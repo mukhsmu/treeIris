@@ -1,10 +1,10 @@
 # treeIris
 Analysis software for the IRIS experiment @ TRIUMF
 
-To checkout and compile:
+To download and compile:
 	
-	git checkout https://github.com/matthiasholl/treeIris
-	make
+	git clone https://github.com/matthiasholl/treeIris
+	make -j4
 
 To run:
 
