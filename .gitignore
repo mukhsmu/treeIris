@@ -6,4 +6,5 @@ core
 *~ 
 *.so
 *.swp
-bin/anaIris
+bin/
+obj/
