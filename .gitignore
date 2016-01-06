@@ -1,0 +1,8 @@
+*.o 
+*Dict.cxx 
+*Dict.cpp 
+*Dict.h 
+core 
+*~ 
+*.so
+bin/anaIris

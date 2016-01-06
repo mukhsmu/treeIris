@@ -117,4 +117,5 @@ clean::
 	rm -f core 
 	rm -f $(SOURCEDIR)/*~ $(INCLUDEDIR)/*~ 
 	rm -f $(INSTALLDIR)/libTEvent.so
+	rm -f $(INSTALLDIR)/bin/anaIris
 # end
