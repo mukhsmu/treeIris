@@ -161,7 +161,7 @@ float SSBEnergy = 0;
 float SSBOffset=0;
 float SSBGain=0;
 
-TGraph *g_elossSi={NULL}; // energy loss function in Si
+// TGraph *g_elossSi={NULL}; // energy loss function in Si
 
 extern FILE* ASCIIYY1;
 extern FILE* ASCIICsI;
@@ -795,7 +795,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
   			//calculate the 
   			//det.TSd1rEnergy2 = 0; // for 40 Ar runs
 
-  			det.TSd2rEnergyCal = erem(det.TSd1rEnergy,g_elossSi);
+  			//det.TSd2rEnergyCal = erem(det.TSd1rEnergy,g_elossSi);
 
   			//Effect of shifting the beam by one mm
   			aVector.SetXYZ(0,0,Sd1Distance);
@@ -823,9 +823,9 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, TString CalibFile)
 
 	ascii = calMesy.boolASCII;
 	
-	TFile f1(calMesy.fileELoss);    //energy loss graphs
-	g_elossSi =  (TGraph*)f1.FindObjectAny("g_elossSi");  //18O energy loss in Si           
-	f1.Close();
+//	TFile f1(calMesy.fileELoss);    //energy loss graphs
+//	g_elossSi =  (TGraph*)f1.FindObjectAny("g_elossSi");  //18O energy loss in Si           
+//	f1.Close();
 	char label[32]; //, sig[32];
 
 // *************** Reading detector distances *************************************
