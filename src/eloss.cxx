@@ -1,14 +1,46 @@
 //Alisher Sanetullaev
 //Energy loss calculator using Bethe formula
-//-dE/dx = 4PI/(m_e c^2) (nz^2)/beta^2 (e^2/4PI(epsilon_0)^2) [ln(2m_e c^2 beta^2/I (1-beta^2))-beta^2] 
-//void EneLoss(char* filename, Double_t & th, Double_t & en); //Stopping power file, target thickness, intial energy
+// modfied by Matthias Holl, December 2015
+// stopping power can now be directly read from file 
 
-
-
-#include <TF1.h>
+#include <iostream>
+#include <fstream>
 #include "../include/eloss.h"
+#include <stdlib.h>
+#include <TRandom3.h>
+#include <TMath.h>
 
+void loadELoss(TString filename, Double_t e[100], Double_t dedx[100], Double_t m)
+{
+	Double_t buffer[2];
+	
+	ifstream infile;
+	Char_t line[2000];
+			
+	infile.open(filename); 
+	if(!infile.is_open()){
+		printf("Cannot open the file %s!!\n",filename.Data());
+		exit(0);
+	}
 
+  	infile.getline(line,2000);
+	for(UInt_t i=0; i<100; i++){
+    	infile.getline(line,2000);
+    	sscanf(line,"%lf %lf %lf %lf",&buffer[1],&buffer[2],&e[i],&dedx[i]);
+  		e[i] *= m/0.931494061; //stopping power for this mass
+   	}    
+	infile.close();
+}
+
+// Double_t straggling(nucleus P, Double_t TZoverA, Double_t ein,  Double_t th)
+// {
+// 	Double_t k= 1.1+0.47*TMath::Log10(ein/Double_t(P.A));
+// 	Double_t Bohr2 = 0.157 * th * P.Z*P.Z *TZoverA /P.A;
+// 	Double_t Bohr = sqrt(Bohr2);
+// 	Double_t d = k*Bohr;
+// 
+// 	return d;
+// }
 
 Double_t fncBethe(Double_t *x, Double_t *par) //Bethe like function for fitting
 {
@@ -27,30 +59,133 @@ Double_t fncBethe(Double_t *x, Double_t *par) //Bethe like function for fitting
   return val;
 }
 
-//Make it a method for a particle class.
-Double_t eloss(Double_t ein, Double_t th , TGraph *func)//initial energy and thickness are given as arguments 
+Double_t eval(Double_t in, Double_t x[100], Double_t y[100])
 {
-	
-	// for (Int_t )
-	
+	Double_t dxin=0., dx=0., dy=0., e=0.;
+	if(in<=0.){
+		e = 0.;
+	}
+	else if(in<x[0]){
+		e = y[0]*in/x[0];
+	}
+	else if(in>x[99]){
+		dxin = in-x[99];
+		dx = x[99]-x[98];
+		dy = y[99]-y[98];
+		e = y[99]+dy*dxin/dx;
+	}
+	else{
+		for(int i=1; i<100;i++){   
+			if(in>x[i-1]&&in<x[i]){
+				dxin = in-x[i-1];
+				dx = x[i]-x[i-1];
+				dy = y[i]-y[i-1];
+				e = y[i-1]+dy*dxin/dx;
+				break;
+			}
+		}
+	}
+	return e;
+}
+
+//Make it a method for a particle class.
+// Double_t simEloss(nucleus P, Double_t TZoverA, Double_t ein, Double_t th , Double_t x[100], Double_t y[100])//initial energy and thickness are given as arguments 
+// {
+// 	Double_t k;
+// 	Double_t Bohr;
+// 	Double_t sgm;
+// 	Double_t strg;
+// 
+// 	TRandom3 *rndm = new TRandom3(0);
+// 	if(ein==0.) return 0;
+// 	//Energy loss calculation including energy Straggling
+// 	Double_t dx =th/100.; //in mg/cm2
+// 	Bohr = TMath::Sqrt(0.157/1000. * dx * P.Z*P.Z *TZoverA);
+// 	Double_t de = 0; //energy loss
+// 	Double_t en= ein; //the energy variable
+// 	for (int i=0; i<100; i++){
+// 	  	de = (dx * eval(en,x,y));//energy loss in dx
+// 		if(de>en){
+// 		   	en=0.;	
+// 			break;
+// 		}
+// 		k= 1.1+0.47*TMath::Log10(en/Double_t(P.A));
+// 		sgm = k*Bohr;
+// 		strg = rndm->Gaus(de,sgm);
+// 		de = (strg>0.) ? strg : 0.;
+// 	  	if(de>en){
+// 		   	en=0.;	
+// 			break;
+// 		}
+// 		en = en - de; // energy remaining after dx
+// 	}
+// 	return ein-en;
+// }
+
+//Make it a method for a particle class.
+Double_t eloss(Double_t ein, Double_t th , Double_t x[100], Double_t y[100])//initial energy and thickness are given as arguments 
+{
+	if(ein==0.) return 0;
 	//Energy loss calculation
 	Double_t dx =th/100.; //in mg/cm2
 	Double_t de = 0; //energy loss
 	Double_t en= ein; //the energy variable
+	for (int i=0; i<100; i++){
+	  	de = (dx * eval(en,x,y));//energy loss in dx
+		if(de>en){
+		   	en=0.;	
+			break;
+		}
+	  	en = en - de; // energy remaining after dx
+	}
+	return ein-en;
+}
+
+Double_t eloss(Double_t ein, Double_t th , TGraph *func)//initial energy and thickness are given as arguments 
+{
+	//Energy loss calculation
+	Double_t dx =th/100.; //in mg/cm2
+	Double_t de = 0; //energy loss
+	Double_t en= ein; //the energy variable
+	//Double_t pos = 0.;// the position variable
+	//while (pos <= th){
+	for (int i=0; i<100; i++){
+	  	// de = (dx * func->Eval(en))/2.; //
+	   	// en = en - de;
+	  	// if(de>en){
+		//    	en=0.;	
+		// 	break;
+		// }
+		de = (dx * func->Eval(en));//energy loss in dx
+	  	if(de>en){
+		   	en=0.;	
+			break;
+		}
+		en = en - de; // energy remaining after dx
+		//pos = pos + dx;
+	}
+	return ein-en;
+}
+//Make it a method for a particle class.
+Double_t elossFi(Double_t efi, Double_t th, Double_t x[100], Double_t y[100])//final energy and thickness are given as arguments 
+{
+	if (th==0) return efi;
+	//Energy loss calculation
+	Double_t dx =th/100.; //in 
+	Double_t de = 0; //energy loss
+	Double_t en= efi; //the energy variable
 	Double_t pos = 0.;// the position variable
 	
 	while (pos<= th){
-	  	de =  (dx*func->Eval(en))/2.; //
-	   	en = en - de;
-	  	de =(dx*func->Eval(en))/2.;//energy loss in dx
-	  	en = en -de; // energy remaining after dx
-	  	pos = pos +dx;
+		de =  (dx* eval(en,x,y))/2.; //
+		en = en + de;
+		de =(dx* eval(en,x,y))/2.;//energy loss in dx
+		en = en +de; // energy remaining after dx
+		pos = pos +dx;
 	}
-
-	return ein - en;
+ 	return en-efi;
 }
 
-//Make it a method for a particle class.
 Double_t elossFi(Double_t efi, Double_t th , TGraph *func)//final energy and thickness are given as arguments 
 {
 
@@ -74,7 +209,32 @@ en = en + de;
  }
  return en-efi;
 }
+//Make it a method for a particle class.
+Double_t thickness(Double_t ein, Double_t efi, Double_t x[100], Double_t y[100])//initial energy and final energy are given as arguments, calculates target thickness 
+{
 
+ // for (Int_t )
+  if (ein<=efi) return 0.0;
+ //Energy loss calculation
+  Double_t dx = 0; 
+  Double_t de = (ein-efi)/1000.; //energy loss step in MeV
+  //  Double_t de = 0.01; //energy loss step in MeV
+ Double_t en= ein; //the energy variable
+ Double_t th = 0.;// the thickness variable
+
+ //Integrate numerically 
+ 
+ while (en > efi){
+   dx = de/eval(en,x,y)/2.; //
+   th = th +dx;
+   en = en-de;
+
+   dx =  de/eval(en,x,y)/2.; //
+   th = th +dx;
+   
+ }
+ return th;
+}
 
 //Make it a method for a particle class.
 Double_t thickness(Double_t ein, Double_t efi , TGraph *func)//initial energy and final energy are given as arguments, calculates target thickness 

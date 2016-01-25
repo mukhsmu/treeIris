@@ -45,40 +45,47 @@ ofstream csv_file;
 #endif
 
 CalibPHYSICS calPhys;
-Graphsdedx dedx_p, dedx_d, dedx_i[3];
+Graphsdedx dedx_p, dedx_d, dedx_t, dedx_i[3];
 
 const int Nchannels = 24;
 const int binlimit = 1900;
-//TH1D * hPhysics_Q[Nchannels] = {NULL}; // Q
+ 	
+Double_t eAH[3][100], eAC4H10[3][100], eASi3N4[3][100], eAAg[3][100];	
+Double_t dedxAH[3][100], dedxAC4H10[3][100], dedxASi3N4[3][100], dedxAAg[3][100];	
+Double_t eBSi[3][100], eBH[3][100], eBSiO2[3][100], eBB[3][100], eBP[3][100], eBAl[3][100], eBMy[3][100], eBCsI[3][100];	
+Double_t dedxBSi[3][100], dedxBH[3][100], dedxBSiO2[3][100], dedxBB[3][100], dedxBP[3][100], dedxBAl[3][100], dedxBMy[3][100], dedxBCsI[3][100];	
+Double_t ebH[3][100], ebSi[3][100], ebAl[3][100], ebB[3][100], ebMy[3][100], ebP[3][100], ebCsI[3][100], ebSiO2[3][100];	
+Double_t dedxbH[3][100], dedxbSi[3][100], dedxbAl[3][100], dedxbB[3][100], dedxbMy[3][100], dedxbP[3][100], dedxbCsI[3][100], dedxbSiO2[3][100];	
 
-TGraph *grIAg[3] ={NULL}; // stopping power in Ag foil
-TGraph *grIH2[3] ={NULL}; // stopping in H2
-TGraph *grISi[3] = {NULL};
-TGraph *grIAl[3] = {NULL};
-TGraph *grIB[3] = {NULL};
-TGraph *grIP[3] = {NULL};
-TGraph *grISiO2[3] = {NULL};
-
-TGraph *grdSi = {NULL};
-TGraph *grdAl = {NULL};
-TGraph *grdB = {NULL};
-TGraph *grdP = {NULL};
-TGraph *grdMy = {NULL};
-TGraph *grdD2 = {NULL};
-TGraph *grdH2 = {NULL};
-
-TGraph *grpSi = {NULL};
-TGraph *grpAl = {NULL};
-TGraph *grpB = {NULL};
-TGraph *grpP = {NULL};
-TGraph *grpMy = {NULL};
-TGraph *grpD2 = {NULL};
-TGraph *grpH2 = {NULL};
+// Double_t grIAg[3][100]; // stopping power in Ag foil
+// Double_t grIH2[3][100]; // stopping in H2
+// Double_t grISi[3][100];
+// Double_t grIAl[3][100];
+// Double_t grIB[3][100];
+// Double_t grIP[3][100];
+// Double_t grISiO2[3][100];
+// 
+// Double_t grdSi[100];
+// Double_t grdAl[100];
+// Double_t grdB[100];
+// Double_t grdP[100];
+// Double_t grdMy[100];
+// Double_t grdD2[100];
+// Double_t grdH2[100];
+// 
+// Double_t grpSi[100];
+// Double_t grpAl[100];
+// Double_t grpB[100];
+// Double_t grpP[100];
+// Double_t grpMy[100];
+// Double_t grpD2[100];
+// Double_t grpH2[100];
 
 double EBAC = 0.; //Beam energy from accelerator
 beam_t beam[3]; // beam properties such as, mass, charge and energy
 target_t tar; //target properties
-ejectile_t lej, hej; //ejectile properties
+ejectile_t lej; //ejectile properties
+ejectile_t hej[3]; //ejectile properties
 Int_t useYCalc = 1;//Use calculated YY1 energy  : do we need to ? :Jaspreet
 //Double_t YdThickness[8] = {112.,109.*1.04/1.2,110.*1.5/1.59,106.*1.04/1.14,101.,109.*1.17/1.28,111.*1.12/1.22,103.};//Thicknesses for YY1 detectors 
 Double_t YdThickness[8]= {104.65, 101.15, 106.125, 101.75,100.052, 105.65,102.48, 105.84}; // Nov 25,2014 // should probably go to parameter file (geometry.txt) 
@@ -134,8 +141,8 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
   	deuterons->SetName("deuterons");
 	printf("Grabbed gates.\n");
 	
-	printf("Calculated dedx graphs in %s\n",calPhys.fileELoss.Data());
-   	TFile *f1 = new TFile(calPhys.fileELoss);
+//	printf("Calculated dedx graphs in %s\n",calPhys.fileELoss.Data());
+//   	TFile *f1 = new TFile(calPhys.fileELoss);
  
 #ifdef csv_output  
   	csv_file.open("S1147pd.csv", ios::out);
@@ -148,65 +155,19 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
 			dedx_i[i].Load(calPhys.fileIdedx[i]);
 			dedx_i[i].Print();
-    		grIAg[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].Ag);
-			if(!grIAg[i]) printf("grIAg not found!\n");
-    		grIH2[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].H2);
-			if(!grIH2[i]) printf("grIH2 not found!\n");
-    		grISi[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].Si);
-			if(!grISi[i]) printf("grISi not found!\n");
-    		grIAl[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].Al); //density 2.7 g/cm^3 // i.5 um * 2.7 g/cm^3 = i.135 mg/cm^2 //i.8 um = i.216 mg/cm^2
-			if(!grIAl[i]) printf("grIAl not found!\n");
-    		grIB[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].B);//i.5 um * 2.35 gm/cm^2 = i.1175 mg/cm^2                                              
-			if(!grIB[i]) printf("grIB not found!\n");
-    		grIP[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].P); //i.5 um * 1.822 gm/cm^2 = i.i911 mg/cm^2
-			if(!grIP[i]) printf("grIP not found!\n");
-    		grISiO2[i] = (TGraph*)f1->FindObjectAny(dedx_i[i].SiO2);//2.5 um * 2.65 gm/cm^2 = i.6625 mg/cm^2
-			if(!grISiO2[i]) printf("grISiO2 not found!\n");
+			loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA);	
+			loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA);	
+			loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
+			loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
+			loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
+			loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
+			loadELoss(dedx_i[i].SiO2,eBH[i],dedxBH[i],mB);	
 		}
 	}    
 	
-//---------------for protons in various layers---Jaspreet ----------------------------------
-	if(calPhys.boolPdedx==kTRUE){
-		printf("\n\nLoading dedx Graphs for proton...\n");
-		dedx_p.Load(calPhys.filePdedx);
-		dedx_p.Print();
- 		grpSi = (TGraph*)f1->FindObjectAny(dedx_p.Si);
-		if(!grpSi) printf("grpSi not found!\n");
-   		grpAl = (TGraph*)f1->FindObjectAny(dedx_p.Al); //density 2.7 g/cm^3 // 0.5 um * 2.7 g/cm^3 = 0.135 mg/cm^2 //0.8 um = 0.216 mg/cm^2    
-		if(!grpAl) printf("grpAl not found!\n");
-    	grpB = (TGraph*)f1->FindObjectAny(dedx_p.B);//0.5 um * 2.35 gm/cm^2 = 0.1175 mg/cm^2                                                    
-		if(!grpB) printf("grpB not found!\n");
-    	grpP = (TGraph*)f1->FindObjectAny(dedx_p.P); //0.5 um * 1.822 gm/cm^2 = 0.0911 mg/cm^2                                                  
-		if(!grpP) printf("grpP not found!\n");
-  		grpMy = (TGraph*)f1->FindObjectAny(dedx_p.My); // 6 um * 1.4 gm/cm^2                                                                        
-		if(!grpMy) printf("grpMy not found!\n");
-		grpH2 = (TGraph*)f1->FindObjectAny(dedx_p.H2);
-		if(!grpH2) printf("grpH2 not found!\n");
-	}
-//---------------for deuterons in various layers---Jaspreet ----------------------------------
-	if(calPhys.boolDdedx==kTRUE){
-		printf("\n\nLoading dedx Graphs for deuteron...\n");
-		dedx_d.Load(calPhys.fileDdedx);
-		dedx_d.Print();
-		grdH2 = (TGraph*)f1->FindObjectAny(dedx_d.H2);
-		if(!grdH2) printf("grdH2 not found!\n");
-		grdAl = (TGraph*)f1->FindObjectAny(dedx_d.Al); //density 2.7 g/cm^3 // 0.5 um * 2.7 g/cm^3 = 0.135 mg/cm^2 //0.8 um = 0.216 mg/cm^2    
-		if(!grdAl) printf("grdAl not found!\n");
-	    grdB = (TGraph*)f1->FindObjectAny(dedx_d.B);//0.5 um * 2.35 gm/cm^2 = 0.1175 mg/cm^2                                                    
-		if(!grdB) printf("grdB not found!\n");
-	    grdP = (TGraph*)f1->FindObjectAny(dedx_d.P); //0.5 um * 1.822 gm/cm^2 = 0.0911 mg/cm^2                                                  
-		if(!grdP) printf("grdP not found!\n");
-	  	grdMy = (TGraph*)f1->FindObjectAny(dedx_d.My); // 6 um * 1.4 gm/cm^2                                                                        
-		if(!grdMy) printf("grdMy not found!\n");
-		grdD2 = (TGraph*)f1->FindObjectAny(dedx_d.D2);
-		if(!grdD2) printf("grdD2 not found!\n");
-		grdSi = (TGraph*)f1->FindObjectAny(dedx_d.Si);
-		if(!grdSi) printf("grdSi not found!\n");
-	}
-//--------------------------------------------------------------------------------
-	 
-	f1->Close();
-	printf("Closed f1\n");
+ 
+//	f1->Close();
+//	printf("Closed f1\n");
 	
 	FILE * pFile;
 	FILE * pwFile;
@@ -247,21 +208,34 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 	for(int i=0; i<3; i++){	
 		if(calPhys.boolRunDepPar[i]){
-			setRunDepPar(calPhys.fileRunDepPar[i], &beam[i], &tar, &lej, &hej);// setting run dependent parameters.
+			setRunDepPar(calPhys.fileRunDepPar[i], &beam[i], &tar, &lej, &hej[i]);// setting run dependent parameters.
 			EBAC = beam[i].EBAC;
 			MBeam = beam[i].mass;
 			kBF = MFoil/MBeam;
 			mA = MBeam; //Beam mass //Reassigned in HandleBOR
 			ma = tar.mass;
 			mb = lej.mass; //Light ejectile mass
-			mB = hej.mass;
+			mB = hej[i].mass;
 	
 			printf("Beam energy: %f\n", beam[i].energy);
 			printf("Target thickness: %f\n",tar.thickness);
+			
+			if(calPhys.boolIdedx[i]==kTRUE){
+				printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
+				dedx_i[i].Load(calPhys.fileIdedx[i]);
+				dedx_i[i].Print();
+				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA);	
+				if(dedx_i[i].boolH2==kTRUE) loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA);	
+				if(dedx_i[i].boolSi==kTRUE) loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
+				if(dedx_i[i].boolAl==kTRUE) loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
+				if(dedx_i[i].boolB==kTRUE) loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
+				if(dedx_i[i].boolP==kTRUE) loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
+				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBH[i],dedxBH[i],mB);	
+			}
 		
-			if (grIH2[i]){
-				beam[i].energy = beam[i].energy-eloss(beam[i].energy,tar.thickness/2.,grIH2[i]);  
-				printf("Energy loss in half target: %f\n" ,eloss(beam[i].energy,tar.thickness/2.,grIH2[i]));
+			if (eAH[i]){
+				beam[i].energy = beam[i].energy-eloss(beam[i].energy,tar.thickness/2.,eAH[i],dedxAH[i]);  
+				printf("Energy loss in half target: %f\n" ,eloss(beam[i].energy,tar.thickness/2.,eAH[i],dedxAH[i]));
 			}
 			else printf("Energy loss in target not specified. EBeam=EBAC");
 
@@ -285,6 +259,31 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			//a2= 1.-mA/mB;
 		}
 	}
+	//---------------for protons in various layers---Jaspreet ----------------------------------
+	if(calPhys.boolPdedx==kTRUE){
+		printf("\n\nLoading dedx Graphs for proton...\n");
+		dedx_p.Load(calPhys.filePdedx);
+		dedx_p.Print();
+		if(dedx_p.Si==kTRUE) loadELoss(dedx_p.Si,ebSi[0],dedxbSi[0],mb);	
+		if(dedx_p.Al==kTRUE) loadELoss(dedx_p.Al,ebAl[0],dedxbAl[0],mb);	
+		if(dedx_p.B==kTRUE) loadELoss(dedx_p.B,ebB[0],dedxbB[0],mb);	
+		if(dedx_p.P==kTRUE) loadELoss(dedx_p.P,ebP[0],dedxbP[0],mb);	
+		if(dedx_p.My==kTRUE) loadELoss(dedx_p.My,ebMy[0],dedxbMy[0],mb);	
+		if(dedx_p.H2==kTRUE) loadELoss(dedx_p.H2,ebH[0],dedxbH[0],mb);	
+	}
+//---------------for deuterons in various layers---Jaspreet ----------------------------------
+	if(calPhys.boolDdedx==kTRUE){
+		printf("\n\nLoading dedx Graphs for deuteron...\n");
+		dedx_d.Load(calPhys.fileDdedx);
+		dedx_d.Print();
+		if(dedx_d.Si==kTRUE) loadELoss(dedx_d.Si,ebSi[1],dedxbSi[1],mb);	
+		if(dedx_d.Al==kTRUE) loadELoss(dedx_d.Al,ebAl[1],dedxbAl[1],mb);	
+		if(dedx_d.B==kTRUE)  loadELoss(dedx_d.B,ebB[1],dedxbB[1],mb);	
+		if(dedx_d.P==kTRUE)  loadELoss(dedx_d.P,ebP[1],dedxbP[1],mb);	
+		if(dedx_d.My==kTRUE) loadELoss(dedx_d.My,ebMy[1],dedxbMy[1],mb);	
+		if(dedx_d.H2==kTRUE) loadELoss(dedx_d.H2,ebH[1],dedxbH[1],mb);	
+	}
+//--------------------------------------------------------------------------------
 		printf("End of HandleBOR_Physics\n");
 } //HandleBOR_Physics
 
@@ -328,22 +327,22 @@ void HandlePHYSICS(IDet *det)
 //
  	//adding dead layer energy losses
  	//Sd2 ring side
-  	if (grIB[nGate]) energy = det->TSd2rEnergy+elossFi(det->TSd2rEnergy,0.1*2.35*0.5/cosTheta,grIB[nGate]); //boron junction implant
-  	if (grIAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,grIAl[nGate]); //first metal
-  	if (grISiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,grISiO2[nGate]); //SiO2
-  	if (grIAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,grIAl[nGate]); //second metal
+  	if (eBB[nGate]) energy = det->TSd2rEnergy+elossFi(det->TSd2rEnergy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
+  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
+  	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
    	//Sd1 ring side
-  	if (grIAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,grIAl[nGate]); //second metal
-  	if (grISiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,grISiO2[nGate]); //SiO2
-  	if (grIAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,grIAl[nGate]); //first metal
+  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
+  	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
    	energy = energy + det->TSd1rEnergy;// energy lost and measured in Sd1
 //	if(MBeam == M20Na){
-//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*1.822*0.5/cosTheta,grIP[nGate]);    // JSR_july_2 // why???
-//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*2.7*0.3/cosTheta,grIAl[nGate]);      //JSR_JULY_2
+//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate]);    // JSR_july_2 // why???
+//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate]);      //JSR_JULY_2
 //   	}
 	//sector side
-	if (grIP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,grIP[nGate]); //phosphorus implant
-	if (grIAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,grIAl[nGate]); //metal
+	if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
+	if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
     
 	PResid = sqrt(2.*det->TSdETot*MBeam);     //Beam momentum in MeV/c
 	A = kBF-1.;                              //Quadratic equation parameters
@@ -367,15 +366,11 @@ void HandlePHYSICS(IDet *det)
     //det->TSdThetaCM = TMath::RadToDeg()*atan(sin(TMath::DegToRad()*det->TSdTheta)*PResid/(PResid*cos(TMath::DegToRad()*det->TSdTheta)-PBeam*MBeam/(MBeam+MFoil)));
 
     // printf("thetaCM: %f\n",det->TSdThetaCM);
-    if (grIAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2., grIAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-
+    if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
     det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta)/sqrt(gammaCM-gammaCM*betaCM*(MBeam+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta))));// check if this is still correct for H2 target tk
- 	if (grIAg[nGate]) det->TBE=  det->TSdETot + elossFi(det->TSdETot,5.2365/2., grIAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-  // cout<<"reaching here 2"<<endl;
    
  // Calculate Q-value from YY1 and CsI// 
 	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == tar.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== tar.mass))) {    //check if in the proton/deuteron gate
-//	if (((deuterons->IsInside(det->TCsI2Energy,det->TYdEnergy*cos(det->TYdTheta*0.01745329)))&& (mb == M2H)) && ((det->TYdEnergy>0.2)  && (det->TCsI2Energy >0.6 )&& (mb== M2H))) {    //check if in the proton/deuteron gate
 
     ECsI= det->TCsI2Energy[0];
     if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
@@ -388,12 +383,12 @@ void HandlePHYSICS(IDet *det)
   	if (mb == tar.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
   	//if (mb == M2H) //proton energy loss in dead layers between YY1 and CsI                                                                                       
     {
-      	if (grdMy)  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),grdMy); //Mylar                                                                                  
-      	else std::cout << "grdMy doesn't exist"<< std::endl;
-      	if (grdAl)  ECsI= ECsI+elossFi(ECsI,0.1*2.702*0.3/cos(thetaR),grdAl); //0.3 u Al                                                                            
-      	else std::cout << "grdAl doesn't exist"<< std::endl;
-      	if (grdP)  ECsI= ECsI+elossFi(ECsI,0.1*1.88219*0.1/cos(thetaR),grdP); // 0.1Phosphorus                                                                      
-      	else std::cout << "grdP doesn't exist"<< std::endl;
+      	if (ebMy[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),ebMy[1],dedxbMy[1]); //Mylar                                                                                  
+      	else std::cout << "ebMy doesn't exist"<< std::endl;
+      	if (ebAl[1])  ECsI= ECsI+elossFi(ECsI,0.1*2.702*0.3/cos(thetaR),ebAl[1],dedxbAl[1]); //0.3 u Al                                                                            
+      	else std::cout << "ebAl doesn't exist"<< std::endl;
+      	if (ebP[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.88219*0.1/cos(thetaR),ebP[1],dedxbP[1]); // 0.1Phosphorus                                                                      
+      	else std::cout << "ebP doesn't exist"<< std::endl;
     }
 
 //---------------YY1 Energy-----------------------------------------------------------------
@@ -402,18 +397,18 @@ void HandlePHYSICS(IDet *det)
  	if(useYCalc){
 		if (mb == tar.mass){
 		//if (mb == M2H){
-  			if (grdSi)  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),grdSi); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
-			else std::cout << "grdSi doesn't exist"<< std::endl;
+  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
+			else std::cout << "ebSi doesn't exist"<< std::endl;
  		}
 	}//useYCalc
 	else Eb= Eb+EYY1; //use measured Yd // change june28
 
    	if (mb == tar.mass){
    	//if (mb == M2H){
-      	if (grdSi)  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),grdSi); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
-    	else std::cout << "grdSi doesn't exist"<< std::endl;
-    	if (grdD2)  Eb= Eb+elossFi(Eb,tar.thickness/2./cos(thetaR),grdD2); //deuteron energy  in mid target midtarget                                                                             
-     	else std::cout << "grdD2 doesn't exist"<< std::endl;
+      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
+    	else std::cout << "ebSi doesn't exist"<< std::endl;
+    	if (ebH[1])  Eb= Eb+elossFi(Eb,tar.thickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
+     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 	}
 
 	Pb = sqrt(Eb*Eb+2.*Eb*mb);

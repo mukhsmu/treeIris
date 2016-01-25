@@ -6,5 +6,6 @@ core
 *~ 
 *.so
 *.swp
+*.root
 bin/
 obj/
