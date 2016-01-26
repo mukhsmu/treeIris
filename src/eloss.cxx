@@ -22,12 +22,13 @@ void loadELoss(TString filename, Double_t e[100], Double_t dedx[100], Double_t m
 		printf("Cannot open the eloss file %s!!\n",filename.Data());
 		exit(0);
 	}
-
+	// printf("%s mass in eloss: %f\n", filename.Data(),m/931.49406);
   	infile.getline(line,2000);
 	for(UInt_t i=0; i<100; i++){
     	infile.getline(line,2000);
     	sscanf(line,"%lf %lf %lf %lf",&buffer[1],&buffer[2],&e[i],&dedx[i]);
-  		e[i] *= m/0.931494061; //stopping power for this mass
+  		e[i] *= m/931.494061; //stopping power for this mass
+    	//printf("%lf %lf %lf %lf\n",buffer[1],buffer[2],e[i],dedx[i]);
    	}    
 	infile.close();
 }

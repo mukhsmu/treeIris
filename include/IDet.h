@@ -36,22 +36,7 @@ class IDet : public TObject {
 		
 		Int_t TICChannel;
 		Double_t TICEnergy;
-		Double_t TIC00;
-		Double_t TIC01;
-		Double_t TIC02;
-		Double_t TIC03;
-		Double_t TIC04;
-		Double_t TIC05;
-		Double_t TIC06;
-		Double_t TIC07;
-		Double_t TIC08;
-		Double_t TIC09;
-		Double_t TIC10;
-		Double_t TIC11;
-		Double_t TIC12;
-		Double_t TIC13;
-		Double_t TIC14;
-		Double_t TIC15;
+		Double_t TIC[16];
 
 		Int_t TSd1rMul;
 		Int_t TSd1rChannel[32];
@@ -79,10 +64,10 @@ class IDet : public TObject {
 		Double_t TSdThetaCM;
 		Double_t TSdPhi[32];
 
-		Double_t TQv1; // Q-value from S3
-		Double_t TQv2; // Q-value from S3
-		Double_t QValue1; //Q-value from YY1 and CsI1
-		Double_t QValue2; //Q-value from YY1 and CsI2
+//		Double_t TQv1; // Q-value from S3
+//		Double_t TQv2; // Q-value from S3
+//		Double_t QValue1; //Q-value from YY1 and CsI1
+//		Double_t QValue2; //Q-value from YY1 and CsI2
 		Double_t QValue; //Q-value from YY1 and CsI2
 		Double_t TBE; //Beam energy
 	

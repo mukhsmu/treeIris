@@ -149,23 +149,6 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
   	assert(csv_file.is_open());
 #endif
 
-//----------------stable beam for Mg experiment  i.e. 20Ne--------------------------------
-	for(int i=0; i<3; i++){
-		if(calPhys.boolIdedx[i]==kTRUE){
-			printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
-			dedx_i[i].Load(calPhys.fileIdedx[i]);
-			dedx_i[i].Print();
-			loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA);	
-			loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA);	
-			loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
-			loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
-			loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
-			loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
-			loadELoss(dedx_i[i].SiO2,eBH[i],dedxBH[i],mB);	
-		}
-	}    
-	
- 
 //	f1->Close();
 //	printf("Closed f1\n");
 	
@@ -264,24 +247,24 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 		printf("\n\nLoading dedx Graphs for proton...\n");
 		dedx_p.Load(calPhys.filePdedx);
 		dedx_p.Print();
-		if(dedx_p.Si==kTRUE) loadELoss(dedx_p.Si,ebSi[0],dedxbSi[0],mb);	
-		if(dedx_p.Al==kTRUE) loadELoss(dedx_p.Al,ebAl[0],dedxbAl[0],mb);	
-		if(dedx_p.B==kTRUE) loadELoss(dedx_p.B,ebB[0],dedxbB[0],mb);	
-		if(dedx_p.P==kTRUE) loadELoss(dedx_p.P,ebP[0],dedxbP[0],mb);	
-		if(dedx_p.My==kTRUE) loadELoss(dedx_p.My,ebMy[0],dedxbMy[0],mb);	
-		if(dedx_p.H2==kTRUE) loadELoss(dedx_p.H2,ebH[0],dedxbH[0],mb);	
+		if(dedx_p.boolSi==kTRUE) loadELoss(dedx_p.Si,ebSi[0],dedxbSi[0],mb);	
+		if(dedx_p.boolAl==kTRUE) loadELoss(dedx_p.Al,ebAl[0],dedxbAl[0],mb);	
+		if(dedx_p.boolB==kTRUE) loadELoss(dedx_p.B,ebB[0],dedxbB[0],mb);	
+		if(dedx_p.boolP==kTRUE) loadELoss(dedx_p.P,ebP[0],dedxbP[0],mb);	
+		if(dedx_p.boolMy==kTRUE) loadELoss(dedx_p.My,ebMy[0],dedxbMy[0],mb);	
+		if(dedx_p.boolH2==kTRUE) loadELoss(dedx_p.H2,ebH[0],dedxbH[0],mb);	
 	}
 //---------------for deuterons in various layers---Jaspreet ----------------------------------
 	if(calPhys.boolDdedx==kTRUE){
 		printf("\n\nLoading dedx Graphs for deuteron...\n");
 		dedx_d.Load(calPhys.fileDdedx);
 		dedx_d.Print();
-		if(dedx_d.Si==kTRUE) loadELoss(dedx_d.Si,ebSi[1],dedxbSi[1],mb);	
-		if(dedx_d.Al==kTRUE) loadELoss(dedx_d.Al,ebAl[1],dedxbAl[1],mb);	
-		if(dedx_d.B==kTRUE)  loadELoss(dedx_d.B,ebB[1],dedxbB[1],mb);	
-		if(dedx_d.P==kTRUE)  loadELoss(dedx_d.P,ebP[1],dedxbP[1],mb);	
-		if(dedx_d.My==kTRUE) loadELoss(dedx_d.My,ebMy[1],dedxbMy[1],mb);	
-		if(dedx_d.H2==kTRUE) loadELoss(dedx_d.H2,ebH[1],dedxbH[1],mb);	
+		if(dedx_d.boolSi==kTRUE) loadELoss(dedx_d.Si,ebSi[1],dedxbSi[1],mb);	
+		if(dedx_d.boolAl==kTRUE) loadELoss(dedx_d.Al,ebAl[1],dedxbAl[1],mb);	
+		if(dedx_d.boolB==kTRUE)  loadELoss(dedx_d.B,ebB[1],dedxbB[1],mb);	
+		if(dedx_d.boolP==kTRUE)  loadELoss(dedx_d.P,ebP[1],dedxbP[1],mb);	
+		if(dedx_d.boolMy==kTRUE) loadELoss(dedx_d.My,ebMy[1],dedxbMy[1],mb);	
+		if(dedx_d.boolH2==kTRUE) loadELoss(dedx_d.H2,ebH[1],dedxbH[1],mb);	
 	}
 //--------------------------------------------------------------------------------
 		printf("End of HandleBOR_Physics\n");
@@ -371,73 +354,75 @@ void HandlePHYSICS(IDet *det)
 
  // Calculate Q-value from YY1 and CsI// 
 	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == tar.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== tar.mass))) {    //check if in the proton/deuteron gate
-
-    ECsI= det->TCsI2Energy[0];
-    if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
-      	ECsI=0;
-	}
-
-  	thetaR =( atan((Yd1rP+((det->TYdRing[0]+1)*(Yd2rP-Yd1rP)/16))/YdDistanceP) + atan((Yd1rP+((det->TYdRing[0])*(Yd2rP-Yd1rP)/16))/YdDistanceP) )/2.;
-  	thetaD = thetaR*TMath::RadToDeg();
-
-  	if (mb == tar.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
-  	//if (mb == M2H) //proton energy loss in dead layers between YY1 and CsI                                                                                       
-    {
-      	if (ebMy[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),ebMy[1],dedxbMy[1]); //Mylar                                                                                  
-      	else std::cout << "ebMy doesn't exist"<< std::endl;
-      	if (ebAl[1])  ECsI= ECsI+elossFi(ECsI,0.1*2.702*0.3/cos(thetaR),ebAl[1],dedxbAl[1]); //0.3 u Al                                                                            
-      	else std::cout << "ebAl doesn't exist"<< std::endl;
-      	if (ebP[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.88219*0.1/cos(thetaR),ebP[1],dedxbP[1]); // 0.1Phosphorus                                                                      
-      	else std::cout << "ebP doesn't exist"<< std::endl;
-    }
-
-//---------------YY1 Energy-----------------------------------------------------------------
-	EYY1 = det->TYdEnergy[0];
-  	//  cout<<"EYY ENERGY IS"<<EYY1<<endl;
- 	if(useYCalc){
-		if (mb == tar.mass){
-		//if (mb == M2H){
-  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
-			else std::cout << "ebSi doesn't exist"<< std::endl;
- 		}
-	}//useYCalc
-	else Eb= Eb+EYY1; //use measured Yd // change june28
-
-   	if (mb == tar.mass){
-   	//if (mb == M2H){
-      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
-    	else std::cout << "ebSi doesn't exist"<< std::endl;
-    	if (ebH[1])  Eb= Eb+elossFi(Eb,tar.thickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
-     	else std::cout << "ebD2 doesn't exist"<< std::endl;
-	}
-
-	Pb = sqrt(Eb*Eb+2.*Eb*mb);
-
-//	My eqs  
-	Double_t Pby = Pb*sin(thetaR);
-	Double_t Pbxcm = gammaCM*betaCM*(Eb+mb)- gammaCM*Pb*cos(thetaR);
-
-// 	cout<<"Beam energy used for QValue is "<< EBeam <<endl;
-//  cout<<"deuteron energy at interaction at angle "<< thetaD<< " is equal ="<<Eb<<endl;
- 	Q = mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb)+2.*PA*Pb*cos(thetaR)+2.*(EBeam+mA+ma-Eb-mb)*ma);  //Alisher's equation 
-
-//	EB = EBeam+mA+ma-Eb-mb; // rel. kinetic energy of recoil.
-//	PB = sqrt(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR));// momentum of the recoil
-//	mB = sqrt(EB^2-PB^2);
-//	cout << "Q= " << Q <<endl;   
-//	Q = mA+ma-mb-sqrt((EBeam+mA+ma-Eb-mb)*(EBeam+mA+ma-Eb-mb)-(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR))); //Equivalent to the previous equation
-//	cout << "Q= " << Q <<endl;   
-  	det->QValue = Q;
-  	IrisEvent->fQv = det->QValue;
-  	IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
-	IrisEvent->fThetacm = TMath::RadToDeg()*atan(Pby/Pbxcm);
-	if (IrisEvent->fThetacm < 0) 
-  		IrisEvent->fThetacm = IrisEvent->fThetacm+180.;
- 		#ifdef csv_output
-			csv_file << det->QValue <<"," << det->TYdEnergy<<","<<IrisEvent->fPart.fThetacm <<","<< det->TYdTheta<< endl;
-		#endif
+	
+	    ECsI= det->TCsI2Energy[0];
+	    if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
+	      	ECsI=0;
+		}
+	
+	  	thetaR =( atan((Yd1rP+((det->TYdRing[0]+1)*(Yd2rP-Yd1rP)/16))/YdDistanceP) + atan((Yd1rP+((det->TYdRing[0])*(Yd2rP-Yd1rP)/16))/YdDistanceP) )/2.;
+	  	thetaD = thetaR*TMath::RadToDeg();
+	
+	  	if (mb == tar.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
+	  	//if (mb == M2H) //proton energy loss in dead layers between YY1 and CsI                                                                                       
+	    {
+	      	if (ebMy[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),ebMy[1],dedxbMy[1]); //Mylar                                                                                  
+	      	else std::cout << "ebMy doesn't exist"<< std::endl;
+	      	if (ebAl[1])  ECsI= ECsI+elossFi(ECsI,0.1*2.702*0.3/cos(thetaR),ebAl[1],dedxbAl[1]); //0.3 u Al                                                                            
+	      	else std::cout << "ebAl doesn't exist"<< std::endl;
+	      	if (ebP[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.88219*0.1/cos(thetaR),ebP[1],dedxbP[1]); // 0.1Phosphorus                                                                      
+	      	else std::cout << "ebP doesn't exist"<< std::endl;
+	    }
+	
+	//---------------YY1 Energy-----------------------------------------------------------------
+		EYY1 = det->TYdEnergy[0];
+	  	//  cout<<"EYY ENERGY IS"<<EYY1<<endl;
+	 	if(useYCalc){
+			if (mb == tar.mass){
+	  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
+				else std::cout << "ebSi doesn't exist"<< std::endl;
+	 		}
+		}//useYCalc
+		else Eb= ECsI+EYY1; //use measured Yd // change june28
+		// else Eb= Eb+EYY1; //use measured Yd // change june28
+	
+	   	if (mb == tar.mass){
+	      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
+	    	else std::cout << "ebSi doesn't exist"<< std::endl;
+	    	if (ebH[1])  Eb= Eb+elossFi(Eb,tar.thickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
+	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
+		}
+	
+		Pb = sqrt(Eb*Eb+2.*Eb*mb);
+	
+	//	My eqs  
+		Double_t Pby = Pb*sin(thetaR);
+		Double_t Pbxcm = gammaCM*betaCM*(Eb+mb)- gammaCM*Pb*cos(thetaR);
+	
+	// 	cout<<"Beam energy used for QValue is "<< EBeam <<endl;
+	//  cout<<"deuteron energy at interaction at angle "<< thetaD<< " is equal ="<<Eb<<endl;
+	 	Q = mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb)+2.*PA*Pb*cos(thetaR)+2.*(EBeam+mA+ma-Eb-mb)*ma);  //Alisher's equation 
+	
+	//	EB = EBeam+mA+ma-Eb-mb; // rel. kinetic energy of recoil.
+	//	PB = sqrt(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR));// momentum of the recoil
+	//	mB = sqrt(EB^2-PB^2);
+	//	cout << "Q= " << Q <<endl;   
+	//	Q = mA+ma-mb-sqrt((EBeam+mA+ma-Eb-mb)*(EBeam+mA+ma-Eb-mb)-(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR))); //Equivalent to the previous equation
+	//	cout << "Q= " << Q <<endl;   
+	  	det->QValue = Q;
+	  	IrisEvent->fQv = det->QValue;
+	  	IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
+		IrisEvent->fThetacm = TMath::RadToDeg()*atan(Pby/Pbxcm);
+		if (IrisEvent->fThetacm < 0) 
+	  		IrisEvent->fThetacm = IrisEvent->fThetacm+180.;
+	 		#ifdef csv_output
+				csv_file << det->QValue <<"," << det->TYdEnergy<<","<<IrisEvent->fPart.fThetacm <<","<< det->TYdTheta<< endl;
+			#endif
 	}//isinside proton (deuteron) gate
-  	IrisEvent->fEYY1 = det->TYdEnergy[0];
+  	//IrisEvent->fEYY1 = det->TYdEnergy[0];
+  	IrisEvent->fEYY1 = EYY1;
+  	IrisEvent->fCsI = ECsI;
+  	IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
 
 	tree->Fill();
 }

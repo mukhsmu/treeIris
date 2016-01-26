@@ -860,8 +860,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
 	     		 	{det.TCsI2Energy[i]= det.TCsI2Energy[i]+det.TYdRing[0]*CsI2Slope[det.TCsI2Channel[i]];}
 			}
 
- 			if (int(det.TCsI2Channel[0]) != det.TYdNo[0])//checking if the csi is behind YY1
-   				{det.TCsI2Energy[0]=0;}
+ 			 if (int(det.TCsI2Channel[0]/2) != det.TYdNo[0])//checking if the csi is behind YY1
+   			 	{det.TCsI2Energy[0]=0;}
 
     		if (ascii)  fprintf(ASCIICsI," %d  %d %d %d %d \n",event.GetSerialNumber(), CsIChannel[0]+32, (int)CsIEnergy[0],  CsIChannel[1]+32, (int)CsIEnergy[1]);
     		
@@ -885,30 +885,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
    
 			det.TICEnergy = ICEnergy; //for filling the tree
 			det.TICChannel = ICChannel;
-			det.TIC00 = IC[0];
-			det.TIC01 = IC[1];
-			det.TIC02 = IC[2];	
-			det.TIC03 = IC[3];
-			det.TIC04 = IC[4];
-			det.TIC05 = IC[5];
-			det.TIC06 = IC[6];
-			det.TIC07 = IC[7];
-			det.TIC08 = IC[8];
-			det.TIC09 = IC[9];
-			det.TIC10 = IC[10];
-			det.TIC11 = IC[11];
-			det.TIC12 = IC[12];
-			det.TIC13 = IC[13];
-			det.TIC14 = IC[14];
-			det.TIC15 = IC[15];
-  			//  det.pileUp = IC[16];
+			for(int i=0; i<NICChannels;i++){
+				det.TIC[i] = IC[i];
+			}
+			
+			//  det.pileUp = IC[16];
   			//if (det.pileUp < 1500) det.pileUp = 0;
     		//printf("modid: %d , ICEnergy: %f \n",modid, ICEnergy);
   
-  			//calculate the 
-  			//det.TSd1rEnergy2 = 0; // for 40 Ar runs
-
-  			//det.TSd2rEnergyCal = erem(det.TSd1rEnergy,g_elossSi);
  			*pdet = det;
 			} //last bank
   		}//nitems!=0 
