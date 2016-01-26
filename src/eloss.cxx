@@ -19,7 +19,7 @@ void loadELoss(TString filename, Double_t e[100], Double_t dedx[100], Double_t m
 			
 	infile.open(filename); 
 	if(!infile.is_open()){
-		printf("Cannot open the file %s!!\n",filename.Data());
+		printf("Cannot open the eloss file %s!!\n",filename.Data());
 		exit(0);
 	}
 

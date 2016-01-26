@@ -33,11 +33,11 @@
 #include <TFile.h>
 #include <TMath.h>
 #include <TTree.h>
-
 #include "TRandom3.h"
-#include "TParticle.h"
-#include "eloss.h"
 #include <TVector3.h>
+#include "TParticle.h"
+
+#include "eloss.h"
 #include "runDepPar.h"
 
 #include "HandleMesytec.h"
@@ -80,18 +80,21 @@ float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
 //AS CsI
+int CsIMul=0;
 float CsI[16]={0}, CsIEnergy[16];//, CsIEnergy2; //CsI energy
 int CsIChannel[16];// channel with the greatest value
 // int CsIChannel2;
 double CsIGain[NCsIChannels]={0.};
 double CsIPed[NCsIChannels]={0.};
 
+int CsI1Mul=0;
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
 int CsI1Channel[16];  // channel with the greatest value
 // int CsI1Channel2;
 double CsI1Gain[NCsI1GroupRing][NCsIChannels]={{0.}};
 double CsI1Ped[NCsIChannels]={0.};
 
+int CsI2Mul=0;
 float CsI2[16]={0}, CsI2Energy[16];//, CsI2Energy2; //CsI energy
 int CsI2Channel[16];  // channel with the greatest value
 // int CsI2Channel2;
@@ -100,57 +103,65 @@ double CsI2Ped[NCsIChannels]={0.};
 double CsI2Slope[NCsIChannels]={0.};//YY1 ring dependence
 
 //AS S3
-float Sd2r[NSd2rChannels];
-float Sd2rEnergy=0, Sd2rEnergy2= 0; //Dummy for Sd2r energy
-int Sd2rChannel,  Sd2rChannel2; // channel with the greatest value
-float Sd2rGain[NSd2rChannels]={1.};
-float Sd2rOffset[NSd2rChannels]={0.};
-float Sd2rPed[NSd1sChannels]={0.};
-Bool_t S3Hit;
-
-float Sd2s[NSd2sChannels];
-float Sd2sEnergy=0,  Sd2sEnergy2= 0; //Dummy for Sd2s energy  
-int Sd2sChannel, Sd2sChannel2; // channel with the greatest value
-float Sd2sGain[NSd2sChannels]={1.};
-float Sd2sOffset[NSd2sChannels]={0.};
-float Sd2sPed[NSd1sChannels]={0.};
-
+int Sd1rMul=0;
 float Sd1r[NSd1rChannels];
-float Sd1rEnergy=0, Sd1rEnergy2= 0; //Dummy for Sd1r energy
-int Sd1rChannel,  Sd1rChannel2; // channel with the greatest value
+float Sd1rEnergy[NSd1rChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+int Sd1rChannel[NSd1rChannels]={-1}; //  Sd1rChannel2; // channel with the greatest value
 float Sd1rGain[NSd1rChannels]={1.};
 float Sd1rOffset[NSd1rChannels]={0.};
 float Sd1rPed[NSd1sChannels]={0.};
 float Sd1rGain2[NSd1rChannels]={1.}; //recalibration parameters
 float Sd1rOffset2[NSd1rChannels]={0.}; //recalibration parameters
 
+int Sd1sMul=0;
 float Sd1s[NSd1sChannels];
-float Sd1sEnergy=0,  Sd1sEnergy2=0; //Dummy for Sd1s energy      
-int Sd1sChannel, Sd1sChannel2; // channel with the greatest value                                                                                    
+float Sd1sEnergy[NSd1sChannels]={0.}; //  Sd1sEnergy2=0; 
+int Sd1sChannel[NSd1sChannels]={-1}; // Sd1sChannel2; // channel with the greatest value                                                                                    
 float Sd1sGain[NSd1sChannels]={1.};
 float Sd1sOffset[NSd1sChannels]={0.};
 float Sd1sPed[NSd1sChannels]={0.};
 
+int Sd2rMul=0;
+float Sd2r[NSd2rChannels];
+float Sd2rEnergy[NSd2rChannels]={0.}; // Sd2rEnergy2= 0; //Dummy for Sd2r energy
+int Sd2rChannel[NSd2rChannels]={-1}; //  Sd2rChannel2; // channel with the greatest value
+float Sd2rGain[NSd2rChannels]={1.};
+float Sd2rOffset[NSd2rChannels]={0.};
+float Sd2rPed[NSd1sChannels]={0.};
+Bool_t S3Hit;
+
+int Sd2sMul=0;
+float Sd2s[NSd2sChannels];
+float Sd2sEnergy[NSd2sChannels]={0.}; //  Sd2sEnergy2= 0; //Dummy for Sd2s energy  
+int Sd2sChannel[NSd2sChannels]={-1}; // Sd2sChannel2; // channel with the greatest value
+float Sd2sGain[NSd2sChannels]={1.};
+float Sd2sOffset[NSd2sChannels]={0.};
+float Sd2sPed[NSd1sChannels]={0.};
+
+int SurMul=0;
 float Sur[NSurChannels];
-float SurEnergy=0, SurEnergy2= 0; //Dummy for Sur energy
-int SurChannel,  SurChannel2; // channel with the greatest value
+float SurEnergy[NSurChannels]={0.}; // SurEnergy2= 0; //Dummy for Sur energy
+int SurChannel[NSurChannels]={-1}; //  SurChannel2; // channel with the greatest value
 float SurGain[NSurChannels]={1.};
 float SurOffset[NSurChannels]={0.};
 float SurPed[NSusChannels]={0.};
 
+int SusMul=0;
 float Sus[NSusChannels];
-float SusEnergy=0,  SusEnergy2=0; //Dummy for Sus energy      
-int SusChannel, SusChannel2; // channel with the greatest value                                                                                    
+float SusEnergy[NSusChannels]={0.}; //  SusEnergy2=0; //Dummy for Sus energy      
+int SusChannel[NSusChannels]={-1}; // SusChannel2; // channel with the greatest value                                                                                    
 float SusGain[NSusChannels]={1.};
 float SusOffset[NSusChannels]={0.};
 float SusPed[NSusChannels]={0.};
 
-float Yd[NYdChannels] ={0}; 
+int YdMul=0;
+float Yd[NYdChannels] ={0.}; 
 float YdEnergy[NYdChannels]={0.};//, YdEnergy2=0; //Dummy for Yd energy
 int YdChannel[NYdChannels]={-1};//, YdChannel2; // channel with the greatest value
 float YdGain[NYdChannels]={1.};
 float YdOffset[NYdChannels]={0.};
 
+int YuMul=0;
 float Yu[NYuChannels] ={0}; 
 float YuEnergy=0, YuEnergy2=0; //Dummy for Yu energy
 int YuChannel, YuChannel2; // channel with the greatest value
@@ -195,6 +206,9 @@ uint32_t channel, overflow;
 int clearDetectors()
 {
 	for (int j=0; j<NICChannels; j++)	IC[j] = 0;
+	CsIMul=0;
+	CsI1Mul=0;
+	CsI2Mul=0;
 	for (int j=0; j<NCsIChannels; j++){
 		CsI[j] = 0;
 		CsI1[j] = 0;
@@ -206,44 +220,54 @@ int clearDetectors()
 		CsI1Channel[j]=-1;
 		CsI2Channel[j]=-1;
 	}
-	for (int j=0; j<NSd2rChannels; j++)	 Sd2r[j] = 0;
-	for (int j=0; j<NSd2sChannels; j++)	 Sd2s[j] = 0;
-	for (int j=0; j<NSd1rChannels; j++)	 Sd1r[j] = 0;
-	for (int j=0; j<NSd1sChannels; j++)	 Sd1s[j] = 0;
+	Sd1rMul=0;
+	for (int j=0; j<NSd1rChannels; j++){
+   		Sd1r[j] = 0;
+		Sd1rEnergy[j] =0;
+		Sd1rChannel[j] =-1;
+	}
+	Sd1sMul=0;
+	for (int j=0; j<NSd1sChannels; j++){
+   		Sd1s[j] = 0;
+		Sd1sEnergy[j] =0;
+		Sd1sChannel[j] =-1;
+	}
+	Sd2rMul=0;
+	for (int j=0; j<NSd2rChannels; j++){
+   		Sd2r[j] = 0;
+		Sd2rEnergy[j] =0;
+		Sd2rChannel[j] =-1;
+	}
+	Sd2sMul=0;
+	for (int j=0; j<NSd2sChannels; j++){
+   		Sd2s[j] = 0;
+		Sd2sEnergy[j] =0;
+		Sd2sChannel[j] =-1;
+	}
+	YdMul=0;
 	for (int j=0; j<NYdChannels; j++){
 	 	Yd[j] = 0;
 		YdEnergy[j]=0.;
 		YdChannel[j]=-1;
     	YdTheta[j] = 0; 
 	}
+	SurMul=0;
+	for (int j=0; j<NSurChannels; j++){
+   		Sur[j] = 0;
+		SurEnergy[j] =0;
+		SurChannel[j] =-1;
+	}
+	SusMul=0;
+	for (int j=0; j<NSusChannels; j++){
+   		Sus[j] = 0;
+		SusEnergy[j] =0;
+		SusChannel[j] =-1;
+	}
+	
 	ICEnergy=0;
-	Sd2rEnergy=0;
-	Sd2sEnergy=0;
-	Sd1rEnergy=0;
-	Sd1sEnergy=0;
-	Sd2rEnergy2=0;
-	Sd2sEnergy2=0;
-	Sd1rEnergy2=0;
-	Sd1sEnergy2=0;
 	SdETot=0;
-	SurEnergy=0;
-	SusEnergy=0;
-	SurEnergy2=0;
-	SusEnergy2=0;
 
 	ICChannel=-1;
-	Sd2rChannel=-1;
-	Sd2sChannel=-1;
-	Sd1rChannel=-1;
-	Sd1sChannel=-1;
-	Sd2rChannel2=-1;
-	Sd2sChannel2=-1;
-	Sd1rChannel2=-1;
-	Sd1sChannel2=-1;
-	SurChannel=-1;
-	SusChannel=-1;
-	SurChannel2=-1;
-	SusChannel2=-1;
 
 	SdTheta = 0;
     phi = 0;
@@ -429,78 +453,187 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
 	      	} // for loop
 	    } // nitems != 0
 	    
-		//After looping over banks, fill the ascii files
-	    if (modid>5 && modid<10) {// check last bank
-	    	//Find the two highest elements in the array
-	 		Sd2rEnergy=0; Sd2rEnergy2 =0; Sd2rChannel = -10000; Sd2rChannel2 =-10000;
-	 		for (int i =0; i< NSd2rChannels;i++){
-	    		if (Sd2rEnergy<Sd2r[i]){
-	    		  	Sd2rEnergy2 = Sd2rEnergy;
-					Sd2rChannel2 = Sd2rChannel;
-	    		  	Sd2rEnergy=Sd2r[i];
-	    		  	Sd2rChannel = i;
-					// if (Sd2rEnergy2 > 0)
-					// cout << "Path1  i: " << i << " Sd2r[i]: "<< Sd2r[i]   << " Sd2rEnergy: " << Sd2rEnergy << " Sd2rEnergy2: " << Sd2rEnergy2  << endl;
-				}
-				else if (Sd2rEnergy2<Sd2r[i])
-				{     
-					//  cout << "Path2 i: " << i << " Sd2r[i]: "<< Sd2r[i]  << " Sd2rEnergy2: " << Sd2rEnergy2  << endl;
-					Sd2rEnergy2=Sd2r[i];
-	 				Sd2rChannel2 = i;
-				} //else if
-	 		} //for
-	
-	    	Sd2sEnergy=0; Sd2sEnergy2 =0; Sd2sChannel = -10000; Sd2sChannel2 =-10000;
-	    	for (int i =0; i< NSd2sChannels;i++){
-				if (Sd2sEnergy<Sd2s[i]){
-					Sd2sEnergy2 = Sd2sEnergy;
-					Sd2sChannel2 = Sd2sChannel;
-	      			Sd2sEnergy=Sd2s[i];
-	      			Sd2sChannel = i;
-				}
-				else if (Sd2sEnergy2<Sd2s[i]) {
-			    	Sd2sEnergy2=Sd2s[i];
-					Sd2sChannel2 = i;
-				}
-	    	} //for
-	
-	  		if (ascii) 
-	    		fprintf(ASCIISd2," %d  %d %d %d %d %d %d %d %d \n",
-				event.GetSerialNumber(), Sd2rChannel+64, (int)Sd2rEnergy,  Sd2rChannel2+64, (int)Sd2rEnergy2,  
-				Sd2sChannel+96, (int)Sd2sEnergy,  Sd2sChannel2+96, (int)Sd2sEnergy2);
+		//After looping over banks, fill the root tree
 		
-	 		Sd1rEnergy=0; Sd1rEnergy2 =0; Sd1rChannel = -10000; Sd1rChannel2 =-10000;
-	    	for (int i =0; i< NSd1rChannels;i++) {
-				if (Sd1rEnergy<Sd1r[i]){
-	      			Sd1rEnergy2 = Sd1rEnergy;
-					Sd1rChannel2 = Sd1rChannel;
-	      			Sd1rEnergy=Sd1r[i];
-	      			Sd1rChannel = i;
-				}
-				else if (Sd1rEnergy2<Sd1r[i]){
-					Sd1rEnergy2=Sd1r[i];
-					Sd1rChannel2 = i;
-				}
-	    	}//for
+		det.Clear(); //make sure root variables are empty
 
-	 		Sd1sEnergy=0; Sd1sEnergy2 =0; Sd1sChannel = -10000; Sd1sChannel2 =-10000;
-	    	for (int i =0; i< NSd1sChannels;i++){
-				if (Sd1sEnergy<Sd1s[i]){
-	      			Sd1sEnergy2 = Sd1sEnergy;
-					Sd1sChannel2 = Sd1sChannel;
-	      			Sd1sEnergy=Sd1s[i];
-	      			Sd1sChannel = i;
-				}
-				else if (Sd1sEnergy2<Sd1s[i]) {     
-					Sd1sEnergy2=Sd1s[i];
-					Sd1sChannel2 = i;
-				}
-	    	} //for
-	
+	    if (modid>5 && modid<10) {// check last bank
+			// *** --- *** Sd1 *** --- *** //		
+	 		// Sd1rEnergy=0; Sd1rEnergy2 =0; Sd1rChannel = -10000; Sd1rChannel2 =-10000;
+	    	// Sort array by energy
+	    	// for (int i =0; i< NSd1rChannels;i++) {
+			// 	if (Sd1rEnergy<Sd1r[i]){
+	      	// 		Sd1rEnergy2 = Sd1rEnergy;
+			// 		Sd1rChannel2 = Sd1rChannel;
+	      	// 		Sd1rEnergy=Sd1r[i];
+	      	// 		Sd1rChannel = i;
+			// 	}
+			// 	else if (Sd1rEnergy2<Sd1r[i]){
+			// 		Sd1rEnergy2=Sd1r[i];
+			// 		Sd1rChannel2 = i;
+			// 	}
+	    	// }//for
+		//det.TSurEnergy[i] = SurEnergy[i];
+			//det.TSusEnergy[i] = SusEnergy[i];
+			//det.TSurChannel[i] = SurChannel[i];
+			//det.TSusChannel[i] = SusChannel[i];
+
+
+ 			for (Int_t i=0;i<NSd1rChannels;i++){
+      			Double_t max = 0.;
+      			Int_t index = -1;
+    			for (Int_t j=0;j<NSd1rChannels;j++){
+      	    		if(Sd1r[j] > max){
+      	        		max = Sd1r[j];
+      	        		index = j;
+      	    		}
+        		}		
+    
+     			Sd1rEnergy[i] = Sd1r[index];
+				if(Sd1rEnergy[i]>0.) Sd1rMul++;
+        		Sd1rChannel[i] = index;  
+        		Sd1r[index] = 0.;
+    		}
+
+			det.TSd1rMul = Sd1rMul;
+ 			for (Int_t i=0;i<Sd1rMul;i++){
+ 				det.TSd1rEnergy[i] = Sd1rEnergy[i];
+				det.TSd1rChannel[i] = Sd1rChannel[i];
+				randm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
+				det.TSdTheta[i] = TMath::RadToDeg()*atan((Sdr1*(24.-Sd1rChannel[i]-randm)+Sdr2*(Sd1rChannel[i]+randm))/24./Sd1Distance); //AS theta angle for Sd (24 - number of rings)
+			}
+	 		// Sd1sEnergy=0; Sd1sEnergy2 =0; Sd1sChannel = -10000; Sd1sChannel2 =-10000;
+	    	// for (int i =0; i< NSd1sChannels;i++){
+			// 	if (Sd1sEnergy<Sd1s[i]){
+	      	// 		Sd1sEnergy2 = Sd1sEnergy;
+			// 		Sd1sChannel2 = Sd1sChannel;
+	      	// 		Sd1sEnergy=Sd1s[i];
+	      	// 		Sd1sChannel = i;
+			// 	}
+			// 	else if (Sd1sEnergy2<Sd1s[i]) {     
+			// 		Sd1sEnergy2=Sd1s[i];
+			// 		Sd1sChannel2 = i;
+			// 	}
+	    	// } //for
+
+			for (Int_t i=0;i<NSd1sChannels;i++){
+      			Double_t max = 0.;
+      			Int_t index = -1;
+    			for (Int_t j=0;j<NSd1sChannels;j++){
+      	    		if(Sd1s[j] > max){
+      	        		max = Sd1s[j];
+      	        		index = j;
+      	    		}
+        		}		
+    
+     			Sd1sEnergy[i] = Sd1s[index];
+				if(Sd1sEnergy[i]>0.) Sd1sMul++;
+        		Sd1sChannel[i] = index;  
+        		Sd1s[index] = 0.;
+    		}
+
+			det.TSd1sMul = Sd1sMul;
+			for (Int_t i=0;i<Sd1sMul;i++){
+				det.TSd1sEnergy[i] = Sd1sEnergy[i];
+				det.TSd1sChannel[i] = Sd1sChannel[i];
+				det.TSdPhi[i] = 180.-360.*Sd1sChannel[i]/32.;
+			}
+
+  			//Effect of shifting the beam by one mm
+			for(Int_t i=0; i<Sd1rMul; i++){
+  				aVector.SetXYZ(0,0,Sd1Distance);
+   				aVector.SetTheta(TMath::DegToRad()*det.TSdTheta[i]);
+   				aVector.SetPhi(TMath::DegToRad()*det.TSdPhi[i]); // if Sd1rMul>Sd1sMul, TSdPhi[i] should be zero for some events
+   				aVector.SetX(aVector.X()+xShift);
+   				aVector.SetY(aVector.Y()+yShift);
+  				det.TSdTheta[i] = aVector.Theta()*TMath::RadToDeg();
+			}
+
 	  		if (ascii) 
 	   			fprintf(ASCIISd1," %d  %d %d %d %d %d %d %d %d \n",
-				event.GetSerialNumber(), Sd1rChannel+64, (int)Sd1rEnergy,  Sd1rChannel2+64, (int)Sd1rEnergy2,  
-				Sd1sChannel+96, (int)Sd1sEnergy,  Sd1sChannel2+96, (int)Sd1sEnergy2);
+				event.GetSerialNumber(), Sd1rChannel[0]+64, (int)Sd1rEnergy[0],  Sd1rChannel[1]+64, (int)Sd1rEnergy[1],  
+				Sd1sChannel[0]+96, (int)Sd1sEnergy[0],  Sd1sChannel[1]+96, (int)Sd1sEnergy[1]);
+
+			// *** --- *** Sd2 *** --- *** //
+	 		// Sd2rEnergy=0; Sd2rEnergy2 =0; Sd2rChannel = -10000; Sd2rChannel2 =-10000;
+	 		// for (int i =0; i< NSd2rChannels;i++){
+	    	// 	if (Sd2rEnergy<Sd2r[i]){
+	    	// 	  	Sd2rEnergy2 = Sd2rEnergy;
+			// 		Sd2rChannel2 = Sd2rChannel;
+	    	// 	  	Sd2rEnergy=Sd2r[i];
+	    	// 	  	Sd2rChannel = i;
+			// 	}
+			// 	else if (Sd2rEnergy2<Sd2r[i])
+			// 	{     
+			// 		Sd2rEnergy2=Sd2r[i];
+	 		// 		Sd2rChannel2 = i;
+			// 	} //else if
+	 		// } //for
+				
+			
+		 	
+
+			for (Int_t i=0;i<NSd2rChannels;i++){
+      			Double_t max = 0.;
+      			Int_t index = -1;
+    			for (Int_t j=0;j<NSd2rChannels;j++){
+      	    		if(Sd2r[j] > max){
+      	        		max = Sd2r[j];
+      	        		index = j;
+      	    		}
+        		}		
+    
+     			Sd2rEnergy[i] = Sd2r[index];
+				if(Sd2rEnergy[i]>0.) Sd2rMul++;
+        		Sd2rChannel[i] = index;  
+        		Sd2r[index] = 0.;
+    		}
+
+			det.TSd2rMul = Sd2rMul;
+			for (Int_t i=0;i<Sd2rMul;i++){
+				det.TSd2rEnergy[i] = Sd2rEnergy[i];
+				det.TSd2rChannel[i] = Sd2rChannel[i];
+			}
+	    	// Sd2sEnergy=0; Sd2sEnergy2 =0; Sd2sChannel = -10000; Sd2sChannel2 =-10000;
+	    	// for (int i =0; i< NSd2sChannels;i++){
+			// 	if (Sd2sEnergy<Sd2s[i]){
+			// 		Sd2sEnergy2 = Sd2sEnergy;
+			// 		Sd2sChannel2 = Sd2sChannel;
+	      	// 		Sd2sEnergy=Sd2s[i];
+	      	// 		Sd2sChannel = i;
+			// 	}
+			// 	else if (Sd2sEnergy2<Sd2s[i]) {
+			//     	Sd2sEnergy2=Sd2s[i];
+			// 		Sd2sChannel2 = i;
+			// 	}
+	    	// } //for
+			
+			for (Int_t i=0;i<NSd2sChannels;i++){
+      			Double_t max = 0.;
+      			Int_t index = -1;
+    			for (Int_t j=0;j<NSd2sChannels;j++){
+      	    		if(Sd2s[j] > max){
+      	        		max = Sd2s[j];
+      	        		index = j;
+      	    		}
+        		}		
+    
+     			Sd2sEnergy[i] = Sd2s[index];
+				if(Sd2sEnergy[i]>0.) Sd2sMul++;
+        		Sd2sChannel[i] = index;  
+        		Sd2s[index] = 0.;
+    		}
+
+			det.TSd2sMul = Sd2sMul;
+			for (Int_t i=0;i<Sd2sMul;i++){
+				det.TSd2sEnergy[i] = Sd2sEnergy[i];
+				det.TSd2sChannel[i] = Sd2sChannel[i];
+			}
+		
+	  		if (ascii) 
+	    		fprintf(ASCIISd2," %d  %d %d %d %d %d %d %d %d \n",
+				event.GetSerialNumber(), Sd2rChannel[0]+64, (int)Sd2rEnergy[0],  Sd2rChannel[1]+64, (int)Sd2rEnergy[1],  
+				Sd2sChannel[0]+96, (int)Sd2sEnergy[0],  Sd2sChannel[1]+96, (int)Sd2sEnergy[1]);
 
 	// 		SurEnergy=0; SurEnergy2 =0; SurChannel = -10000; SurChannel2 =-10000;
 	//    	for (int i =0; i< NSurChannels;i++) {
@@ -536,43 +669,23 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
 	//			SusChannel+96, (int)SusEnergy,  SusChannel2+96, (int)SusEnergy2);
 	//
 		  	//root tree values
-		    det.Clear();  
 			
 			det.SSB = SSBEnergy;
-			det.TSd2rEnergy = Sd2rEnergy;
-			det.TSd2sEnergy = Sd2sEnergy;
-			det.TSd1rEnergy = Sd1rEnergy;
-			det.TSd1sEnergy = Sd1sEnergy;
-			det.TSd2rChannel = Sd2rChannel;
-			det.TSd2sChannel = Sd2sChannel;
-			det.TSd1rChannel = Sd1rChannel;
-			det.TSd1sChannel = Sd1sChannel;
-			//det.TSurEnergy = SurEnergy;
-			//det.TSusEnergy = SusEnergy;
-			//det.TSurChannel = SurChannel;
-			//det.TSusChannel = SusChannel;
-
-			//Make sure to only accept neighboring channels for energy deposition division
-			if(abs(det.TSd2rChannel-det.TSd2rChannel2)==1)	det.TSd2rEnergy2 = Sd2rEnergy2;
-			if(abs(det.TSd2sChannel-det.TSd2sChannel2)==1)	det.TSd2sEnergy2 = Sd2sEnergy2;
-			if(abs(det.TSd1rChannel-det.TSd1rChannel2)==1)	det.TSd1rEnergy2 = Sd1rEnergy2;
-			if(abs(det.TSd1sChannel-det.TSd1sChannel2)==1)	det.TSd1sEnergy2 = Sd1sEnergy2;
-			//if(abs(det.TSurChannel-det.TSurChannel2)==1)	det.TSurEnergy2 = SurEnergy2;
-			//if(abs(det.TSusChannel-det.TSusChannel2)==1)	det.TSusEnergy2 = SusEnergy2;
+						// //Make sure to only accept neighboring channels for energy deposition division
+			// if(abs(det.TSd2rChannel-det.TSd2rChannel2)==1)	det.TSd2rEnergy2 = Sd2rEnergy2;
+			// if(abs(det.TSd2sChannel-det.TSd2sChannel2)==1)	det.TSd2sEnergy2 = Sd2sEnergy2;
+			// if(abs(det.TSd1rChannel-det.TSd1rChannel2)==1)	det.TSd1rEnergy2 = Sd1rEnergy2;
+			// if(abs(det.TSd1sChannel-det.TSd1sChannel2)==1)	det.TSd1sEnergy2 = Sd1sEnergy2;
+			// //if(abs(det.TSurChannel-det.TSurChannel2)==1)	det.TSurEnergy2 = SurEnergy2;
+			// //if(abs(det.TSusChannel-det.TSusChannel2)==1)	det.TSusEnergy2 = SusEnergy2;
 		
-			det.TSd2rChannel2 = Sd2rChannel2;
-			det.TSd2sChannel2 = Sd2sChannel2;
-			det.TSd1rChannel2 = Sd1rChannel2;
-			det.TSd1sChannel2 = Sd1sChannel2;
-			//det.TSurChannel2 = SurChannel2;
-			//det.TSusChannel2 = SusChannel2;
-			
-			randm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
-			det.TSdTheta = TMath::RadToDeg()*atan((Sdr1*(24.-Sd1rChannel-randm)+Sdr2*(Sd1rChannel+randm))/24./Sd1Distance); //AS theta angle for Sd (24 - number of rings)
-			
-			det.TSdPhi = 180.-360.*Sd1sChannel/32.;
-		 	
-			//Finds the channel with the highest peak
+			// det.TSd2rChannel2 = Sd2rChannel2;
+			// det.TSd2sChannel2 = Sd2sChannel2;
+			// det.TSd1rChannel2 = Sd1rChannel2;
+			// det.TSd1sChannel2 = Sd1sChannel2;
+			// //det.TSurChannel2 = SurChannel2;
+			// //det.TSusChannel2 = SusChannel2;
+					//Finds the channel with the highest peak
 		    // YdEnergy=0; YdChannel = -1; YdEnergy2=0; YdChannel2 =-10000;
 		    // for (int i =0; i< NYdChannels;i++) {
 			//   	if(Yd[i]>YdEnergy){
@@ -598,35 +711,35 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
         		}		
     
      			YdEnergy[i] = Yd[index];
+				if(YdEnergy[i]>0.) YdMul++;
         		YdChannel[i] = index;  
         		Yd[index] = 0.;
     		}
 
 			//if(YdChannel>=0) YdEnergy =  (YdEnergy-YdOffset[YdChannel]) * YdGain[YdChannel];
-			for(int i=0;i<NYdChannels;i++){	
-				if (YdChannel[i]>=0){
-					det.TYdEnergy[i] = YdEnergy[i];
-					det.TYdChannel[i] = YdChannel[i];
-			
-					det.TYdNo[i] = int(YdChannel[i]/16);
-					det.TYdRing[i] = YdChannel[i]%16;
-					//here
-					YdTheta[i] = TMath::RadToDeg()*atan((Yd1r*(16.-YdChannel[i]%16-randm)+Yd2r*(YdChannel[i]%16+randm))/16./YdDistance);
-					det.TYdTheta[i]= YdTheta[i];
-				}
+			det.TYdMul = YdMul;
+			for(int i=0;i<YdMul;i++){	
+				det.TYdEnergy[i] = YdEnergy[i];
+				det.TYdChannel[i] = YdChannel[i];
+		
+				det.TYdNo[i] = int(YdChannel[i]/16);
+				det.TYdRing[i] = YdChannel[i]%16;
+				//here
+				YdTheta[i] = TMath::RadToDeg()*atan((Yd1r*(16.-YdChannel[i]%16-randm)+Yd2r*(YdChannel[i]%16+randm))/16./YdDistance);
+				det.TYdTheta[i]= YdTheta[i];
 			}
 		 
 		  	if (ascii) 
 		    	fprintf(ASCIIYY1," %d  %d %d %d %d \n",event.GetSerialNumber(), YdChannel[0]+192, (int)YdEnergy[0],  YdChannel[1]+192, (int)YdEnergy[1]);
 		
-			//AS angles
-			if (Sd1rEnergy>0){
-				SdTheta = TMath::RadToDeg()*(Sdr1*(24.-Sd1rChannel-randm)+Sdr2*(Sd1rChannel+randm))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
-			}
-			 if (Sd1rEnergy>0){
-			  	phi = (Sd1sChannel*180./32.); //AS phi angle for Sd (32 - number of sectors)
-			}
-
+//			//AS angles
+//			if (Sd1rEnergy>0){
+//				SdTheta = TMath::RadToDeg()*(Sdr1*(24.-Sd1rChannel-randm)+Sdr2*(Sd1rChannel+randm))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
+//			}
+//			 if (Sd1rEnergy>0){
+//			  	phi = (Sd1sChannel*180./32.); //AS phi angle for Sd (32 - number of sectors)
+//			}
+//
 			// for (Int_t i=0;i<NCsIChannels;i++){
       		// 	Double_t max = 0.;
       		// 	Int_t index = 0;
@@ -653,25 +766,27 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
         		}		
     
      			CsI1Energy[i] = CsI1[index];
+				if(CsI1Energy[i]>0.) CsI1Mul++;
         		CsI1Channel[i] = index;  
         		CsI1[index] = 0.;
     		}
 
-			for (Int_t i=0;i<NCsIChannels;i++){
-      			Double_t max = 0.;
-      			Int_t index = 0;
-    			for (Int_t j=0;j<NCsIChannels;j++){
-      	    		if(CsI2[j] > max){
-      	        		max = CsI2[j];
-      	        		index = j;
-      	    		}
-        		}		
-    
-     			CsI2Energy[i] = CsI2[index];
-        		CsI2Channel[i] = index;  
-        		CsI2[index] = 0.;
-    		}
-			// CsI1Energy=0; CsI1Energy2 =0; CsI1Channel = -1; CsI1Channel2 =-1;
+			det.TCsI1Mul = CsI1Mul;
+			for(int i=0; i<CsI1Mul; i++){
+	    		det.TCsI1ADC[i] = CsI1Energy[i];
+	
+				if (YdMul>0){
+		      		int m = (YdChannel[0]%16)/(16/NCsI1GroupRing);
+		      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
+		      		det.TCsI1Energy[i] = CsI1Energy[i]; 
+		      		det.TCsI1Channel[i] = CsI1Channel[i];
+		    	}
+	     		if (CsI1Energy[i]>0.){
+	   				CsIEnergy[i] = CsI1Energy[i];
+	   				CsIChannel[i] = CsI1Channel[i];
+	     		}
+			}
+		// CsI1Energy=0; CsI1Energy2 =0; CsI1Channel = -1; CsI1Channel2 =-1;
 			// for (int i =0; i< 16;i++) {
 			//   	// printf("CsI1 ch: %d, value %f\n", i, CsI1[i]);
 			//   	if (CsI1Energy<CsI1[i]){
@@ -701,21 +816,29 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
 			// 	}
 			// } //for
 
-			for(int i=0; i<NCsIChannels; i++){
-	    		det.TCsI1ADC[i] = CsI1Energy[i];
-	    		det.TCsI2ADC[i] = CsI2Energy[i];
+			for (Int_t i=0;i<NCsIChannels;i++){
+      			Double_t max = 0.;
+      			Int_t index = 0;
+    			for (Int_t j=0;j<NCsIChannels;j++){
+      	    		if(CsI2[j] > max){
+      	        		max = CsI2[j];
+      	        		index = j;
+      	    		}
+        		}		
+    
+     			CsI2Energy[i] = CsI2[index];
+				if(CsI2Energy[i]>0.) CsI2Mul++;
+        		CsI2Channel[i] = index;  
+        		CsI2[index] = 0.;
+    		}
 	
-				if (CsI1Energy[i]>0 && CsI1Channel[i]>-1 && YdChannel>=0){
-		      		int m = (YdChannel[0]%16)/(16/NCsI1GroupRing);
-		      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
-		      		det.TCsI1Energy[i] = CsI1Energy[i]; 
-		      		det.TCsI1Channel[i] = CsI1Channel[i];
-		    	}
+			for(int i=0; i<CsI2Mul; i++){
+	    		det.TCsI2ADC[i] = CsI2Energy[i];
 	
 	 			// if (CsI1Energy[i]>0 && CsI1Channel[i]>-1)
 	    		// 	CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[CsI1Channel[i]];
 	
-		  		if (CsI2Energy[i]>0.&& CsI2Energy[i] < 4000. && CsI2Channel[i]>-1 && YdChannel>=0){
+		  		if (CsI2Energy[i] < 4000. && YdMul>0){
 					int m = (YdChannel[0]%16)/(16/NCsI2Group);
 		        	CsI2Energy[i] = (CsI2Energy[i]-CsI2Ped[CsI2Channel[i]])*CsI2Gain[m][CsI2Channel[i]];
 		        	det.TCsI2Energy[i] = CsI2Energy[i];
@@ -729,21 +852,11 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
 	       			CsIEnergy[i] = CsI2Energy[i];//0.177*CsI1Energy[i]-23.3;
 	 				CsIChannel[i] = CsI2Channel[i];
 	     		}
-	     		else if (CsI1Energy[i]>0.){
-	   				CsIEnergy[i] = CsI1Energy[i];
-	   				CsIChannel[i] = CsI1Channel[i];
-	     		}
-	
+
 	    		det.TCsIEnergy[i] = CsIEnergy[i]; //for filling the tree
 	    		det.TCsIChannel[i] = CsIChannel[i];
-	    		
-				// det.TCsI1Energy[i] = CsI1Energy[i]; //for filling the tree
-	    		// det.TCsI1Channel[i] = CsI1Channel[i];
-	
-	  			// det.TCsI2Energy[i] = CsI2Energy[i]; //for filling the tree
-	    		// det.TCsI2Channel[i] = CsI2Channel[i];
-	
-	 			if (useCsI2Slope && det.TYdRing[0] >-1)   
+	    	
+				if (useCsI2Slope && det.TYdRing[0] >-1)   
 	     		 	{det.TCsI2Energy[i]= det.TCsI2Energy[i]+det.TYdRing[0]*CsI2Slope[det.TCsI2Channel[i]];}
 			}
 
@@ -796,18 +909,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int MYLABEL, IDet 
   			//det.TSd1rEnergy2 = 0; // for 40 Ar runs
 
   			//det.TSd2rEnergyCal = erem(det.TSd1rEnergy,g_elossSi);
-
-  			//Effect of shifting the beam by one mm
-  			aVector.SetXYZ(0,0,Sd1Distance);
-   			aVector.SetTheta(TMath::DegToRad()*det.TSdTheta);
-   			aVector.SetPhi(TMath::DegToRad()*det.TSdPhi);
-
-   			//aVector.SetX(aVector.X());
-  			// aVector.SetY(aVector.Y());
-   			aVector.SetX(aVector.X()+xShift);
-   			aVector.SetY(aVector.Y()+yShift);
-
-  			det.TSdTheta = aVector.Theta()*TMath::RadToDeg();
  			*pdet = det;
 			} //last bank
   		}//nitems!=0 

@@ -292,7 +292,7 @@ void HandlePHYSICS(IDet *det)
  	//  printf("calling HandlePHYSICS %d %d \n", gCSInitems, gPHOSnitems);
   	//TTree *eventPhy = new TTree ("eventPhy","Physics event"); //Physics event
   	//eventPhy->Branch("fLp",&fLp,"fLp/F"); //Light particle detected at YY1 and CsI
-  	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta));
+  	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta[0]));
 
 	// Selecting an incoming isotope:	
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
@@ -327,7 +327,7 @@ void HandlePHYSICS(IDet *det)
 //
  	//adding dead layer energy losses
  	//Sd2 ring side
-  	if (eBB[nGate]) energy = det->TSd2rEnergy+elossFi(det->TSd2rEnergy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
+  	if (eBB[nGate]) energy = det->TSd2rEnergy[0]+elossFi(det->TSd2rEnergy[0],0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
   	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
   	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
   	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
@@ -335,7 +335,7 @@ void HandlePHYSICS(IDet *det)
   	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
   	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
   	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
-   	energy = energy + det->TSd1rEnergy;// energy lost and measured in Sd1
+   	energy = energy + det->TSd1rEnergy[0];// energy lost and measured in Sd1
 //	if(MBeam == M20Na){
 //		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate]);    // JSR_july_2 // why???
 //		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate]);      //JSR_JULY_2
@@ -346,7 +346,7 @@ void HandlePHYSICS(IDet *det)
     
 	PResid = sqrt(2.*det->TSdETot*MBeam);     //Beam momentum in MeV/c
 	A = kBF-1.;                              //Quadratic equation parameters
-    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta);
+    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta[0]);
     C = -1.*(kBF+1)*PResid*PResid; 
     if (A!=0)
     PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
@@ -367,8 +367,8 @@ void HandlePHYSICS(IDet *det)
 
     // printf("thetaCM: %f\n",det->TSdThetaCM);
     if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta)/sqrt(gammaCM-gammaCM*betaCM*(MBeam+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta))));// check if this is still correct for H2 target tk
-   
+    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta[0])/sqrt(gammaCM-gammaCM*betaCM*(MBeam+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta[0]))));// check if this is still correct for H2 target tk
+
  // Calculate Q-value from YY1 and CsI// 
 	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == tar.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== tar.mass))) {    //check if in the proton/deuteron gate
 
