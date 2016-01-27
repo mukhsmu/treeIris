@@ -376,10 +376,10 @@ int ProcessMidasFile(TApplication*app,const char*fname)
 	  		HandleMidasEvent(event);
 		}
       
-      	if((i%50000)==0)
+      	if((i%100)==0)
 		{
 	  		//resetClock2time();
-	   		printf("Processing event %d\n",i);
+	   		printf("Processing event %d\r",i);
 	  		//SISperiodic();
 	  		//StepThroughSISBuffer();
 		}

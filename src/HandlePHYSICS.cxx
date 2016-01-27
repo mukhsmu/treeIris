@@ -17,14 +17,16 @@
 #include <iostream>
 #include <assert.h>
 #include <fstream>
+#include <string>
 
-#include <TH1D.h>
+// #include <TH1D.h>
 #include <TFile.h>
 #include <TMath.h>
 #include "HandleMesytec.h"
 #include "HandlePHYSICS.h"
 #include "Globals.h"
 #include "eloss.h"
+#include "nucleus.h"
 #include "runDepPar.h"
 #include "TCutG.h"
 //#include "TGraph.h"
@@ -82,13 +84,16 @@ Double_t dedxbH[3][100], dedxbSi[3][100], dedxbAl[3][100], dedxbB[3][100], dedxb
 // Double_t grpH2[100];
 
 double EBAC = 0.; //Beam energy from accelerator
-beam_t beam[3]; // beam properties such as, mass, charge and energy
-target_t tar; //target properties
-ejectile_t lej; //ejectile properties
-ejectile_t hej[3]; //ejectile properties
-Int_t useYCalc = 1;//Use calculated YY1 energy  : do we need to ? :Jaspreet
+runDepPar_t runDepPar[3]; // beam properties such as, mass, charge and energy
+// target_t tar; //target properties
+// ejectile_t lej; //ejectile properties
+// ejectile_t hej[3]; //ejectile properties
+nucleus beam[3]; // beam particle properties
+nucleus target; // target properties
+nucleus lej; // light ejetcile properties
+nucleus hej[3]; // heavy ejectile properties  
+Int_t useYCalc = 0;//Use calculated YY1 energy  : do we need to ? :Jaspreet
 //Double_t YdThickness[8] = {112.,109.*1.04/1.2,110.*1.5/1.59,106.*1.04/1.14,101.,109.*1.17/1.28,111.*1.12/1.22,103.};//Thicknesses for YY1 detectors 
-Double_t YdThickness[8]= {104.65, 101.15, 106.125, 101.75,100.052, 105.65,102.48, 105.84}; // Nov 25,2014 // should probably go to parameter file (geometry.txt) 
 Double_t PResid; //Momentum of residue
 Double_t PBeam; // Calculated beam momentum after scattering off Ag
 Double_t PA; //Beam momentum before reaction
@@ -116,10 +121,12 @@ TCutG * protons;
 TCutG * deuterons;
 //TGraph *Li11pp;//elastic scattering kinematics graph
 
+Double_t YdThickness[8]= {104.65, 101.15, 106.125, 101.75,100.052, 105.65,102.48, 105.84}; // Nov 25,2014 // should probably go to parameter file (geometry.txt) 
 float YdDistanceP = 0.; // distance from target in mm
 float Yd1rP= 0., Yd2rP = 0. ; // inner and outer radii in mm
 float Sd1DistanceP = 0., Sd2DistanceP = 0.; //distance from target in mm
 float Sdr1P = 0., Sdr2P= 0.; //AS Inner and outer radii of an S3 detector (in mm).
+float TThickness = 0.;
 
 int nGate = 0; // for selecting incoming ion
 
@@ -185,23 +192,30 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 		if (strcmp(buffer,"SD2D")==0)	Sd2DistanceP = v;
 		if (strcmp(buffer,"SDR1")==0)	Sdr1P = v;
 		if (strcmp(buffer,"SDR2")==0)	Sdr2P = v;
+		if (strcmp(buffer,"TTH")==0)	TThickness = v;
 	
 	}
 	fclose(pFile);
 
 	for(int i=0; i<3; i++){	
 		if(calPhys.boolRunDepPar[i]){
-			setRunDepPar(calPhys.fileRunDepPar[i], &beam[i], &tar, &lej, &hej[i]);// setting run dependent parameters.
-			EBAC = beam[i].EBAC;
-			MBeam = beam[i].mass;
-			kBF = MFoil/MBeam;
-			mA = MBeam; //Beam mass //Reassigned in HandleBOR
-			ma = tar.mass;
+			setRunDepPar(calPhys.fileRunDepPar[i], &runDepPar[i]);// setting run dependent parameters.
+			
+			beam[i].getInfo(runDepPar[i].nA);
+			target.getInfo(runDepPar[i].na);
+			hej[i].getInfo(runDepPar[i].nB);
+			lej.getInfo(runDepPar[i].nb);
+
+			EBAC = runDepPar[i].EBAC;
+			// MBeam = runDepPar[i].mass;
+			mA = beam[i].mass; //Beam mass //Reassigned in HandleBOR
+			ma = target.mass;
 			mb = lej.mass; //Light ejectile mass
 			mB = hej[i].mass;
+			kBF = MFoil/mA;
 	
-			printf("Beam energy: %f\n", beam[i].energy);
-			printf("Target thickness: %f\n",tar.thickness);
+			printf("Beam energy: %f\n", runDepPar[i].energy);
+			printf("Target thickness: %f\n",TThickness);
 			
 			if(calPhys.boolIdedx[i]==kTRUE){
 				printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
@@ -217,24 +231,25 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			}
 		
 			if (eAH[i]){
-				beam[i].energy = beam[i].energy-eloss(beam[i].energy,tar.thickness/2.,eAH[i],dedxAH[i]);  
-				printf("Energy loss in half target: %f\n" ,eloss(beam[i].energy,tar.thickness/2.,eAH[i],dedxAH[i]));
+				Double_t temp_energy = runDepPar[i].energy;
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,TThickness/2.,eAH[i],dedxAH[i]);  
+				printf("Energy loss in half target: %f\n" ,temp_energy-runDepPar[i].energy);
 			}
 			else printf("Energy loss in target not specified. EBeam=EBAC");
 
-			beam[i].momentum = sqrt(beam[i].energy*beam[i].energy+2.*beam[i].energy*beam[i].mass);//beam momentum
-			beam[i].beta = beam[i].momentum/(beam[i].energy + beam[i].mass + tar.mass);
-			beam[i].gamma = 1./sqrt(1.-beam[i].beta*beam[i].beta);
-			
-			EBeam= beam[i].energy;
-			PA = beam[i].momentum;//beam momentum
-			betaCM = beam[i].beta;
-			gammaCM = beam[i].gamma;
+			runDepPar[i].momentum = sqrt(runDepPar[i].energy*runDepPar[i].energy+2.*runDepPar[i].energy*beam[i].mass);//beam momentum
+			runDepPar[i].beta = runDepPar[i].momentum/(runDepPar[i].energy + beam[i].mass + target.mass);
+			runDepPar[i].gamma = 1./sqrt(1.-runDepPar[i].beta*runDepPar[i].beta);
+
+			EBeam= runDepPar[i].energy;
+			PA = runDepPar[i].momentum;//beam momentum
+			betaCM = runDepPar[i].beta;
+			gammaCM = runDepPar[i].gamma;
 	
 			printf("Resulting energy: %f\n",EBeam);
 			printf("Beam momentum: %f\n",PA);
 			printf("Beam beta: %f\tBeam gamma: %f\n",betaCM,gammaCM);
-			printf("MBeam: %f\t MFoil: %f\t kBF: %f\n",MBeam,MFoil,kBF);
+			printf("MBeam: %f\t MFoil: %f\t kBF: %f\n",beam[i].mass,MFoil,kBF);
 			printf("beam mass: %f\ttarget mass: %f\n",mA,ma);
 			printf("heavy ejectile mass: %f\tlight ejectile mass: %f\n",mB,mb);
 			
@@ -281,33 +296,27 @@ void HandlePHYSICS(IDet *det)
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
  	else if (calPhys.boolICGates==kTRUE) {  
 		for(int i=0; i<3; i++){  
- 			if ((det->TICEnergy>beam[i].ICmin) && (det->TICEnergy<beam[i].ICmax)) { 
+ 			if ((det->TICEnergy>runDepPar[i].ICmin) && (det->TICEnergy<runDepPar[i].ICmax)) { 
 				nGate = i; 
   			}
 		}
 	} 
 
-	EBAC = beam[nGate].EBAC;
-	MBeam = beam[nGate].mass;
-	kBF = MFoil/MBeam;
-	mA = MBeam; 
-	mB = MBeam;
-	EBeam= beam[nGate].energy;
-	betaCM = beam[nGate].beta;
-	gammaCM = beam[nGate].gamma;
-	PA = beam[nGate].momentum; // beam momentum
+	EBAC = runDepPar[nGate].EBAC;
+	// MBeam = runDepPar[nGate].mass;
+	mA = beam[nGate].mass; 
+	ma = target.mass; 
+	mB = hej[nGate].mass;
+	mb = lej.mass;
+	kBF = MFoil/mA;
+	EBeam= runDepPar[nGate].energy;
+	betaCM = runDepPar[nGate].beta;
+	gammaCM = runDepPar[nGate].gamma;
+	PA = runDepPar[nGate].momentum; // beam momentum
 	// betaCM = sqrt(EBeam*EBeam+2.*EBeam*MBeam)/(EBeam + MBeam + mb);
 	// gammaCM = 1./sqrt(1.-betaCM*betaCM);
 	// PA = sqrt(EBeam*EBeam+2.*EBeam*MBeam);//beam momentum
 	
-//---------------------------------------------------------
-//	else  if (MBeam == M18O)//18O beam
-//    {
-//      	//std::cout << "MBeam == M18O" << std::endl; 
-//		det->TSdETot = det->TSd2rEnergyCal+det->TSd1rEnergy; //temporarly set to calculated value
-//
-//	}
-//
  	//adding dead layer energy losses
  	//Sd2 ring side
   	if (eBB[nGate]) energy = det->TSd2rEnergy[0]+elossFi(det->TSd2rEnergy[0],0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
@@ -319,15 +328,12 @@ void HandlePHYSICS(IDet *det)
   	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
   	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
    	energy = energy + det->TSd1rEnergy[0];// energy lost and measured in Sd1
-//	if(MBeam == M20Na){
-//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate]);    // JSR_july_2 // why???
-//		det->TSd1rEnergy = det->TSd1rEnergy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate]);      //JSR_JULY_2
-//   	}
+
 	//sector side
 	if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
 	if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
     
-	PResid = sqrt(2.*det->TSdETot*MBeam);     //Beam momentum in MeV/c
+	PResid = sqrt(2.*det->TSdETot*mA);     //Beam momentum in MeV/c
 	A = kBF-1.;                              //Quadratic equation parameters
     B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta[0]);
     C = -1.*(kBF+1)*PResid*PResid; 
@@ -343,17 +349,17 @@ void HandlePHYSICS(IDet *det)
     // if (A!=0)
     // PResid = (sqrt(B*B-4.*A*C)-B)/(2*A);
 
-    det->TBE = PBeam*PBeam/(2.*MBeam);
+    det->TBE = PBeam*PBeam/(2.*mA);
    
     //  det->TSdETot = EBAC; //tk remove
     //det->TSdThetaCM = TMath::RadToDeg()*atan(sin(TMath::DegToRad()*det->TSdTheta)*PResid/(PResid*cos(TMath::DegToRad()*det->TSdTheta)-PBeam*MBeam/(MBeam+MFoil)));
 
     // printf("thetaCM: %f\n",det->TSdThetaCM);
     if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta[0])/sqrt(gammaCM-gammaCM*betaCM*(MBeam+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta[0]))));// check if this is still correct for H2 target tk
+    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta[0])/sqrt(gammaCM-gammaCM*betaCM*(mA+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta[0]))));// check if this is still correct for H2 target tk
 
  // Calculate Q-value from YY1 and CsI// 
-	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == tar.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== tar.mass))) {    //check if in the proton/deuteron gate
+	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == target.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== target.mass))) {    //check if in the proton/deuteron gate
 	
 	    ECsI= det->TCsI2Energy[0];
 	    if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
@@ -363,7 +369,7 @@ void HandlePHYSICS(IDet *det)
 	  	thetaR =( atan((Yd1rP+((det->TYdRing[0]+1)*(Yd2rP-Yd1rP)/16))/YdDistanceP) + atan((Yd1rP+((det->TYdRing[0])*(Yd2rP-Yd1rP)/16))/YdDistanceP) )/2.;
 	  	thetaD = thetaR*TMath::RadToDeg();
 	
-	  	if (mb == tar.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
+	  	if (mb == target.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
 	  	//if (mb == M2H) //proton energy loss in dead layers between YY1 and CsI                                                                                       
 	    {
 	      	if (ebMy[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),ebMy[1],dedxbMy[1]); //Mylar                                                                                  
@@ -378,7 +384,7 @@ void HandlePHYSICS(IDet *det)
 		EYY1 = det->TYdEnergy[0];
 	  	//  cout<<"EYY ENERGY IS"<<EYY1<<endl;
 	 	if(useYCalc){
-			if (mb == tar.mass){
+			if (mb == target.mass){
 	  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
 				else std::cout << "ebSi doesn't exist"<< std::endl;
 	 		}
@@ -386,10 +392,10 @@ void HandlePHYSICS(IDet *det)
 		else Eb= ECsI+EYY1; //use measured Yd // change june28
 		// else Eb= Eb+EYY1; //use measured Yd // change june28
 	
-	   	if (mb == tar.mass){
+	   	if (mb == target.mass){
 	      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
 	    	else std::cout << "ebSi doesn't exist"<< std::endl;
-	    	if (ebH[1])  Eb= Eb+elossFi(Eb,tar.thickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
+	    	if (ebH[1])  Eb= Eb+elossFi(Eb,TThickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
 	

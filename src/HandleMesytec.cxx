@@ -5,7 +5,6 @@
 //
 // $Id$
 //
-
 /// \mainpage
 ///
 /// \section intro_sec Introduction
@@ -23,13 +22,12 @@
 #include <signal.h>
 #include <stdint.h>
 
-
 #include "TMidasEvent.h"
-#include <TApplication.h>
-#include <TCanvas.h>
-#include <TH1D.h>
-#include <TH2F.h>
-#include <TNtuple.h>
+// #include <TApplication.h>
+// #include <TCanvas.h>
+// #include <TH1D.h>
+// #include <TH2F.h>
+// #include <TNtuple.h>
 #include <TFile.h>
 #include <TMath.h>
 #include <TTree.h>
@@ -37,12 +35,12 @@
 #include <TVector3.h>
 #include "TParticle.h"
 
-#include "eloss.h"
-#include "runDepPar.h"
+// #include "eloss.h"
+// #include "runDepPar.h"
 
 #include "HandleMesytec.h"
 #include "CalibMesytec.h"
-#include "../include/Globals.h"
+#include "Globals.h"
 
 int gMesytecnitems;
 
@@ -171,8 +169,6 @@ float YuOffset[NYuChannels]={0.};
 float SSBEnergy = 0;
 float SSBOffset=0;
 float SSBGain=0;
-
-// TGraph *g_elossSi={NULL}; // energy loss function in Si
 
 extern FILE* ASCIIYY1;
 extern FILE* ASCIICsI;
@@ -908,9 +904,6 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, TString CalibFile)
 
 	ascii = calMesy.boolASCII;
 	
-//	TFile f1(calMesy.fileELoss);    //energy loss graphs
-//	g_elossSi =  (TGraph*)f1.FindObjectAny("g_elossSi");  //18O energy loss in Si           
-//	f1.Close();
 	char label[32]; //, sig[32];
 
 // *************** Reading detector distances *************************************
@@ -948,6 +941,8 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, TString CalibFile)
 		if (strcmp(buffer,"SD2D")==0)	Sd2Distance = v;
 		if (strcmp(buffer,"SDR1")==0)	Sdr1 = v;
 		if (strcmp(buffer,"SDR2")==0)	Sdr2 = v;
+		if (strcmp(buffer,"XSHIFT")==0)	xShift = v;
+		if (strcmp(buffer,"YSHIFT")==0)	yShift = v;
 	
 	}
 	fclose(pFile);
