@@ -19,29 +19,24 @@
 #include <fstream>
 #include <string>
 
-// #include <TH1D.h>
 #include <TFile.h>
 #include <TMath.h>
+#include "TCutG.h"
 #include "HandleMesytec.h"
 #include "HandlePHYSICS.h"
 #include "Globals.h"
 #include "eloss.h"
 #include "nucleus.h"
 #include "runDepPar.h"
-#include "TCutG.h"
-//#include "TGraph.h"
 #include "CalibPHYSICS.h"
 #include "Graphsdedx.h"
 
 //#define pd // (p,d) reaction analysis
 extern TEvent *IrisEvent;
-
 extern TFile* treeFile;
-
 extern TTree* tree;
 
 //#define csv_output //output a selected dataset into a csv file, for analysis with a different program, such as python
-
 #ifdef csv_output
 ofstream csv_file;
 #endif
@@ -59,41 +54,13 @@ Double_t dedxBSi[3][100], dedxBH[3][100], dedxBSiO2[3][100], dedxBB[3][100], ded
 Double_t ebH[3][100], ebSi[3][100], ebAl[3][100], ebB[3][100], ebMy[3][100], ebP[3][100], ebCsI[3][100], ebSiO2[3][100];	
 Double_t dedxbH[3][100], dedxbSi[3][100], dedxbAl[3][100], dedxbB[3][100], dedxbMy[3][100], dedxbP[3][100], dedxbCsI[3][100], dedxbSiO2[3][100];	
 
-// Double_t grIAg[3][100]; // stopping power in Ag foil
-// Double_t grIH2[3][100]; // stopping in H2
-// Double_t grISi[3][100];
-// Double_t grIAl[3][100];
-// Double_t grIB[3][100];
-// Double_t grIP[3][100];
-// Double_t grISiO2[3][100];
-// 
-// Double_t grdSi[100];
-// Double_t grdAl[100];
-// Double_t grdB[100];
-// Double_t grdP[100];
-// Double_t grdMy[100];
-// Double_t grdD2[100];
-// Double_t grdH2[100];
-// 
-// Double_t grpSi[100];
-// Double_t grpAl[100];
-// Double_t grpB[100];
-// Double_t grpP[100];
-// Double_t grpMy[100];
-// Double_t grpD2[100];
-// Double_t grpH2[100];
-
 double EBAC = 0.; //Beam energy from accelerator
-runDepPar_t runDepPar[3]; // beam properties such as, mass, charge and energy
-// target_t tar; //target properties
-// ejectile_t lej; //ejectile properties
-// ejectile_t hej[3]; //ejectile properties
+runDep runDepPar[3]; // run dependant parameters
 nucleus beam[3]; // beam particle properties
 nucleus target; // target properties
 nucleus lej; // light ejetcile properties
 nucleus hej[3]; // heavy ejectile properties  
 Int_t useYCalc = 0;//Use calculated YY1 energy  : do we need to ? :Jaspreet
-//Double_t YdThickness[8] = {112.,109.*1.04/1.2,110.*1.5/1.59,106.*1.04/1.14,101.,109.*1.17/1.28,111.*1.12/1.22,103.};//Thicknesses for YY1 detectors 
 Double_t PResid; //Momentum of residue
 Double_t PBeam; // Calculated beam momentum after scattering off Ag
 Double_t PA; //Beam momentum before reaction
@@ -138,8 +105,8 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 	calPhys.Load(CalibFile);
 	calPhys.Print();
 
-	TFile *fgates = new TFile(calPhys.fileGates);
-   	printf("opened file %s\n",calPhys.fileGates.Data());
+	TFile *fgates = new TFile(calPhys.fileGates.data());
+   	printf("opened file %s\n",calPhys.fileGates.data());
   
 	protons = (TCutG*)fgates->FindObjectAny("proton");
   	if(!protons) printf("No proton gate.\n");  
@@ -163,13 +130,13 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 	FILE * pwFile;
  	char buffer[32];
 	
-	pFile=fopen(calPhys.fileGeometry,"r");
+	pFile=fopen(calPhys.fileGeometry.data(),"r");
 
 	if (pFile == NULL) {
 		perror ("Error opening file");
 		fprintf(pwFile,"Error opening file");
    	}	
-	printf("Reading config file '%s'\n",calPhys.fileGeometry.Data());
+	printf("Reading config file '%s'\n",calPhys.fileGeometry.data());
 	
 	while (!feof(pFile))
 	{
@@ -199,7 +166,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 	for(int i=0; i<3; i++){	
 		if(calPhys.boolRunDepPar[i]){
-			setRunDepPar(calPhys.fileRunDepPar[i], &runDepPar[i]);// setting run dependent parameters.
+			runDepPar[i].setRunDepPar(calPhys.fileRunDepPar[i]);// setting run dependent parameters.
 			
 			beam[i].getInfo(runDepPar[i].nA);
 			target.getInfo(runDepPar[i].na);

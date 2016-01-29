@@ -4,6 +4,7 @@
 #define CalibPHYSICS_H
 #include <TObject.h>
 #include <TClass.h>
+#include <string>
 
 //Extern
 //extern int gPHYSICSnitems;
@@ -12,14 +13,14 @@ class CalibPHYSICS : public TObject {
 		CalibPHYSICS(); 
 		virtual ~CalibPHYSICS() {} //! 
 		
-		TString installPath;
-		TString fileGates;
-		TString fileELoss;
-		TString filePdedx;
-		TString fileDdedx;
-		TString fileIdedx[3];
-		TString fileRunDepPar[3];
-		TString fileGeometry;
+		std::string installPath;
+		std::string fileGates;
+		std::string fileELoss;
+		std::string filePdedx;
+		std::string fileDdedx;
+		std::string fileIdedx[3];
+		std::string fileRunDepPar[3];
+		std::string fileGeometry;
 
 		Bool_t boolICGates;
 		Bool_t boolGates;

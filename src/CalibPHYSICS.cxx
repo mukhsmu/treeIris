@@ -1,7 +1,7 @@
 #include "CalibPHYSICS.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "TString.h"
+#include <string>
 
 CalibPHYSICS::CalibPHYSICS(){
   //CalibPHYSICS::Class()->IgnoreTObjectStreamer;
@@ -146,27 +146,27 @@ void CalibPHYSICS::Load(TString filename){
 void CalibPHYSICS::Print(){
 	printf("\n********************************\n");
 	printf("** PHYSICS calibration files: **\n");
-	if(boolGeometry)	printf("Experiment geometry: %s\n",fileGeometry.Data());
+	if(boolGeometry)	printf("Experiment geometry: %s\n",fileGeometry.data());
 	else	printf("No experiment geometry specified.\n");
-	if(boolELoss)	printf("Energy loss root file: %s\n",fileELoss.Data());
+	if(boolELoss)	printf("Energy loss root file: %s\n",fileELoss.data());
 	else	printf("No energy loss root file specified.\n");
-	if(boolPdedx)	printf("Proton energy loss graphs: %s\n",filePdedx.Data());
+	if(boolPdedx)	printf("Proton energy loss graphs: %s\n",filePdedx.data());
 	else	printf("No proton energy loss graphs specified.\n");
-	if(boolDdedx)	printf("Deuteron energy loss graphs: %s\n",fileDdedx.Data());
+	if(boolDdedx)	printf("Deuteron energy loss graphs: %s\n",fileDdedx.data());
 	else	printf("No deuteron energy loss graphs specified.\n");
-	if(boolIdedx[0])	printf("Ion energy loss graphs: %s\n",fileIdedx[0].Data());
+	if(boolIdedx[0])	printf("Ion energy loss graphs: %s\n",fileIdedx[0].data());
 	else	printf("No ion energy loss graphs specified.\n");
-	if(boolIdedx[1])	printf("Ion energy loss graphs: %s\n",fileIdedx[1].Data());
+	if(boolIdedx[1])	printf("Ion energy loss graphs: %s\n",fileIdedx[1].data());
 	else	printf("No ion energy loss graphs specified.\n");
-	if(boolIdedx[2])	printf("Ion energy loss graphs: %s\n",fileIdedx[2].Data());
+	if(boolIdedx[2])	printf("Ion energy loss graphs: %s\n",fileIdedx[2].data());
 	else	printf("No ion energy loss graphs specified.\n");
-	if(boolGates)	printf("Deuteron/proton gates: %s\n",fileGates.Data());
+	if(boolGates)	printf("Deuteron/proton gates: %s\n",fileGates.data());
 	else	printf("No deuteron/proton gates specified.\n");
-	if(boolRunDepPar[0])	printf("Run dependant parameters: %s\n",fileRunDepPar[0].Data());
+	if(boolRunDepPar[0])	printf("Run dependant parameters: %s\n",fileRunDepPar[0].data());
 	else	printf("No run dependant parameters specified.\n");
-	if(boolRunDepPar[1])	printf("Run dependant parameters: %s\n",fileRunDepPar[1].Data());
+	if(boolRunDepPar[1])	printf("Run dependant parameters: %s\n",fileRunDepPar[1].data());
 	else	printf("No run dependant parameters specified.\n");
-	if(boolRunDepPar[2])	printf("Run dependant parameters: %s\n",fileRunDepPar[2].Data());
+	if(boolRunDepPar[2])	printf("Run dependant parameters: %s\n",fileRunDepPar[2].data());
 	else	printf("No run dependant parameters specified.\n");
 	if(boolICGates)	printf("Using ionization chamber for incoming ID.\n");
 	else	printf("No incoming ID using the ionization chamber.\n");
