@@ -4,6 +4,7 @@
 #define CalibMesytec_H
 #include <TObject.h>
 #include <TClass.h>
+#include <string>
 
 //Extern
 //extern int gMesytecnitems;
@@ -12,20 +13,20 @@ class CalibMesytec : public TObject {
 		CalibMesytec(); 
 		virtual ~CalibMesytec() {} //! 
 
-		TString installPath;
-		TString fileGeometry;
-		TString fileELoss;
-		TString fileIC;
-		TString fileCsI1;
-		TString fileCsI2;
-		TString fileSd1r;
-		TString fileSd1s;
-		TString fileSd2r;
-		TString fileSd2s;
-		TString fileSur;
-		TString fileSus;
-		TString fileYd;
-		TString fileYu;
+		std::string installPath;
+		std::string fileGeometry;
+		std::string fileELoss;
+		std::string fileIC;
+		std::string fileCsI1;
+		std::string fileCsI2;
+		std::string fileSd1r;
+		std::string fileSd1s;
+		std::string fileSd2r;
+		std::string fileSd2s;
+		std::string fileSur;
+		std::string fileSus;
+		std::string fileYd;
+		std::string fileYu;
 
 		Bool_t boolGeometry;
 		Bool_t boolELoss;
@@ -42,9 +43,8 @@ class CalibMesytec : public TObject {
 		Bool_t boolYu;
 		Bool_t boolASCII;
 
-		//virtual void ReadCalibPar(char* line);
 		virtual void ReadFilenames(char* line);
-		virtual void Load(TString filename);
+		virtual void Load(std::string filename);
 		virtual void Print();
 		virtual void Clear();
 //		ClassDef(CalibMesytec,1)

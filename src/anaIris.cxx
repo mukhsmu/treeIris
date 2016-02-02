@@ -47,8 +47,8 @@ bool gIsPedestalsRun = false;
 bool gIsOffline = false;
 int  gEventCutoff = 0;
 bool gUseTdc = true;
-TString gOutputFile = "";
-TString gCalibFile = "";
+std::string gOutputFile = "";
+std::string gCalibFile = "";
 
 char mesbkname[][5] = {"ICA_", "SD2A", "SD1A", "YDA_","SUA_",""};
 //char tdcbkname[][5] = {"YDT_", "", ""};
@@ -152,9 +152,9 @@ void startRun(int transition,int run,int time)
 	// gOutputFile = new TFile(filename,"RECREATE");
 	
 	// sprintf(filename, "tree%05d.root", run);
-	sprintf(filename, "%s", gOutputFile.Data());
+	sprintf(filename, "%s", gOutputFile.data());
 	treeFile = new TFile(filename,"RECREATE");
-	printf("Writing data to %s.\n",gOutputFile.Data());
+	printf("Writing data to %s.\n",gOutputFile.data());
 	
 	HandleBOR_Mesytec(run, time, pdet, gCalibFile);
 	if(gUseTdc) HandleBOR_V1190(run, time, ptdc);

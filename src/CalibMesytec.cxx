@@ -1,46 +1,10 @@
 #include "CalibMesytec.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "TString.h"
 
 CalibMesytec::CalibMesytec(){
-  //CalibMesytec::Class()->IgnoreTObjectStreamer;
-  CalibMesytec::Clear();
+  	CalibMesytec::Clear();
 }
-
-//void CalibMesytec::ReadCalibPar(char* ptr)
-//{
-//	char *from=line;
-//	char *to=line;
-//	while (*from) {
-//		if (*from>32) {*to=*from;to++;}
-//		from++;
-//	}
-//	*to=0;
-//	if (*line==0) return; // line is empty
-//	
-//	char* val=strchr(line,'=');
-//	if (!val) printf("Missing = in input file, line: '%s'\n",line);
-//	*val=0;
-//	
-//	// trim param name
-//	char* trm=val-1;
-//	while (*trm<=32) *(trm--)=0;
-//	
-//	val++;
-//	if (*val==0) printf("Value missing for parameter %s",line);
-//	
-//	// parse float parameter (if any)
-//	float v;
-//	sscanf(val,"%f",&v);
-//	if (strcmp(line,"YDD")==0)	Ydd = v;
-//	if (strcmp(line,"YDR1")==0)	Yd1r = v;
-//	if (strcmp(line,"YDR2")==0)	Yd2r = v;
-//	if (strcmp(line,"SD1D")==0)	Sd1d = v;
-//	if (strcmp(line,"SD2D")==0)	Sd2d = v;
-//	if (strcmp(line,"SDR1")==0)	Sdr1 = v;
-//	if (strcmp(line,"SDR2")==0)	Sdr2 = v;
-//}
 
 void CalibMesytec::ReadFilenames(char* line)
 {
@@ -70,7 +34,7 @@ void CalibMesytec::ReadFilenames(char* line)
 	if (*val==0 && expect_val) printf("Value missing for parameter %s",line);
 
 	char cval[256];	
-	TString strval;
+	std::string strval;
 	sscanf(val,"%s",cval);
 	strval=cval;
 	
@@ -148,7 +112,7 @@ void CalibMesytec::ReadFilenames(char* line)
 	}
 }
 
-void CalibMesytec::Load(TString filename){	
+void CalibMesytec::Load(std::string filename){	
 
 	boolGeometry=kFALSE;
 	boolELoss=kFALSE;
@@ -166,14 +130,14 @@ void CalibMesytec::Load(TString filename){
 	boolASCII=kFALSE;
 
 	char line[256];
-	FILE* file=fopen(filename.Data(),"rb");
+	FILE* file=fopen(filename.data(),"rb");
 	if (!file)
 	{
-		printf("Cannot open config file '%s' for reading. Stop.\n",filename.Data());
+		printf("Cannot open config file '%s' for reading. Stop.\n",filename.data());
 		exit(0);
 	}
 	
-	printf("Reading config file '%s'\n",filename.Data());
+	printf("Reading config file '%s'\n",filename.data());
 	
 	while (!feof(file))
 	{
@@ -198,31 +162,31 @@ void CalibMesytec::Load(TString filename){
 void CalibMesytec::Print(){
 	printf("\n********************************\n");
 	printf("** Mesytec calibration files: **\n");
-	if(boolGeometry)	printf("Experiment geometry: %s\n",fileGeometry.Data());
+	if(boolGeometry)	printf("Experiment geometry: %s\n",fileGeometry.data());
 	else	printf("No experiment geometry specified.\n");
-	if(boolELoss)	printf("Energy loss root file: %s\n",fileELoss.Data());
+	if(boolELoss)	printf("Energy loss root file: %s\n",fileELoss.data());
 	else	printf("No energy loss root file specified.\n");
-	if(boolIC)	printf("Ionization chamber calibration: %s\n",fileIC.Data());
+	if(boolIC)	printf("Ionization chamber calibration: %s\n",fileIC.data());
 	else	printf("No ionization chamber calibration specified.\n");
-	if(boolCsI1)	printf("CsI1 calibration: %s\n",fileCsI1.Data());
+	if(boolCsI1)	printf("CsI1 calibration: %s\n",fileCsI1.data());
 	else	printf("No CsI1 calibration specified.\n");
-	if(boolCsI2)	printf("CsI2 calibration: %s\n",fileCsI2.Data());
+	if(boolCsI2)	printf("CsI2 calibration: %s\n",fileCsI2.data());
 	else	printf("No CsI2 calibration specified.\n");
-	if(boolSd1r)	printf("Sd1r calibration: %s\n",fileSd1r.Data());
+	if(boolSd1r)	printf("Sd1r calibration: %s\n",fileSd1r.data());
 	else	printf("No Sd1r calibration specified.\n");
-	if(boolSd1s)	printf("Sd1s calibration: %s\n",fileSd1s.Data());
+	if(boolSd1s)	printf("Sd1s calibration: %s\n",fileSd1s.data());
 	else	printf("No Sd1s calibration specified.\n");
-	if(boolSd2r)	printf("Sd2r calibration: %s\n",fileSd2r.Data());
+	if(boolSd2r)	printf("Sd2r calibration: %s\n",fileSd2r.data());
 	else	printf("No Sd2r calibration specified.\n");
-	if(boolSd2s)	printf("Sd2s calibration: %s\n",fileSd2s.Data());
+	if(boolSd2s)	printf("Sd2s calibration: %s\n",fileSd2s.data());
 	else	printf("No Sd2s calibration specified.\n");
-	if(boolSur)	printf("Sur calibration: %s\n",fileSur.Data());
+	if(boolSur)	printf("Sur calibration: %s\n",fileSur.data());
 	else	printf("No Sur calibration specified.\n");
-	if(boolSus)	printf("Sus calibration: %s\n",fileSus.Data());
+	if(boolSus)	printf("Sus calibration: %s\n",fileSus.data());
 	else	printf("No Sus calibration specified.\n");
-	if(boolYd)	printf("Yd calibration: %s\n",fileYd.Data());
+	if(boolYd)	printf("Yd calibration: %s\n",fileYd.data());
 	else	printf("No Yd calibration specified.\n");
-	if(boolYu)	printf("Yu calibration: %s\n",fileYu.Data());
+	if(boolYu)	printf("Yu calibration: %s\n",fileYu.data());
 	else	printf("No Yu calibration specified.\n");
 	printf("********************************\n\n");
 }
