@@ -34,7 +34,7 @@ ROOTCFLAGS    = $(shell root-config --cflags)
 CXXFLAGS      += -g -Wall -ansi -Df2cFortran -fPIC $(ROOTCFLAGS) 
 CXXFLAGS      += -I$(DATASTRUCTDIR)/include -I$(RECDIR)/include -L$(LIBDIR) 
 
-ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/eloss.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o  $(TEVENTSO) $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/nucleus.o $(OBJECTDIR)/runDepPar.o $(OBJECTDIR)/HandleScaler.o $(OBJECTDIR)/HandlePHYSICS.o $(OBJECTDIR)/CalibMesytec.o $(OBJECTDIR)/CalibPHYSICS.o $(OBJECTDIR)/Graphsdedx.o 
+ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/eloss.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o  $(TEVENTSO) $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/nucleus.o $(OBJECTDIR)/runDepPar.o $(OBJECTDIR)/HandleScaler.o $(OBJECTDIR)/HandlePHYSICS.o $(OBJECTDIR)/CalibMesytec.o $(OBJECTDIR)/CalibPHYSICS.o $(OBJECTDIR)/Graphsdedx.o $(OBJECTDIR)/geometry.o 
 
 #ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/eloss.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o  $(OBJECTDIR)/TEvent.o $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/IParticle.o $(OBJECTDIR)/runDepPar.o $(OBJECTDIR)/HandleScaler.o $(OBJECTDIR)/HandlePHYSICS.o  $(OBJECTDIR)/IDet.o   
 
@@ -85,6 +85,9 @@ $(OBJECTDIR)/runDepPar.o: $(SOURCEDIR)/runDepPar.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJECTDIR)/CalibMesytec.o: $(SOURCEDIR)/CalibMesytec.cxx 
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJECTDIR)/geometry.o: $(SOURCEDIR)/geometry.cxx 
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJECTDIR)/Graphsdedx.o: $(SOURCEDIR)/Graphsdedx.cxx 

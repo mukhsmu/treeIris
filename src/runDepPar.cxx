@@ -35,10 +35,10 @@ void runDep::setRunDepPar(std::string filename)
 		if (*val==0) printf("Value missing for parameter %s",buffer);
 		
 		// parse float parameter (if any)
-		float v;
+		Double_t v;
 		char cval[256];	
 		std::string strval;
-		sscanf(val,"%f",&v);
+		sscanf(val,"%lf",&v);
 		sscanf(val,"%s",cval);
 		strval=cval;
 

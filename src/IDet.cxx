@@ -1,9 +1,7 @@
 //IDet.cxx
-//#include "TObject.h"
-//#include "TClass.h"
 #include "IDet.h"
 #include <math.h>
-//ClassImp(IDet);
+
 IDet::IDet(){
   //IDet::Class()->IgnoreTObjectStreamer;
   IDet::Clear();
@@ -11,7 +9,6 @@ IDet::IDet(){
 
 void IDet::Clear()
 {
-  //  TEfull=0;
   	TYdMul=0;  
   	for(int i=0;i<128;i++){
 		TYdEnergy[i]=0.;

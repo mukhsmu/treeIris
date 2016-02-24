@@ -5,14 +5,11 @@
 #include <TObject.h>
 #include <TClass.h>
 
-//Extern
-//extern int gMesytecnitems;
 class IDet : public TObject {
  	public:
-  	// Int_t EventNumber;
-  	IDet(); //! Create
-	 //  det_t(const det_t &); //! 
-	virtual ~IDet() {} //! 
+  		IDet(); //! Create
+		virtual ~IDet() {} //! 
+		
 		Int_t TYdMul;
 		Int_t TYdChannel[128];
 		Double_t TYdEnergy[128];

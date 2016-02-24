@@ -14,11 +14,12 @@ class tdc_t
 {
 	public: 
 		Double_t timeRF[512];
+		Double_t timeRef[512];
 		int timeRaw[512];
 };
 
-//void  HandleV1190(TMidasEvent& event, void* ptr, tdc_t* timeArray, int wsize, int MYLABEL);
-void  HandleV1190(TMidasEvent& event, void* ptr, ITdc* timeArray, int wsize, int MYLABEL);
+//void  HandleV1190(TMidasEvent& event, void* ptr, tdc_t* timeArray, int wsize, int bank);
+void  HandleV1190(TMidasEvent& event, void* ptr, ITdc* ptdc, int nitems, int bank);
 //void  HandleBOR_V1190(int run, int time, tdc_t *timeArray);
 void  HandleBOR_V1190(int run, int time, ITdc *timeArray);
 void  HandleEOR_V1190(int run, int time);

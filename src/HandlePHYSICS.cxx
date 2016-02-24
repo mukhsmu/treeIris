@@ -30,6 +30,7 @@
 #include "runDepPar.h"
 #include "CalibPHYSICS.h"
 #include "Graphsdedx.h"
+#include "geometry.h"
 
 //#define pd // (p,d) reaction analysis
 extern TEvent *IrisEvent;
@@ -42,6 +43,7 @@ ofstream csv_file;
 #endif
 
 CalibPHYSICS calPhys;
+geometry geoP;
 Graphsdedx dedx_p, dedx_d, dedx_t, dedx_i[3];
 
 const int Nchannels = 24;
@@ -89,11 +91,11 @@ TCutG * deuterons;
 //TGraph *Li11pp;//elastic scattering kinematics graph
 
 Double_t YdThickness[8]= {104.65, 101.15, 106.125, 101.75,100.052, 105.65,102.48, 105.84}; // Nov 25,2014 // should probably go to parameter file (geometry.txt) 
-float YdDistanceP = 0.; // distance from target in mm
-float Yd1rP= 0., Yd2rP = 0. ; // inner and outer radii in mm
-float Sd1DistanceP = 0., Sd2DistanceP = 0.; //distance from target in mm
-float Sdr1P = 0., Sdr2P= 0.; //AS Inner and outer radii of an S3 detector (in mm).
-float TThickness = 0.;
+// float geoP.YdDistance = 0.; // distance from target in mm
+// float geoP.Yd1r= 0., geoP.Yd2r = 0. ; // inner and outer radii in mm
+// float geoP.Sd1Distance = 0., geoP.Sd2Distance = 0.; //distance from target in mm
+// float geoP.Sdr1 = 0., geoP.Sdr2= 0.; //AS Inner and outer radii of an S3 detector (in mm).
+// float geoP.TThickness = 0.;
 
 int nGate = 0; // for selecting incoming ion
 
@@ -126,48 +128,52 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 //	f1->Close();
 //	printf("Closed f1\n");
 	
-	FILE * pFile;
-	FILE * pwFile;
- 	char buffer[32];
-	
-	pFile=fopen(calPhys.fileGeometry.data(),"r");
+//	FILE * pFile;
+//	FILE * pwFile;
+// 	char buffer[32];
+//	
+//	pFile=fopen(calPhys.fileGeometry.data(),"r");
+//
+//	if (pFile == NULL) {
+//		perror ("Error opening file");
+//		fprintf(pwFile,"Error opening file");
+//   	}	
+//	printf("Reading config file '%s'\n",calPhys.fileGeometry.data());
+//	
+//	while (!feof(pFile))
+//	{
+//		if (!fgets(buffer,32,pFile)) break;
+//		printf("%s",buffer);
+//		
+//		char* val=strchr(buffer,'=');
+//		if (!val) printf("Missing = in input pFile, line: '%s'\n",buffer);
+//		*val=0;
+//		val++;
+//		if (*val==0) printf("Value missing for parameter %s",buffer);
+//		
+//		// parse float parameter (if any)
+//		float v;
+//		sscanf(val,"%f",&v);
+//		if (strcmp(buffer,"YDD")==0)	geoP.YdDistance = v;
+//		if (strcmp(buffer,"YDR1")==0)	geoP.Yd1r = v;
+//		if (strcmp(buffer,"YDR2")==0)	geoP.Yd2r = v;
+//		if (strcmp(buffer,"SD1D")==0)	geoP.Sd1Distance = v;
+//		if (strcmp(buffer,"SD2D")==0)	geoP.Sd2Distance = v;
+//		if (strcmp(buffer,"SDR1")==0)	geoP.Sdr1 = v;
+//		if (strcmp(buffer,"SDR2")==0)	geoP.Sdr2 = v;
+//		if (strcmp(buffer,"TTH")==0)	geoP.TThickness = v;
+//	
+//	}
+//	fclose(pFile);
 
-	if (pFile == NULL) {
-		perror ("Error opening file");
-		fprintf(pwFile,"Error opening file");
-   	}	
-	printf("Reading config file '%s'\n",calPhys.fileGeometry.data());
+	geoP.ReadGeometry(calPhys.fileGeometry.data());
+	geoP.Print();
 	
-	while (!feof(pFile))
-	{
-		if (!fgets(buffer,32,pFile)) break;
-		printf("%s",buffer);
-		
-		char* val=strchr(buffer,'=');
-		if (!val) printf("Missing = in input pFile, line: '%s'\n",buffer);
-		*val=0;
-		val++;
-		if (*val==0) printf("Value missing for parameter %s",buffer);
-		
-		// parse float parameter (if any)
-		float v;
-		sscanf(val,"%f",&v);
-		if (strcmp(buffer,"YDD")==0)	YdDistanceP = v;
-		if (strcmp(buffer,"YDR1")==0)	Yd1rP = v;
-		if (strcmp(buffer,"YDR2")==0)	Yd2rP = v;
-		if (strcmp(buffer,"SD1D")==0)	Sd1DistanceP = v;
-		if (strcmp(buffer,"SD2D")==0)	Sd2DistanceP = v;
-		if (strcmp(buffer,"SDR1")==0)	Sdr1P = v;
-		if (strcmp(buffer,"SDR2")==0)	Sdr2P = v;
-		if (strcmp(buffer,"TTH")==0)	TThickness = v;
-	
-	}
-	fclose(pFile);
-
 	for(int i=0; i<3; i++){	
 		if(calPhys.boolRunDepPar[i]){
 			runDepPar[i].setRunDepPar(calPhys.fileRunDepPar[i]);// setting run dependent parameters.
-			
+			runDepPar[i].Print();
+
 			beam[i].getInfo(runDepPar[i].nA);
 			target.getInfo(runDepPar[i].na);
 			hej[i].getInfo(runDepPar[i].nB);
@@ -182,7 +188,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			kBF = MFoil/mA;
 	
 			printf("Beam energy: %f\n", runDepPar[i].energy);
-			printf("Target thickness: %f\n",TThickness);
+			printf("Target thickness: %f\n",geoP.TThickness);
 			
 			if(calPhys.boolIdedx[i]==kTRUE){
 				printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
@@ -199,7 +205,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 		
 			if (eAH[i]){
 				Double_t temp_energy = runDepPar[i].energy;
-				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,TThickness/2.,eAH[i],dedxAH[i]);  
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TThickness/2.,eAH[i],dedxAH[i]);  
 				printf("Energy loss in half target: %f\n" ,temp_energy-runDepPar[i].energy);
 			}
 			else printf("Energy loss in target not specified. EBeam=EBAC");
@@ -333,7 +339,7 @@ void HandlePHYSICS(IDet *det)
 	      	ECsI=0;
 		}
 	
-	  	thetaR =( atan((Yd1rP+((det->TYdRing[0]+1)*(Yd2rP-Yd1rP)/16))/YdDistanceP) + atan((Yd1rP+((det->TYdRing[0])*(Yd2rP-Yd1rP)/16))/YdDistanceP) )/2.;
+	  	thetaR =( atan((geoP.Yd1r+((det->TYdRing[0]+1)*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) + atan((geoP.Yd1r+((det->TYdRing[0])*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) )/2.;
 	  	thetaD = thetaR*TMath::RadToDeg();
 	
 	  	if (mb == target.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
@@ -362,7 +368,7 @@ void HandlePHYSICS(IDet *det)
 	   	if (mb == target.mass){
 	      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
 	    	else std::cout << "ebSi doesn't exist"<< std::endl;
-	    	if (ebH[1])  Eb= Eb+elossFi(Eb,TThickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
+	    	if (ebH[1])  Eb= Eb+elossFi(Eb,geoP.TThickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
 	
