@@ -44,15 +44,18 @@ void IDet::Clear()
 	TSd2sMul=0;
   	TSdETot=0;
   	TSdThetaCM=0;
-	for(int i=0;i<32;i++){
+	for(int i=0;i<24;i++){
   		TSd1rEnergy[i]=0;
 		TSd1rChannel[i]=-1;
-  		TSd1sEnergy[i]=0;
-		TSd1sChannel[i]=-1;
-  		TSd1sADC[i]=0;
+  		TSd1rADC[i]=0;
   		TSd2rEnergy[i]=0;
 		TSd2rChannel[i]=-1;
   		TSd2rADC[i]=0;
+	}
+	for(int i=0;i<32;i++){
+  		TSd1sEnergy[i]=0;
+		TSd1sChannel[i]=-1;
+  		TSd1sADC[i]=0;
   		TSd2sEnergy[i]=0;
 		TSd2sChannel[i]=-1;
   		TSd2sADC[i]=0;

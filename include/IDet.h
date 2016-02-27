@@ -36,9 +36,9 @@ class IDet : public TObject {
 		Double_t TIC[16];
 
 		Int_t TSd1rMul;
-		Int_t TSd1rChannel[32];
-		Double_t TSd1rEnergy[32];
-		Double_t TSd1rADC[32];
+		Int_t TSd1rChannel[24];
+		Double_t TSd1rEnergy[24];
+		Double_t TSd1rADC[24];
 		
 		Int_t TSd1sMul;
 		Int_t TSd1sChannel[32];
@@ -46,9 +46,9 @@ class IDet : public TObject {
 		Double_t TSd1sADC[32];
 		
 		Int_t TSd2rMul;
-		Int_t TSd2rChannel[32];
-		Double_t TSd2rEnergy[32];
-		Double_t TSd2rADC[32];
+		Int_t TSd2rChannel[24];
+		Double_t TSd2rEnergy[24];
+		Double_t TSd2rADC[24];
 		Double_t TSd2rEnergyCal;
 		
 		Int_t TSd2sMul;

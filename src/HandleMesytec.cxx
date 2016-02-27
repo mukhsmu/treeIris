@@ -680,10 +680,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
     	//Use calibration values here
    
-		det.TICEnergy = ICEnergy; //for filling the tree
-		det.TICChannel = ICChannel;
+		if(ICEnergy>0.) 
+		{
+			det.TICEnergy = ICEnergy; //for filling the tree
+			det.TICChannel = ICChannel;
+		}
 		for(int i=0; i<NICChannels;i++){
-			det.TIC[i] = IC[i];
+			if(IC[i]>0.)	det.TIC[i] = IC[i];
 		}
   
  		*pdet = det;
