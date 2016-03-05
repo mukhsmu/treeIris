@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include <TFile.h>
 #include <TMath.h>
@@ -125,47 +126,6 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
   	assert(csv_file.is_open());
 #endif
 
-//	f1->Close();
-//	printf("Closed f1\n");
-	
-//	FILE * pFile;
-//	FILE * pwFile;
-// 	char buffer[32];
-//	
-//	pFile=fopen(calPhys.fileGeometry.data(),"r");
-//
-//	if (pFile == NULL) {
-//		perror ("Error opening file");
-//		fprintf(pwFile,"Error opening file");
-//   	}	
-//	printf("Reading config file '%s'\n",calPhys.fileGeometry.data());
-//	
-//	while (!feof(pFile))
-//	{
-//		if (!fgets(buffer,32,pFile)) break;
-//		printf("%s",buffer);
-//		
-//		char* val=strchr(buffer,'=');
-//		if (!val) printf("Missing = in input pFile, line: '%s'\n",buffer);
-//		*val=0;
-//		val++;
-//		if (*val==0) printf("Value missing for parameter %s",buffer);
-//		
-//		// parse float parameter (if any)
-//		float v;
-//		sscanf(val,"%f",&v);
-//		if (strcmp(buffer,"YDD")==0)	geoP.YdDistance = v;
-//		if (strcmp(buffer,"YDR1")==0)	geoP.Yd1r = v;
-//		if (strcmp(buffer,"YDR2")==0)	geoP.Yd2r = v;
-//		if (strcmp(buffer,"SD1D")==0)	geoP.Sd1Distance = v;
-//		if (strcmp(buffer,"SD2D")==0)	geoP.Sd2Distance = v;
-//		if (strcmp(buffer,"SDR1")==0)	geoP.Sdr1 = v;
-//		if (strcmp(buffer,"SDR2")==0)	geoP.Sdr2 = v;
-//		if (strcmp(buffer,"TTH")==0)	geoP.TThickness = v;
-//	
-//	}
-//	fclose(pFile);
-
 	geoP.ReadGeometry(calPhys.fileGeometry.data());
 	geoP.Print();
 	
@@ -260,10 +220,14 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 void HandlePHYSICS(IDet *det)
 {
- 	//  printf("calling HandlePHYSICS %d %d \n", gCSInitems, gPHOSnitems);
+	if(det->TYdMul==0||det->TCsI2Mul==0||det->TSd1rMul==0){
+	   tree->Fill();
+   	   return;
+	} 
+   	   //  printf("calling HandlePHYSICS %d %d \n", gCSInitems, gPHOSnitems);
   	//TTree *eventPhy = new TTree ("eventPhy","Physics event"); //Physics event
   	//eventPhy->Branch("fLp",&fLp,"fLp/F"); //Light particle detected at YY1 and CsI
-  	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta[0]));
+  	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta.at(0)));
 
 	// Selecting an incoming isotope:	
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
@@ -291,27 +255,27 @@ void HandlePHYSICS(IDet *det)
 	// PA = sqrt(EBeam*EBeam+2.*EBeam*MBeam);//beam momentum
 	
  	//adding dead layer energy losses
- 	//Sd2 ring side
-  	if (eBB[nGate]) energy = det->TSd2rEnergy[0]+elossFi(det->TSd2rEnergy[0],0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
-  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
-  	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
-  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
-   	//Sd1 ring side
-  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
-  	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
-  	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
-   	energy = energy + det->TSd1rEnergy[0];// energy lost and measured in Sd1
+	//Sd2 ring side
+	energy = (det->TSd2rEnergy.size()>0) ? det->TSd2rEnergy.at(0) : 0.;
+	if (eBB[nGate]) energy = energy+elossFi(det->TSd2rEnergy.at(0),0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
+	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
+	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
+	//Sd1 ring side
+	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
+	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
+	energy = energy + det->TSd1rEnergy.at(0);// energy lost and measured in Sd1
 
 	//sector side
 	if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
 	if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
-    
+
 	PResid = sqrt(2.*det->TSdETot*mA);     //Beam momentum in MeV/c
 	A = kBF-1.;                              //Quadratic equation parameters
-    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta[0]);
+    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta.at(0));
     C = -1.*(kBF+1)*PResid*PResid; 
-    if (A!=0)
-    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
+    if (A!=0)    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
   	//cout<<"reaching here"<<endl;
   	//to calculate residue energy from beam
  
@@ -329,17 +293,17 @@ void HandlePHYSICS(IDet *det)
 
     // printf("thetaCM: %f\n",det->TSdThetaCM);
     if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta[0])/sqrt(gammaCM-gammaCM*betaCM*(mA+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta[0]))));// check if this is still correct for H2 target tk
+    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta.at(0))/sqrt(gammaCM-gammaCM*betaCM*(mA+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta.at(0)))));// check if this is still correct for H2 target tk
 
  // Calculate Q-value from YY1 and CsI// 
-	if (((deuterons->IsInside(det->TCsI2Energy[0],det->TYdEnergy[0]*cos(det->TYdTheta[0]*0.01745329)))&& (mb == target.mass)) && ((det->TYdEnergy[0]>0.2)  && (det->TCsI2Energy[0] >0.6 )&& (mb== target.mass))) {    //check if in the proton/deuteron gate
+	if (((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*0.01745329)))&& (mb == target.mass)) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0) >0.6 )&& (mb== target.mass))) {    //check if in the proton/deuteron gate
 	
-	    ECsI= det->TCsI2Energy[0];
+	    ECsI= det->TCsI2Energy.at(0);
 	    if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
 	      	ECsI=0;
 		}
 	
-	  	thetaR =( atan((geoP.Yd1r+((det->TYdRing[0]+1)*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) + atan((geoP.Yd1r+((det->TYdRing[0])*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) )/2.;
+	  	thetaR =( atan((geoP.Yd1r+((det->TYdRing.at(0)+1)*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) + atan((geoP.Yd1r+((det->TYdRing.at(0))*(geoP.Yd2r-geoP.Yd1r)/16))/geoP.YdDistance) )/2.;
 	  	thetaD = thetaR*TMath::RadToDeg();
 	
 	  	if (mb == target.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
@@ -354,11 +318,11 @@ void HandlePHYSICS(IDet *det)
 	    }
 	
 	//---------------YY1 Energy-----------------------------------------------------------------
-		EYY1 = det->TYdEnergy[0];
+		EYY1 = det->TYdEnergy.at(0);
 	  	//  cout<<"EYY ENERGY IS"<<EYY1<<endl;
 	 	if(useYCalc){
 			if (mb == target.mass){
-	  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo[0]]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
+	  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,0.1*2.32*YdThickness[det->TYdNo.at(0)]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
 				else std::cout << "ebSi doesn't exist"<< std::endl;
 	 		}
 		}//useYCalc

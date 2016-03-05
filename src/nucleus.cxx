@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <algorithm>
 #include "nucleus.h"
 
@@ -39,7 +40,8 @@ void nucleus::ReadFile(Int_t inputA, std::string inpEl)
 	Double_t mass2=0.;
 	
 	FILE *massfile;
-	massfile=fopen("/home/iris/mholl/AME2012/mass.mas12","r");
+	massfile=fopen("ame/mass.mas12","r");
+	if(massfile==NULL) massfile=fopen("../ame/mass.mas12","r");
 	if(massfile==NULL){
 		printf("Cannot open mass table !!\n");
 		exit(0);
@@ -77,7 +79,8 @@ void nucleus::ReadFile(Int_t inputA, std::string inpEl)
 	fclose(massfile);
 
 	FILE *rctfile1;
-	rctfile1=fopen("/home/iris/mholl/AME2012/rct1.mas12","r");
+	rctfile1=fopen("ame/rct1.mas12","r");
+	if(rctfile1==NULL) rctfile1=fopen("../ame/rct1.mas12","r");
 	if(rctfile1==NULL){
 		printf("Cannot open first separation energy table !!\n");
 		exit(0);
@@ -112,7 +115,8 @@ void nucleus::ReadFile(Int_t inputA, std::string inpEl)
 	fclose(rctfile1);
 
 	FILE *rctfile2;
-	rctfile2=fopen("/home/iris/mholl/AME2012/rct2.mas12","r");
+	rctfile2=fopen("ame/rct2.mas12","r");
+	if(rctfile2==NULL) rctfile2=fopen("../ame/rct2.mas12","r");
 	if(rctfile2==NULL){
 		printf("Cannot open second separation energy table !!\n");
 		exit(0);
@@ -157,7 +161,8 @@ void nucleus::getInfo(Int_t inputN, Int_t inputZ)
 	std::string cN,cZ,cEl;
 
 	FILE *massfile;
-	massfile=fopen("/home/iris/mholl/AME2012/mass.mas12","r");
+	massfile=fopen("ame/mass.mas12","r");
+	if(massfile==NULL) massfile=fopen("../ame/mass.mas12","r");
 	if(massfile==NULL){
 		printf("Cannot open mass table !!\n");
 		exit(0);

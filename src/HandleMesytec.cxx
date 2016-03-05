@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <stdint.h>
+#include <vector>
 
 #include "TMidasEvent.h"
 #include <TFile.h>
@@ -459,10 +460,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TSd1rMul = Sd1rMul;
  		for (Int_t i=0;i<Sd1rMul;i++){
- 			det.TSd1rEnergy[i] = Sd1rEnergy[i];
-			det.TSd1rChannel[i] = Sd1rChannel[i];
+ 			det.TSd1rEnergy.push_back(Sd1rEnergy[i]);
+			det.TSd1rChannel.push_back(Sd1rChannel[i]);
 			randm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
-			det.TSdTheta[i] = TMath::RadToDeg()*atan((geoM.Sdr1*(24.-Sd1rChannel[i]-randm)+geoM.Sdr2*(Sd1rChannel[i]+randm))/24./geoM.Sd1Distance); //AS theta angle for Sd (24 - number of rings)
+			det.TSdTheta.push_back(TMath::RadToDeg()*atan((geoM.Sdr1*(24.-Sd1rChannel[i]-randm)+geoM.Sdr2*(Sd1rChannel[i]+randm))/24./geoM.Sd1Distance)); //AS theta angle for Sd (24 - number of rings)
 		}
 		
 		for (Int_t i=0;i<NSd1sChannels;i++){
@@ -483,19 +484,19 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TSd1sMul = Sd1sMul;
 		for (Int_t i=0;i<Sd1sMul;i++){
-			det.TSd1sEnergy[i] = Sd1sEnergy[i];
-			det.TSd1sChannel[i] = Sd1sChannel[i];
-			det.TSdPhi[i] = 180.-360.*Sd1sChannel[i]/32.;
+			det.TSd1sEnergy.push_back(Sd1sEnergy[i]);
+			det.TSd1sChannel.push_back(Sd1sChannel[i]);
+			det.TSdPhi.push_back(180.-360.*Sd1sChannel[i]/32.);
 		}
 
   		//Effect of shifting the beam by one mm
 		for(Int_t i=0; i<Sd1rMul; i++){
   			aVector.SetXYZ(0,0,geoM.Sd1Distance);
-   			aVector.SetTheta(TMath::DegToRad()*det.TSdTheta[i]);
-   			aVector.SetPhi(TMath::DegToRad()*det.TSdPhi[i]); // if Sd1rMul>Sd1sMul, TSdPhi[i] should be zero for some events
+   			aVector.SetTheta(TMath::DegToRad()*det.TSdTheta.at(i));
+   			if(i<Sd1sMul) aVector.SetPhi(TMath::DegToRad()*det.TSdPhi.at(i)); // if Sd1rMul>Sd1sMul, TSdPhi[i] should be zero for some events
    			aVector.SetX(aVector.X()+geoM.xShift);
    			aVector.SetY(aVector.Y()+geoM.yShift);
-  			det.TSdTheta[i] = aVector.Theta()*TMath::RadToDeg();
+  			det.TSdTheta.at(i) = aVector.Theta()*TMath::RadToDeg();
 		}
 
 		if (ascii) 
@@ -521,8 +522,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TSd2rMul = Sd2rMul;
 		for (Int_t i=0;i<Sd2rMul;i++){
-			det.TSd2rEnergy[i] = Sd2rEnergy[i];
-			det.TSd2rChannel[i] = Sd2rChannel[i];
+			det.TSd2rEnergy.push_back(Sd2rEnergy[i]);
+			det.TSd2rChannel.push_back(Sd2rChannel[i]);
 		}
 				
 		for (Int_t i=0;i<NSd2sChannels;i++){
@@ -543,8 +544,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TSd2sMul = Sd2sMul;
 		for (Int_t i=0;i<Sd2sMul;i++){
-			det.TSd2sEnergy[i] = Sd2sEnergy[i];
-			det.TSd2sChannel[i] = Sd2sChannel[i];
+			det.TSd2sEnergy.push_back(Sd2sEnergy[i]);
+			det.TSd2sChannel.push_back(Sd2sChannel[i]);
 		}
 	
 		if (ascii) 
@@ -574,14 +575,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TYdMul = YdMul;
 		for(int i=0;i<YdMul;i++){	
-			det.TYdEnergy[i] = YdEnergy[i];
-			det.TYdChannel[i] = YdChannel[i];
+			det.TYdEnergy.push_back(YdEnergy[i]);
+			det.TYdChannel.push_back(YdChannel[i]);
 	
-			det.TYdNo[i] = int(YdChannel[i]/16);
-			det.TYdRing[i] = YdChannel[i]%16;
+			det.TYdNo.push_back(int(YdChannel[i]/16));
+			det.TYdRing.push_back(YdChannel[i]%16);
 			//here
 			YdTheta[i] = TMath::RadToDeg()*atan((geoM.Yd1r*(16.-YdChannel[i]%16-randm)+geoM.Yd2r*(YdChannel[i]%16+randm))/16./geoM.YdDistance);
-			det.TYdTheta[i]= YdTheta[i];
+			det.TYdTheta.push_back(YdTheta[i]);
 		}
 	 
 	  	if (ascii) 
@@ -605,14 +606,15 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TCsI1Mul = CsI1Mul;
 		for(int i=0; i<CsI1Mul; i++){
-			det.TCsI1ADC[i] = CsI1Energy[i];
+			// det.TCsI1ADC.push_back(CsI1Energy[i]);
 	
 			if (YdMul>0){
 	      		int m = (YdChannel[0]%16)/(16/NCsI1GroupRing);
 	      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
-	      		det.TCsI1Energy[i] = CsI1Energy[i]; 
-	      		det.TCsI1Channel[i] = CsI1Channel[i];
+	      		det.TCsI1Energy.push_back(CsI1Energy[i]); 
+	      		det.TCsI1Channel.push_back(CsI1Channel[i]);
 	    	}
+
 	 		if (CsI1Energy[i]>0.){
 				CsIEnergy[i] = CsI1Energy[i];
 				CsIChannel[i] = CsI1Channel[i];
@@ -636,13 +638,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     	}
 	
 		for(int i=0; i<CsI2Mul; i++){
-			det.TCsI2ADC[i] = CsI2Energy[i];
+			// det.TCsI2ADC.push_back(CsI2Energy[i]);
 	  		
 			if (CsI2Energy[i] < 4000. && YdMul>0){
 				int m = (YdChannel[0]%16)/(16/NCsI2Group);
 	        	CsI2Energy[i] = (CsI2Energy[i]-CsI2Ped[CsI2Channel[i]])*CsI2Gain[m][CsI2Channel[i]];
-	        	det.TCsI2Energy[i] = CsI2Energy[i];
-	        	det.TCsI2Channel[i] = CsI2Channel[i];
+	        	det.TCsI2Energy.push_back(CsI2Energy[i]);
+	        	det.TCsI2Channel.push_back(CsI2Channel[i]);
 	      	}
 	
 			if (CsI2Energy[i]>0.){
@@ -650,15 +652,15 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				CsIChannel[i] = CsI2Channel[i];
 	 		}
 
-			det.TCsIEnergy[i] = CsIEnergy[i]; //for filling the tree
-			det.TCsIChannel[i] = CsIChannel[i];
+			det.TCsIEnergy.push_back(CsIEnergy[i]); //for filling the tree
+			det.TCsIChannel.push_back(CsIChannel[i]);
 		
-			if (useCsI2Slope && det.TYdRing[0] >-1)   
-	 		 	{det.TCsI2Energy[i]= det.TCsI2Energy[i]+det.TYdRing[0]*CsI2Slope[det.TCsI2Channel[i]];}
+			if (useCsI2Slope && det.TYdRing.at(0) >-1)   
+	 		 	{det.TCsI2Energy.at(i)= det.TCsI2Energy.at(i)+det.TYdRing.at(0)*CsI2Slope[det.TCsI2Channel.at(i)];}
 		}
-
- 		 if (int(det.TCsI2Channel[0]/2) != det.TYdNo[0])//checking if the csi is behind YY1
-   		 	{det.TCsI2Energy[0]=0;}
+//	Has to be fixed for multi-hit!!!
+ 		 if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
+   		 	{det.TCsI2Energy.at(0)=0;}
 
     	if (ascii)  fprintf(ASCIICsI," %d  %d %d %d %d \n",event.GetSerialNumber(), CsIChannel[0]+32, (int)CsIEnergy[0],  CsIChannel[1]+32, (int)CsIEnergy[1]);
     	

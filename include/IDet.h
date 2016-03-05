@@ -2,6 +2,7 @@
 
 #ifndef IDet_H
 #define IDet_H
+#include <vector>
 #include <TObject.h>
 #include <TClass.h>
 
@@ -11,23 +12,23 @@ class IDet : public TObject {
 		virtual ~IDet() {} //! 
 		
 		Int_t TYdMul;
-		Int_t TYdChannel[128];
-		Double_t TYdEnergy[128];
-		Int_t TYdNo[128];
-		Int_t TYdRing[128];
-		Double_t TYdTheta[128];// Yd theta angle
+		std::vector<Int_t> TYdChannel;
+		std::vector<Double_t> TYdEnergy;
+		std::vector<Int_t> TYdNo;
+		std::vector<Int_t> TYdRing;
+		std::vector<Double_t> TYdTheta;// Yd theta angle
 
 		Int_t TCsI1Mul;
-		Int_t TCsI1Channel[16];
-		Double_t TCsI1Energy[16];
-		Double_t TCsI1ADC[16];
+		std::vector<Int_t> TCsI1Channel;
+		std::vector<Double_t> TCsI1Energy;
+		std::vector<Double_t> TCsI1ADC;
 		Int_t TCsI2Mul;
-		Int_t TCsI2Channel[16];
-		Double_t TCsI2Energy[16];
+		std::vector<Int_t> TCsI2Channel;
+		std::vector<Double_t> TCsI2Energy;
+		std::vector<Double_t> TCsI2ADC;
 		Int_t TCsIMul;
-		Int_t TCsIChannel[16];
-		Double_t TCsIEnergy[16];
-		Double_t TCsI2ADC[16];
+		std::vector<Int_t> TCsIChannel;
+		std::vector<Double_t> TCsIEnergy;
 
 		Double_t SSB;
 		
@@ -36,30 +37,30 @@ class IDet : public TObject {
 		Double_t TIC[16];
 
 		Int_t TSd1rMul;
-		Int_t TSd1rChannel[24];
-		Double_t TSd1rEnergy[24];
-		Double_t TSd1rADC[24];
+		std::vector<Int_t> TSd1rChannel;
+		std::vector<Double_t> TSd1rEnergy;
+		std::vector<Double_t> TSd1rADC;
 		
 		Int_t TSd1sMul;
-		Int_t TSd1sChannel[32];
-		Double_t TSd1sEnergy[32];
-		Double_t TSd1sADC[32];
+		std::vector<Int_t> TSd1sChannel;
+		std::vector<Double_t> TSd1sEnergy;
+		std::vector<Double_t> TSd1sADC;
 		
 		Int_t TSd2rMul;
-		Int_t TSd2rChannel[24];
-		Double_t TSd2rEnergy[24];
-		Double_t TSd2rADC[24];
+		std::vector<Int_t> TSd2rChannel;
+		std::vector<Double_t> TSd2rEnergy;
+		std::vector<Double_t> TSd2rADC;
 		Double_t TSd2rEnergyCal;
 		
 		Int_t TSd2sMul;
-		Int_t TSd2sChannel[32];
-		Double_t TSd2sEnergy[32];
-		Double_t TSd2sADC[32];
+		std::vector<Int_t> TSd2sChannel;
+		std::vector<Double_t> TSd2sEnergy;
+		std::vector<Double_t> TSd2sADC;
 		
 		Double_t TSdETot;
-		Double_t TSdTheta[32];
+		std::vector<Double_t> TSdTheta;
 		Double_t TSdThetaCM;
-		Double_t TSdPhi[32];
+		std::vector<Double_t> TSdPhi;
 
 //		Double_t TQv1; // Q-value from S3
 //		Double_t TQv2; // Q-value from S3
