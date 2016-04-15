@@ -220,7 +220,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 void HandlePHYSICS(IDet *det)
 {
-	if(det->TYdMul==0||det->TCsI2Mul==0||det->TSd1rMul==0){
+	if(det->TSd1rMul==0){
 	   tree->Fill();
    	   return;
 	} 
@@ -257,7 +257,7 @@ void HandlePHYSICS(IDet *det)
  	//adding dead layer energy losses
 	//Sd2 ring side
 	energy = (det->TSd2rEnergy.size()>0) ? det->TSd2rEnergy.at(0) : 0.;
-	if (eBB[nGate]) energy = energy+elossFi(det->TSd2rEnergy.at(0),0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
+	if (eBB[nGate]) energy = energy+elossFi(energy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
 	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
 	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
 	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
@@ -294,7 +294,10 @@ void HandlePHYSICS(IDet *det)
     // printf("thetaCM: %f\n",det->TSdThetaCM);
     if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,foilTh/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
     det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta.at(0))/sqrt(gammaCM-gammaCM*betaCM*(mA+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta.at(0)))));// check if this is still correct for H2 target tk
-
+	if(det->TYdMul==0||det->TCsI2Mul==0){
+	   tree->Fill();
+   	   return;
+	}
  // Calculate Q-value from YY1 and CsI// 
 	if (((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*0.01745329)))&& (mb == target.mass)) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0) >0.6 )&& (mb== target.mass))) {    //check if in the proton/deuteron gate
 	

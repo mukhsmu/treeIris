@@ -12,15 +12,15 @@ class Graphsdedx : public TObject {
 		Graphsdedx(); 
 		virtual ~Graphsdedx() {} //! 
 
-		TString Ag;
-		TString Al;
-		TString B;
-		TString D2;
-		TString H2;
-		TString My;
-		TString P;
-		TString Si;
-		TString SiO2;
+		std::string Ag;
+		std::string Al;
+		std::string B;
+		std::string D2;
+		std::string H2;
+		std::string My;
+		std::string P;
+		std::string Si;
+		std::string SiO2;
 
 		Bool_t boolAg;
 		Bool_t boolAl;

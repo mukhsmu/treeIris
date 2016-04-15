@@ -18,13 +18,13 @@ void IDet::Clear()
 	
 	TCsI1Mul=0;
 	TCsI2Mul=0;
-	TCsIEnergy.clear();
+//	TCsIEnergy.clear();
   	TCsI1Energy.clear();
   	TCsI2Energy.clear();
-  	TCsIEnergy.clear();
-  	TCsI1ADC.clear();
-  	TCsI2ADC.clear();
-	TCsIChannel.clear();
+//  	TCsIEnergy.clear();
+//  	TCsI1ADC.clear();
+//  	TCsI2ADC.clear();
+//	TCsIChannel.clear();
 	TCsI1Channel.clear();
 	TCsI2Channel.clear();
 
@@ -43,16 +43,16 @@ void IDet::Clear()
   	TSdThetaCM=0;
   	TSd1rEnergy.clear();
 	TSd1rChannel.clear();
-  	TSd1rADC.clear();
+//  	TSd1rADC.clear();
   	TSd2rEnergy.clear();
 	TSd2rChannel.clear();
-  	TSd2rADC.clear();
+//  	TSd2rADC.clear();
   	TSd1sEnergy.clear();
 	TSd1sChannel.clear();
-  	TSd1sADC.clear();
+//  	TSd1sADC.clear();
   	TSd2sEnergy.clear();
 	TSd2sChannel.clear();
-  	TSd2sADC.clear();
+//  	TSd2sADC.clear();
   	TSdTheta.clear();
   	TSdPhi.clear();
   //	TQv1=0; // Q-value  

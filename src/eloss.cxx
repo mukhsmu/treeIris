@@ -1,47 +1,34 @@
 //Alisher Sanetullaev
 //Energy loss calculator using Bethe formula
-// modfied by Matthias Holl, December 2015
+// modified by Matthias Holl, December 2015
 // stopping power can now be directly read from file 
 
 #include <iostream>
 #include <fstream>
-#include "../include/eloss.h"
 #include <stdlib.h>
 #include <TRandom3.h>
 #include <TMath.h>
+#include "eloss.h"
 
-void loadELoss(TString filename, Double_t e[100], Double_t dedx[100], Double_t m)
+void loadELoss(std::string filename, Double_t e[100], Double_t dedx[100], Double_t m)
 {
-	Double_t buffer[2];
-	
-	ifstream infile;
-	Char_t line[2000];
-			
-	infile.open(filename); 
+	std::ifstream infile;
+ 	Char_t line[2000];
+                                                                                                                                                                                                               
+	infile.open(filename.data());
 	if(!infile.is_open()){
-		printf("Cannot open the eloss file %s!!\n",filename.Data());
+		printf("Cannot open the file %s!!\n",filename.data());
 		exit(0);
 	}
-	// printf("%s mass in eloss: %f\n", filename.Data(),m/931.49406);
-  	infile.getline(line,2000);
+
+	infile.getline(line,2000);
 	for(UInt_t i=0; i<100; i++){
-    	infile.getline(line,2000);
-    	sscanf(line,"%lf %lf %lf %lf",&buffer[1],&buffer[2],&e[i],&dedx[i]);
-  		e[i] *= m/931.494061; //stopping power for this mass
-    	//printf("%lf %lf %lf %lf\n",buffer[1],buffer[2],e[i],dedx[i]);
-   	}    
+		infile.getline(line,2000);
+		sscanf(line,"%*f\t%*f\t%lf\t%lf\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t\n",&e[i],&dedx[i]);
+		e[i] *= m/0.931494061; //stopping power for this mass
+	}
 	infile.close();
 }
-
-// Double_t straggling(nucleus P, Double_t TZoverA, Double_t ein,  Double_t th)
-// {
-// 	Double_t k= 1.1+0.47*TMath::Log10(ein/Double_t(P.A));
-// 	Double_t Bohr2 = 0.157 * th * P.Z*P.Z *TZoverA /P.A;
-// 	Double_t Bohr = sqrt(Bohr2);
-// 	Double_t d = k*Bohr;
-// 
-// 	return d;
-// }
 
 Double_t fncBethe(Double_t *x, Double_t *par) //Bethe like function for fitting
 {

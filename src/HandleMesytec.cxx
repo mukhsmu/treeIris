@@ -70,11 +70,11 @@ float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
 //AS CsI
-int CsIMul=0;
-float CsI[16]={0}, CsIEnergy[16];//, CsIEnergy2; //CsI energy
-int CsIChannel[16];// channel with the greatest value
-double CsIGain[NCsIChannels]={0.};
-double CsIPed[NCsIChannels]={0.};
+// int CsIMul=0;
+// float CsI[16]={0}, CsIEnergy[16];//, CsIEnergy2; //CsI energy
+// int CsIChannel[16];// channel with the greatest value
+// double CsIGain[NCsIChannels]={0.};
+// double CsIPed[NCsIChannels]={0.};
 
 int CsI1Mul=0;
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
@@ -160,7 +160,8 @@ float SSBOffset=0;
 float SSBGain=0;
 
 extern FILE* ASCIIYY1;
-extern FILE* ASCIICsI;
+extern FILE* ASCIICsI1;
+extern FILE* ASCIICsI2;
 extern FILE* ASCIISd1;
 extern FILE* ASCIISd2;
 // extern FILE* ASCIISu;
@@ -191,17 +192,17 @@ uint32_t channel, overflow;
 int clearDetectors()
 {
 	for (int j=0; j<NICChannels; j++)	IC[j] = 0;
-	CsIMul=0;
+	// CsIMul=0;
 	CsI1Mul=0;
 	CsI2Mul=0;
 	for (int j=0; j<NCsIChannels; j++){
-		CsI[j] = 0;
+	//	CsI[j] = 0;
 		CsI1[j] = 0;
 		CsI2[j] = 0;
-		CsIEnergy[j]=0;
+	//	CsIEnergy[j]=0;
 		CsI1Energy[j]=0;
 		CsI2Energy[j]=0;
-		CsIChannel[j]=-1;
+	//	CsIChannel[j]=-1;
 		CsI1Channel[j]=-1;
 		CsI2Channel[j]=-1;
 	}
@@ -615,10 +616,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	      		det.TCsI1Channel.push_back(CsI1Channel[i]);
 	    	}
 
-	 		if (CsI1Energy[i]>0.){
-				CsIEnergy[i] = CsI1Energy[i];
-				CsIChannel[i] = CsI1Channel[i];
-	 		}
+	 //		if (CsI1Energy[i]>0.){
+	 //   		CsIEnergy[i] = CsI1Energy[i];
+	 //   		CsIChannel[i] = CsI1Channel[i];
+	 //		}
 		}
 	
 		for (Int_t i=0;i<NCsIChannels;i++){
@@ -647,13 +648,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	        	det.TCsI2Channel.push_back(CsI2Channel[i]);
 	      	}
 	
-			if (CsI2Energy[i]>0.){
-	   			CsIEnergy[i] = CsI2Energy[i];//0.177*CsI1Energy[i]-23.3;
-				CsIChannel[i] = CsI2Channel[i];
-	 		}
+		//	if (CsI2Energy[i]>0.){
+	   	//		CsIEnergy[i] = CsI2Energy[i];//0.177*CsI1Energy[i]-23.3;
+		//		CsIChannel[i] = CsI2Channel[i];
+	 	//	}
 
-			det.TCsIEnergy.push_back(CsIEnergy[i]); //for filling the tree
-			det.TCsIChannel.push_back(CsIChannel[i]);
+			// det.TCsIEnergy.push_back(CsIEnergy[i]); //for filling the tree
+			// det.TCsIChannel.push_back(CsIChannel[i]);
 		
 			if (useCsI2Slope && det.TYdRing.at(0) >-1)   
 	 		 	{det.TCsI2Energy.at(i)= det.TCsI2Energy.at(i)+det.TYdRing.at(0)*CsI2Slope[det.TCsI2Channel.at(i)];}
@@ -662,7 +663,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
  		 if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
    		 	{det.TCsI2Energy.at(0)=0;}
 
-    	if (ascii)  fprintf(ASCIICsI," %d  %d %d %d %d \n",event.GetSerialNumber(), CsIChannel[0]+32, (int)CsIEnergy[0],  CsIChannel[1]+32, (int)CsIEnergy[1]);
+    	if (ascii)  fprintf(ASCIICsI1," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI1Channel[0]+32, (int)CsI1Energy[0],  CsI1Channel[1]+32, (int)CsI1Energy[1]);
+    	if (ascii)  fprintf(ASCIICsI2," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI2Channel[0]+32, (int)CsI2Energy[0],  CsI2Channel[1]+32, (int)CsI2Energy[1]);
     	
 		ICEnergy=0; ICEnergy2 =0; ICChannel = -10000; ICChannel2 =-10000;
     	for (int i =0; i< NICChannels;i++) {
@@ -715,14 +717,18 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
   		sprintf(label,"ASCIIYY1run%d.txt",gRunNumber);    
   		ASCIIYY1 = fopen(label,"w");
  		fprintf(ASCIIYY1,"Evt:  id1: vpeak1: id2: vpeak2 \n");
+		
+		sprintf(label,"ASCIICsI1run%d.txt",gRunNumber); 
+ 		ASCIICsI1 = fopen(label,"w");
+ 		fprintf(ASCIICsI1,"Evt:  id1: vpeak1: id2: vpeak2 \n");
 
-  		sprintf(label,"ASCIICsIrun%d.txt",gRunNumber); 
- 		ASCIICsI = fopen(label,"w");
- 		fprintf(ASCIICsI,"Evt:  id1: vpeak1: id2: vpeak2 \n");
+  		sprintf(label,"ASCIICsI2run%d.txt",gRunNumber); 
+ 		ASCIICsI2 = fopen(label,"w");
+ 		fprintf(ASCIICsI2,"Evt:  id1: vpeak1: id2: vpeak2 \n");
 
  		sprintf(label,"ASCIIICrun%d.txt",gRunNumber); 
  		ASCIIIC = fopen(label,"w");
- 		fprintf(ASCIICsI,"Evt:  id1: vpeak1: id2: vpeak2 \n");
+ 		fprintf(ASCIIIC,"Evt:  id1: vpeak1: id2: vpeak2 \n");
 
   		sprintf(label,"ASCIISd2run%d.txt",gRunNumber); 
  		ASCIISd2 = fopen(label,"w");

@@ -31,7 +31,7 @@ void Graphsdedx::ReadGraphnames(char* line)
 	if (*val==0) printf("Value missing for parameter %s",line);
 
 	char cval[256];	
-	TString strval;
+	std::string strval;
 	sscanf(val,"%s",cval);
 	strval=cval;
 	
@@ -116,23 +116,23 @@ void Graphsdedx::Load(TString filename){
 }
 
 void Graphsdedx::Print(){
-	if(boolAg==kTRUE)	printf("Ag graph: %s\n",Ag.Data());
+	if(boolAg==kTRUE)	printf("Ag graph: %s\n",Ag.data());
 	else	printf("Ag graph not specified.\n");
-	if(boolAl==kTRUE)	printf("Al graph: %s\n",Al.Data());
+	if(boolAl==kTRUE)	printf("Al graph: %s\n",Al.data());
 	else	printf("Al graph not specified.\n");
-	if(boolB==kTRUE)	printf("B graph: %s\n",B.Data());
+	if(boolB==kTRUE)	printf("B graph: %s\n",B.data());
 	else	printf("B graph not specified.\n");
-	if(boolD2==kTRUE)	printf("D2 graph: %s",P.Data());
+	if(boolD2==kTRUE)	printf("D2 graph: %s",P.data());
 	else	printf("D2 graph not specified.\n");
-	if(boolH2==kTRUE)	printf("H2 graph: %s\n",H2.Data());
+	if(boolH2==kTRUE)	printf("H2 graph: %s\n",H2.data());
 	else	printf("H2 graph not specified.\n");
-	if(boolMy==kTRUE)	printf("My graph: %s\n",My.Data());
+	if(boolMy==kTRUE)	printf("My graph: %s\n",My.data());
 	else	printf("My graph not specified.\n");
-	if(boolP==kTRUE)	printf("P graph: %s\n",P.Data());
+	if(boolP==kTRUE)	printf("P graph: %s\n",P.data());
 	else	printf("P graph not specified.\n");
-	if(boolSi==kTRUE)	printf("Si graph: %s\n",Si.Data());
+	if(boolSi==kTRUE)	printf("Si graph: %s\n",Si.data());
 	else	printf("Si graph not specified.\n");
-	if(boolSiO2==kTRUE)	printf("SiO2 graph: %s\n",SiO2.Data());
+	if(boolSiO2==kTRUE)	printf("SiO2 graph: %s\n",SiO2.data());
 	else	printf("SiO2 graph not specified.\n");
 }
 

@@ -7,7 +7,7 @@
 // #include "nucleus.h"
 //Extern
 
-void loadELoss(TString, Double_t[100], Double_t[100], Double_t);
+void loadELoss(std::string, Double_t[100], Double_t[100], Double_t);
 Double_t eval(Double_t, Double_t[100], Double_t[100]);
 Double_t eloss(Double_t, Double_t, TGraph *);
 Double_t eloss(Double_t, Double_t, Double_t[100], Double_t[100]);
