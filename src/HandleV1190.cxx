@@ -111,54 +111,90 @@ void HandleV1190(TMidasEvent& event, void* ptr, ITdc* ptdc, int nitems, int bank
 	times.Clear();
 	if(bank==5){ 	// check for last bank 
 		for(i=32; i<64; i++){
-			times.TICTDC[i-32] = timeRaw[i];
-			times.TICTime[i-32] = timeRef[i];
-			times.TICTimeRF[i-32] = timeRF[i];
+			if(timeRef[i]>0.){
+				//times.TICTDC.push_back(timeRaw[i]);
+				times.TICTime.push_back(timeRef[i]);
+				times.TICTimeRF.push_back(timeRF[i]);
+				times.TICTChannel.push_back(i-32);
+				times.TICTMul++;
+			}
 		}
 				
-	 	for(i=64; i<192; i++){
-			times.TYdTDC[i-64] = timeRaw[i];
-			times.TYdTime[i-64] = timeRef[i];
-			times.TYdTimeRF[i-64] = timeRF[i];
+		for(i=64; i<192; i++){
+			if(timeRef[i]>0.){
+			//	times.TYdTDC.push_back(timeRaw[i]);
+				times.TYdTime.push_back(timeRef[i]);
+				times.TYdTimeRF.push_back(timeRF[i]);
+				times.TYdTChannel.push_back(i-64);
+				times.TYdTMul++;
+			}
 		}
 
-	 	for(i=192; i<320; i++){
-			times.TYuTDC[i-192] = timeRaw[i];
-			times.TYuTime[i-192] = timeRef[i];
-			times.TYuTimeRF[i-192] = timeRF[i];
+		for(i=192; i<320; i++){
+			if(timeRef[i]>0.){
+			//	times.TYuTDC.push_back(timeRaw[i]);
+				times.TYuTime.push_back(timeRef[i]);
+				times.TYuTimeRF.push_back(timeRF[i]);
+				times.TYuTChannel.push_back(i-192);
+				times.TYuTMul++;
+			}
 		}
 			
-	 	for(i=320; i<352; i++){
-			times.TSurTDC[i-320] = timeRaw[i];
-			times.TSurTime[i-320] = timeRef[i];
-			times.TSurTimeRF[i-320] = timeRF[i];
+		for(i=320; i<352; i++){
+			if(timeRef[i]>0.){
+			//	times.TSurTDC.push_back(timeRaw[i]);
+				times.TSurTime.push_back(timeRef[i]);
+				times.TSurTimeRF.push_back(timeRF[i]);
+				times.TSurTChannel.push_back(i-320);
+				times.TSurTMul++;
+			}
 		}
-	 	for(i=352; i<384; i++){
-			times.TSusTDC[i-352] = timeRaw[i];
-			times.TSusTime[i-352] = timeRef[i];
-			times.TSusTimeRF[i-352] = timeRF[i];
-		}
-			
-	 	for(i=384; i<416; i++){
-			times.TSd1rTDC[i-384] = timeRaw[i];
-			times.TSd1rTime[i-384] = timeRef[i];
-			times.TSd1rTimeRF[i-384] = timeRF[i];
-		}
-	 	for(i=416; i<448; i++){
-			times.TSd1sTDC[i-416] = timeRaw[i];
-			times.TSd1sTime[i-416] = timeRef[i];
-			times.TSd1sTimeRF[i-416] = timeRF[i];
+		for(i=352; i<384; i++){
+			if(timeRef[i]>0.){
+			//	times.TSusTDC.push_back(timeRaw[i]);
+				times.TSusTime.push_back(timeRef[i]);
+				times.TSusTimeRF.push_back(timeRF[i]);
+				times.TSusTChannel.push_back(i-352);
+				times.TSusTMul++;
+			}
 		}
 			
-	 	for(i=448; i<480; i++){
-			times.TSd2rTDC[i-448] = timeRaw[i];
-			times.TSd2rTime[i-448] = timeRef[i];
-			times.TSd2rTimeRF[i-448] = timeRF[i];
+		for(i=384; i<416; i++){
+			if(timeRef[i]>0.){
+			//	times.TSd1rTDC.push_back(timeRaw[i]);
+				times.TSd1rTime.push_back(timeRef[i]);
+				times.TSd1rTimeRF.push_back(timeRF[i]);
+				times.TSd1rTChannel.push_back(i-384);
+				times.TSd1rTMul++;
+			}
 		}
-	 	for(i=480; i<512; i++){
-			times.TSd2sTDC[i-480] = timeRaw[i];
-			times.TSd2sTime[i-480] = timeRef[i];
-			times.TSd2sTimeRF[i-480] = timeRF[i];
+		for(i=416; i<448; i++){
+			if(timeRef[i]>0.){
+			//	times.TSd1sTDC.push_back(timeRaw[i]);
+				times.TSd1sTime.push_back(timeRef[i]);
+				times.TSd1sTimeRF.push_back(timeRF[i]);
+				times.TSd1sTChannel.push_back(i-416);
+				times.TSd1sTMul++;
+			}
+		}
+			
+		for(i=448; i<480; i++){
+			if(timeRef[i]>0.){
+			//	times.TSd2rTDC.push_back(timeRaw[i]);
+				times.TSd2rTime.push_back(timeRef[i]);
+				times.TSd2rTimeRF.push_back(timeRF[i]);
+				times.TSd2rTChannel.push_back(i-448);
+				times.TSd2rTMul++;
+			}
+		}
+		for(i=480; i<512; i++){
+			if(timeRef[i]>0.){
+			//	times.TSd2sTDC.push_back(timeRaw[i]);
+				times.TSd2sTime.push_back(timeRef[i]);
+				times.TSd2sTimeRF.push_back(timeRF[i]);
+				times.TSd2sTChannel.push_back(i-480);
+				times.TSd2sTMul++;
+			}
 		}
 		*ptdc=times;
 	}	// check for last bank

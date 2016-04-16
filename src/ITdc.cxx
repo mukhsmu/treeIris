@@ -8,43 +8,58 @@ ITdc::ITdc(){
 
 void ITdc::Clear()
 {
+	TICTMul = 0;
+	//TICTDC.clear();
+	TICTChannel.clear();
+	TICTime.clear();
+	TICTimeRF.clear();
 	
- 	for(int i=0; i<32; i++){
-		TICTDC[i] = 0;
-		TICTime[i] = 0;
-		TICTimeRF[i] = 0;
-	}
-		
- 	for(int i=0; i<128; i++){
-		TYdTDC[i] = 0;
-		TYuTDC[i] = 0;
-		TYdTime[i] = 0;
-		TYuTime[i] = 0;
-		TYdTimeRF[i] = 0;
-		TYuTimeRF[i] = 0;
-	}
-		
- 	for(int i=0; i<32; i++){
-		TSurTDC[i] = 0;
-		TSurTime[i] = 0;
-		TSurTimeRF[i] = 0;
-		TSusTDC[i] = 0;
-		TSusTime[i] = 0;
-		TSusTimeRF[i] = 0;
-		
-		TSd1rTDC[i] = 0;
-		TSd1rTime[i] = 0;
-		TSd1rTimeRF[i] = 0;
-		TSd1sTDC[i] = 0;
-		TSd1sTime[i] = 0;
-		TSd1sTimeRF[i] = 0;
-		
-		TSd2rTDC[i] = 0;
-		TSd2rTime[i] = 0;
-		TSd2rTimeRF[i] = 0;
-		TSd2sTDC[i] = 0;
-		TSd2sTime[i] = 0;
-		TSd2sTimeRF[i] = 0;
-	}
+	TYdTMul = 0;
+	//TYdTDC.clear();
+	TYdTChannel.clear();
+	TYdTime.clear();
+	TYdTimeRF.clear();
+	
+	TYuTMul = 0;
+	//TYuTDC.clear();
+	TYuTChannel.clear();
+	TYuTime.clear();
+	TYuTimeRF.clear();
+	
+	TSurTMul = 0;
+	//TSurTDC.clear();
+	TSurTChannel.clear();
+	TSurTime.clear();
+	TSurTimeRF.clear();
+	
+	TSusTMul = 0;
+	//TSusTDC.clear();
+	TSusTChannel.clear();
+	TSusTime.clear();
+	TSusTimeRF.clear();
+	
+	TSd1rTMul = 0;
+	//TSd1rTDC.clear();
+	TSd1rTChannel.clear();
+	TSd1rTime.clear();
+	TSd1rTimeRF.clear();
+	
+	TSd1sTMul = 0;
+	//TSd1sTDC.clear();
+	TSd1sTChannel.clear();
+	TSd1sTime.clear();
+	TSd1sTimeRF.clear();
+	
+	TSd2rTMul = 0;
+	//TSd2rTDC.clear();
+	TSd2rTChannel.clear();
+	TSd2rTime.clear();
+	TSd2rTimeRF.clear();
+	
+	TSd2sTMul = 0;
+	//TSd2sTDC.clear();
+	TSd2sTChannel.clear();
+	TSd2sTime.clear();
+	TSd2sTimeRF.clear();
 }
 
