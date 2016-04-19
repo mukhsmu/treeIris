@@ -174,9 +174,9 @@ int ydNo;
 //AS Total energies
 Double_t SdETot = 0;
 float YdDistance = 0.; // distance from target in mm
-float Yd1r= 0., Yd2r = 0. ; // inner and outer radii in mm
+float YdInnerRadius= 0., YdOuterRadius = 0. ; // inner and outer radii in mm
 float Sd1Distance = 0., Sd2Distance = 0.; //distance from target in mm
-float Sdr1 = 0., Sdr2= 0.; //AS Inner and outer radii of an S3 detector (in mm).
+float SdInnerRadius = 0., SdOuterRadius= 0.; //AS Inner and outer radii of an S3 detector (in mm).
 
 Double_t xShift = 0;//1.97;
 Double_t yShift = 0;//1.3;
@@ -412,20 +412,20 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 	  				//AS angles // Is this used anywhere??
 	  				if (modid==2){
-	  				  	// theta = TMath::RadToDeg()*(Sdr1*(24.-channel-fRandom.Rndm())+Sdr2*(channel-fRandom.Rndm()))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
+	  				  	// theta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-fRandom.Rndm())+SdOuterRadius*(channel-fRandom.Rndm()))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
 	  				}
 	  				
 	  				if (modid==3){
 	  				  	phi = ((channel+fRandom.Rndm())*180./32.); //AS phi angle for Sd (32 - number of sectors)
 	  				}
 	  				//  if (modid>5 && modid<10){
-	  				  //theta = TMath::RadToDeg()*(Yd1r*(16.-channel-0.5)+Yd2r*(channel+0.5))/16./YdDistance;
+	  				  //theta = TMath::RadToDeg()*(YdInnerRadius*(16.-channel-0.5)+YdOuterRadius*(channel+0.5))/16./YdDistance;
 	  				  //det.TYdTheta= theta;
 	  				 // cout <<  " det.TYdTheta= " <<  det.TYdTheta << endl;
 	  				//}
 	
 	  				if (modid==10){
-	  				  	theta1 = TMath::RadToDeg()*(Sdr1*(24.-channel-0.5)+Sdr2*(channel+0.5))/24./SuDistance; //AS theta angle for Su (24 - number of rings)
+	  				  	theta1 = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-0.5)+SdOuterRadius*(channel+0.5))/24./SuDistance; //AS theta angle for Su (24 - number of rings)
 	  				}
 	  				
 	  				if (modid==11){
@@ -464,7 +464,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
  			det.TSd1rEnergy.push_back(Sd1rEnergy[i]);
 			det.TSd1rChannel.push_back(Sd1rChannel[i]);
 			randm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
-			det.TSdTheta.push_back(TMath::RadToDeg()*atan((geoM.Sdr1*(24.-Sd1rChannel[i]-randm)+geoM.Sdr2*(Sd1rChannel[i]+randm))/24./geoM.Sd1Distance)); //AS theta angle for Sd (24 - number of rings)
+			det.TSdTheta.push_back(TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd1rChannel[i]-randm)+geoM.SdOuterRadius*(Sd1rChannel[i]+randm))/24./geoM.Sd1Distance)); //AS theta angle for Sd (24 - number of rings)
 		}
 		
 		for (Int_t i=0;i<NSd1sChannels;i++){
@@ -582,7 +582,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TYdNo.push_back(int(YdChannel[i]/16));
 			det.TYdRing.push_back(YdChannel[i]%16);
 			//here
-			YdTheta[i] = TMath::RadToDeg()*atan((geoM.Yd1r*(16.-YdChannel[i]%16-randm)+geoM.Yd2r*(YdChannel[i]%16+randm))/16./geoM.YdDistance);
+			YdTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YdChannel[i]%16-randm)+geoM.YdOuterRadius*(YdChannel[i]%16+randm))/16./geoM.YdDistance);
 			det.TYdTheta.push_back(YdTheta[i]);
 		}
 	 

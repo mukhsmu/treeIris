@@ -10,16 +10,20 @@ class geometry : public TObject {
 		geometry(); 
 		virtual ~geometry() {} //! 
 		
-		Double_t YdDistance;
-		Double_t Yd1r;
-		Double_t Yd2r;
-		Double_t Sd1Distance;
-		Double_t Sd2Distance;
-		Double_t Sdr1;
-		Double_t Sdr2;
+		Double_t TargetThickness;
+		Double_t FoilThickness;
 		Double_t xShift;
 		Double_t yShift;
-		Double_t TThickness;
+		Double_t YdThickness[8];
+		Double_t YdDistance;
+		Double_t YdInnerRadius;
+		Double_t YdOuterRadius;
+		Double_t Sd1Thickness;
+		Double_t Sd1Distance;
+		Double_t Sd2Thickness;
+		Double_t Sd2Distance;
+		Double_t SdInnerRadius;
+		Double_t SdOuterRadius;
 
 		void ReadGeometry(std::string);
 		void Print();
