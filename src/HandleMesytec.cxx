@@ -638,6 +638,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     		CsI2[index] = 0.;
     	}
 	
+		det.TCsI2Mul = CsI2Mul;
 		for(int i=0; i<CsI2Mul; i++){
 			// det.TCsI2ADC.push_back(CsI2Energy[i]);
 	  		

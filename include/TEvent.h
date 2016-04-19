@@ -26,13 +26,13 @@ class TEvent : public TObject {
 		
 		TTree *fChain;          //! pointer to the analyzed TTree or TChain
 		
-		IParticle fPart;        //
+		// IParticle fPart;        //
 		
-		Double_t fEYY1;             //
-		Double_t fCsI;              //
-		Double_t fSd1;              //
-		Double_t fSd2;              //
-		Double_t fIC;               //
+		// Double_t fEYY1;             //
+		// Double_t fCsI;              //
+		// Double_t fSd1;              //
+		// Double_t fSd2;              //
+		// Double_t fIC;               //
 		Double_t fThetacm;          //
 		
 		Double_t fLP; //Light particle energy //

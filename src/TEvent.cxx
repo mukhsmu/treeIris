@@ -33,11 +33,11 @@ TEvent::TEvent() {
   IParticle::Class()->IgnoreTObjectStreamer();   
   //fPart = new TParticle();        //
 
-  fEYY1 =0;             //
-  fCsI=0;              //
-  fSd1=0;              //
-  fSd2=0;              //
-  fIC=0;               //
+  // fEYY1 =0;             //
+  // fCsI=0;              //
+  // fSd1=0;              //
+  // fSd2=0;              //
+  // fIC=0;               //
 
   fLP=0; //Light particle energy //
   fHP=0; //Heavy particle energy //
@@ -55,18 +55,18 @@ TEvent::TEvent(const TEvent &evt) : TObject(evt) //
 }
 
 Int_t TEvent::Clear(){
-   fEYY1 =0;             //
-  fCsI=0;              //
-  fSd1=0;              //
-  fSd2=0;              //
-  fIC=0;               //
+  // fEYY1 =0;             //
+  // fCsI=0;              //
+  // fSd1=0;              //
+  // fSd2=0;              //
+  // fIC=0;               //
 
   fLP=0; //Light particle energy //
   fHP=0; //Heavy particle energy //
   fQv=0;                         //
   fThetacm=0;                         //
   fEB=0; //Beam energy           //
-  fPart.Clear();
+  // fPart.Clear();
 return 1;
 }
 

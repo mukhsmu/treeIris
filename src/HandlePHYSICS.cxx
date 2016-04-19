@@ -287,7 +287,7 @@ void HandlePHYSICS(IDet *det)
    	   return;
 	}
  // Calculate Q-value from YY1 and CsI// 
-	if (((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*TMath::Pi()/180.)))&& (mb == target.mass)) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0) >0.6 )&& (mb== target.mass))) {    //check if in the proton/deuteron gate
+	if ((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*TMath::Pi()/180.))) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0)>0.6 ))) {    //check if in the proton/deuteron gate
 	
 	    ECsI= det->TCsI2Energy.at(0);
 	    if( ECsI < 0.6){ //approx pedestal vaule // Should probably be changed ?
@@ -333,8 +333,8 @@ void HandlePHYSICS(IDet *det)
 		Double_t Pby = Pb*sin(thetaR);
 		Double_t Pbxcm = gammaCM*betaCM*(Eb+mb)- gammaCM*Pb*cos(thetaR);
 	
-	// 	cout<<"Beam energy used for QValue is "<< EBeam <<endl;
-	//  cout<<"deuteron energy at interaction at angle "<< thetaD<< " is equal ="<<Eb<<endl;
+	 	// cout<<"Beam energy used for QValue is "<< EBeam <<endl;
+	  	// cout<<"deuteron energy at interaction at angle "<< thetaD<< " is equal ="<<Eb<<endl;
 	 	Q = mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb)+2.*PA*Pb*cos(thetaR)+2.*(EBeam+mA+ma-Eb-mb)*ma);  //Alisher's equation 
 	
 	//	EB = EBeam+mA+ma-Eb-mb; // rel. kinetic energy of recoil.
@@ -345,7 +345,7 @@ void HandlePHYSICS(IDet *det)
 	//	cout << "Q= " << Q <<endl;   
 	  	det->QValue = Q;
 	  	IrisEvent->fQv = det->QValue;
-	  	IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
+	  	// IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
 		IrisEvent->fThetacm = TMath::RadToDeg()*atan(Pby/Pbxcm);
 		if (IrisEvent->fThetacm < 0) 
 	  		IrisEvent->fThetacm = IrisEvent->fThetacm+180.;
@@ -354,9 +354,9 @@ void HandlePHYSICS(IDet *det)
 			#endif
 	}//isinside proton (deuteron) gate
   	//IrisEvent->fEYY1 = det->TYdEnergy[0];
-  	IrisEvent->fEYY1 = EYY1;
-  	IrisEvent->fCsI = ECsI;
-  	IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
+  	// IrisEvent->fEYY1 = EYY1;
+  	// IrisEvent->fCsI = ECsI;
+  	// IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
 
 	tree->Fill();
 }
