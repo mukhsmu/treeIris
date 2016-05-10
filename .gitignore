@@ -8,5 +8,4 @@ core
 *.swp
 *.swo
 *.root
-bin/
-obj/
+*.png
