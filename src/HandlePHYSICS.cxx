@@ -136,6 +136,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			ma = target.mass;
 			mb = lej.mass; //Light ejectile mass
 			mB = hej[i].mass;
+      printf("mA=%f, ma=%f, mb=%f, mB=%f\n",mA,ma,mb,mB); 
 			kBF = MFoil/mA;
 	
 			printf("Beam energy: %f\n", runDepPar[i].energy);
@@ -145,8 +146,8 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 				printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
 				dedx_i[i].Load(calPhys.fileIdedx[i]);
 				dedx_i[i].Print();
-				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA);	
-				if(dedx_i[i].boolH2==kTRUE) loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA);	
+				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA/1000.);	
+				if(dedx_i[i].boolH2==kTRUE) loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA/1000.);	
 				if(dedx_i[i].boolSi==kTRUE) loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
 				if(dedx_i[i].boolAl==kTRUE) loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
 				if(dedx_i[i].boolB==kTRUE) loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
