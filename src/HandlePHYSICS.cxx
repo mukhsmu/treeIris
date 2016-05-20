@@ -50,12 +50,12 @@ Graphsdedx dedx_p, dedx_d, dedx_t, dedx_i[3];
 const int Nchannels = 24;
 const int binlimit = 1900;
  	
-Double_t eAH[3][100], eAC4H10[3][100], eASi3N4[3][100], eAAg[3][100];	
-Double_t dedxAH[3][100], dedxAC4H10[3][100], dedxASi3N4[3][100], dedxAAg[3][100];	
-Double_t eBSi[3][100], eBH[3][100], eBSiO2[3][100], eBB[3][100], eBP[3][100], eBAl[3][100], eBMy[3][100], eBCsI[3][100];	
-Double_t dedxBSi[3][100], dedxBH[3][100], dedxBSiO2[3][100], dedxBB[3][100], dedxBP[3][100], dedxBAl[3][100], dedxBMy[3][100], dedxBCsI[3][100];	
-Double_t ebH[3][100], ebSi[3][100], ebAl[3][100], ebB[3][100], ebMy[3][100], ebP[3][100], ebCsI[3][100], ebSiO2[3][100];	
-Double_t dedxbH[3][100], dedxbSi[3][100], dedxbAl[3][100], dedxbB[3][100], dedxbMy[3][100], dedxbP[3][100], dedxbCsI[3][100], dedxbSiO2[3][100];	
+Double_t eATgt[3][100], eAC4H10[3][100], eASi3N4[3][100], eAAg[3][100];	
+Double_t dedxATgt[3][100], dedxAC4H10[3][100], dedxASi3N4[3][100], dedxAAg[3][100];	
+Double_t eBSi[3][100], eBTgt[3][100], eBSiO2[3][100], eBB[3][100], eBP[3][100], eBAl[3][100], eBMy[3][100], eBCsI[3][100];	
+Double_t dedxBSi[3][100], dedxBTgt[3][100], dedxBSiO2[3][100], dedxBB[3][100], dedxBP[3][100], dedxBAl[3][100], dedxBMy[3][100], dedxBCsI[3][100];	
+Double_t ebTgt[3][100], ebSi[3][100], ebAl[3][100], ebB[3][100], ebMy[3][100], ebP[3][100], ebCsI[3][100], ebSiO2[3][100];	
+Double_t dedxbTgt[3][100], dedxbSi[3][100], dedxbAl[3][100], dedxbB[3][100], dedxbMy[3][100], dedxbP[3][100], dedxbCsI[3][100], dedxbSiO2[3][100];	
 
 double EBAC = 0.; //Beam energy from accelerator
 runDep runDepPar[3]; // run dependant parameters
@@ -147,17 +147,17 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 				dedx_i[i].Load(calPhys.fileIdedx[i]);
 				dedx_i[i].Print();
 				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA/1000.);	
-				if(dedx_i[i].boolH2==kTRUE) loadELoss(dedx_i[i].H2,eAH[i],dedxAH[i],mA/1000.);	
+				if(dedx_i[i].boolTgt==kTRUE) loadELoss(dedx_i[i].Tgt,eATgt[i],dedxATgt[i],mA/1000.);	
 				if(dedx_i[i].boolSi==kTRUE) loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
 				if(dedx_i[i].boolAl==kTRUE) loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
 				if(dedx_i[i].boolB==kTRUE) loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
 				if(dedx_i[i].boolP==kTRUE) loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
-				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBH[i],dedxBH[i],mB);	
+				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBTgt[i],dedxBTgt[i],mB);	
 			}
 		
-			if (eAH[i]){
+			if (eATgt[i]){
 				Double_t temp_energy = runDepPar[i].energy;
-				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TargetThickness/2.,eAH[i],dedxAH[i]);  
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TargetThickness/2.,eATgt[i],dedxATgt[i]);  
 				printf("Energy loss in half target: %f\n" ,temp_energy-runDepPar[i].energy);
 			}
 			else printf("Energy loss in target not specified. EBeam=EBAC");
@@ -189,7 +189,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 		if(dedx_p.boolB==kTRUE) loadELoss(dedx_p.B,ebB[0],dedxbB[0],mb);	
 		if(dedx_p.boolP==kTRUE) loadELoss(dedx_p.P,ebP[0],dedxbP[0],mb);	
 		if(dedx_p.boolMy==kTRUE) loadELoss(dedx_p.My,ebMy[0],dedxbMy[0],mb);	
-		if(dedx_p.boolH2==kTRUE) loadELoss(dedx_p.H2,ebH[0],dedxbH[0],mb);	
+		if(dedx_p.boolTgt==kTRUE) loadELoss(dedx_p.Tgt,ebTgt[0],dedxbTgt[0],mb);	
 	}
 //---------------for deuterons in various layers---Jaspreet ----------------------------------
 	if(calPhys.boolDdedx==kTRUE){
@@ -201,7 +201,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 		if(dedx_d.boolB==kTRUE)  loadELoss(dedx_d.B,ebB[1],dedxbB[1],mb);	
 		if(dedx_d.boolP==kTRUE)  loadELoss(dedx_d.P,ebP[1],dedxbP[1],mb);	
 		if(dedx_d.boolMy==kTRUE) loadELoss(dedx_d.My,ebMy[1],dedxbMy[1],mb);	
-		if(dedx_d.boolH2==kTRUE) loadELoss(dedx_d.H2,ebH[1],dedxbH[1],mb);	
+		if(dedx_d.boolTgt==kTRUE) loadELoss(dedx_d.Tgt,ebTgt[1],dedxbTgt[1],mb);	
 	}
 //--------------------------------------------------------------------------------
 		printf("End of HandleBOR_Physics\n");
@@ -324,7 +324,7 @@ void HandlePHYSICS(IDet *det)
 	   	if (mb == target.mass){
 	      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
 	    	else std::cout << "ebSi doesn't exist"<< std::endl;
-	    	if (ebH[1])  Eb= Eb+elossFi(Eb,geoP.TargetThickness/2./cos(thetaR),ebH[1],dedxbH[1]); //deuteron energy  in mid target midtarget                                                                             
+	    	if (ebTgt[1])  Eb= Eb+elossFi(Eb,geoP.TargetThickness/2./cos(thetaR),ebTgt[1],dedxbTgt[1]); //deuteron energy  in mid target midtarget                                                                             
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
 	

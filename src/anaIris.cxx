@@ -1,10 +1,8 @@
-//
+// treeIris
+// Analysis software for the IRIS experiment @TRIUMF
+// based on
 // ROOT analyzer
-//
-// K.Olchanski
-//
-// $Id: analyzer.cxx 64 2008-12-22 03:14:11Z olchansk $
-//
+// by K.Olchanski
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -62,47 +60,6 @@ double GetTimeSec() {
 	gettimeofday(&tv,NULL);
 	return tv.tv_sec + 0.000001*tv.tv_usec;
 }
-
-//--------------------------------------------------------------
-class MyPeriodic : public TTimer
-{
-	public:
-		typedef void (*TimerHandler)(void);
-		
-		int          fPeriod_msec;
-		TimerHandler fHandler;
-		double       fLastTime;
-		
-		MyPeriodic(int period_msec,TimerHandler handler)
-		{
-			assert(handler != NULL);
-			fPeriod_msec = period_msec;
-			fHandler  = handler;
-			fLastTime = GetTimeSec();
-			Start(period_msec,kTRUE);
-		}
-		
-		Bool_t Notify()
-		{
-			double t = GetTimeSec();
-			
-			if (t - fLastTime >= 0.9*fPeriod_msec*0.001)
-			  {
-			if (fHandler)
-			  (*fHandler)();
-			
-			fLastTime = t;
-			  }
-			
-			Reset();
-			return kTRUE;
-		}
-		
-		~MyPeriodic()
-		{
-			TurnOff();
-		}
-};
 
 //--------------------------------------------------------------
 void startRun(int transition,int run,int time)

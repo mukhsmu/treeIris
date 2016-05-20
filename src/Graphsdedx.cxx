@@ -48,14 +48,14 @@ void Graphsdedx::ReadGraphnames(char* line)
 		B = strval;
 		boolB = kTRUE;
 	}
-	if (strcmp(line,"D2")==0){
-		D2 = strval;
-		boolP = kTRUE;
+	if (strcmp(line,"TGT")==0){
+		Tgt = strval;
+		boolTgt = kTRUE;
 	}
-	if (strcmp(line,"H2")==0){
-		H2 = strval;
-		boolH2 = kTRUE;
-	}
+	// if (strcmp(line,"H2")==0){
+	// 	H2 = strval;
+	// 	boolH2 = kTRUE;
+	// }
 	if (strcmp(line,"My")==0){
 		My = strval;
 		boolMy = kTRUE;
@@ -78,8 +78,8 @@ void Graphsdedx::Load(TString filename){
 	boolAg=kFALSE;
 	boolAl=kFALSE;
 	boolB=kFALSE;
-	boolD2=kFALSE;
-	boolH2=kFALSE;
+	boolTgt=kFALSE;
+	// boolH2=kFALSE;
 	boolMy=kFALSE;
 	boolP=kFALSE;
 	boolSi=kFALSE;
@@ -122,10 +122,10 @@ void Graphsdedx::Print(){
 	else	printf("Al graph not specified.\n");
 	if(boolB==kTRUE)	printf("B graph: %s\n",B.data());
 	else	printf("B graph not specified.\n");
-	if(boolD2==kTRUE)	printf("D2 graph: %s",P.data());
-	else	printf("D2 graph not specified.\n");
-	if(boolH2==kTRUE)	printf("H2 graph: %s\n",H2.data());
-	else	printf("H2 graph not specified.\n");
+	if(boolTgt==kTRUE)	printf("Target graph: %s\n",P.data());
+	else	printf("Target graph not specified.\n");
+	// if(boolH2==kTRUE)	printf("H2 graph: %s\n",H2.data());
+	// else	printf("H2 graph not specified.\n");
 	if(boolMy==kTRUE)	printf("My graph: %s\n",My.data());
 	else	printf("My graph not specified.\n");
 	if(boolP==kTRUE)	printf("P graph: %s\n",P.data());

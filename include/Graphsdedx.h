@@ -15,8 +15,8 @@ class Graphsdedx : public TObject {
 		std::string Ag;
 		std::string Al;
 		std::string B;
-		std::string D2;
-		std::string H2;
+		std::string Tgt;
+		// std::string H2;
 		std::string My;
 		std::string P;
 		std::string Si;
@@ -25,8 +25,8 @@ class Graphsdedx : public TObject {
 		Bool_t boolAg;
 		Bool_t boolAl;
 		Bool_t boolB;
-		Bool_t boolD2;
-		Bool_t boolH2;
+		Bool_t boolTgt;
+		// Bool_t boolH2;
 		Bool_t boolMy;
 		Bool_t boolP;
 		Bool_t boolSi;
