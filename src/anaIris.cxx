@@ -30,7 +30,8 @@
 int  gRunNumber = 0;
 bool gIsPedestalsRun = false;
 int  gEventCutoff = 0;
-bool gUseTdc = true;
+bool gUseTdc = false;
+bool gUseRaw = false;
 std::string gOutputFile = "";
 std::string gCalibFile = "";
 
@@ -129,7 +130,7 @@ void HandleMidasEvent(TMidasEvent& event)
       	int size = event.LocateBank(NULL, mesbkname[m], &ptr);
       	//  if (m==2)  printf("ADC bank %s: first: %d %d\n", mesbkname[m], mesbkname[m][0], size); // loop until ascii code for first character of the bank name is empty
       	if (ptr && size) { 
-			HandleMesytec(event, ptr, size, m, pdet, gCalibFile); 
+			HandleMesytec(event, ptr, size, m, pdet, gCalibFile, gUseRaw); 
  		} 
       	m++;
  	}
@@ -295,8 +296,10 @@ int main(int argc, char *argv[])
 	 		gCalibFile = arg+9;
 			have_calib=true;
 		}
-       	else if (strcmp(arg,"-nt")==0)
-	 		gUseTdc=false;
+       	else if (strcmp(arg,"-tdc")==0)
+	 		gUseTdc=true;
+       	else if (strcmp(arg,"-raw")==0)
+	 		gUseRaw=true;
        	else if (strcmp(arg,"-h")==0)
 	 		help(); // does not return
        	else if (arg[0] == '-')

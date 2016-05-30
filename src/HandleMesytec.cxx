@@ -77,12 +77,14 @@ float ICPed[NICChannels]={0.};
 // double CsIPed[NCsIChannels]={0.};
 
 int CsI1Mul=0;
+int CsI1ADC[16]={0};
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
 int CsI1Channel[16];  // channel with the greatest value
 double CsI1Gain[NCsI1GroupRing][NCsIChannels]={{0.}};
 double CsI1Ped[NCsIChannels]={0.};
 
 int CsI2Mul=0;
+int CsI2ADC[16]={0};
 float CsI2[16]={0}, CsI2Energy[16];//, CsI2Energy2; //CsI energy
 int CsI2Channel[16];  // channel with the greatest value
 double CsI2Gain[NCsI2Group][NCsIChannels]={{0.}};
@@ -91,6 +93,7 @@ double CsI2Slope[NCsIChannels]={0.};//YY1 ring dependence
 
 //AS S3
 int Sd1rMul=0;
+int Sd1rADC[NSd1rChannels];
 float Sd1r[NSd1rChannels];
 float Sd1rEnergy[NSd1rChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
 int Sd1rChannel[NSd1rChannels]={-1}; //  Sd1rChannel2; // channel with the greatest value
@@ -101,6 +104,7 @@ float Sd1rGain2[NSd1rChannels]={1.}; //recalibration parameters
 float Sd1rOffset2[NSd1rChannels]={0.}; //recalibration parameters
 
 int Sd1sMul=0;
+int Sd1sADC[NSd1rChannels];
 float Sd1s[NSd1sChannels];
 float Sd1sEnergy[NSd1sChannels]={0.}; //  Sd1sEnergy2=0; 
 int Sd1sChannel[NSd1sChannels]={-1}; // Sd1sChannel2; // channel with the greatest value                                                                                    
@@ -109,6 +113,7 @@ float Sd1sOffset[NSd1sChannels]={0.};
 float Sd1sPed[NSd1sChannels]={0.};
 
 int Sd2rMul=0;
+int Sd2rADC[NSd1rChannels];
 float Sd2r[NSd2rChannels];
 float Sd2rEnergy[NSd2rChannels]={0.}; // Sd2rEnergy2= 0; //Dummy for Sd2r energy
 int Sd2rChannel[NSd2rChannels]={-1}; //  Sd2rChannel2; // channel with the greatest value
@@ -118,6 +123,7 @@ float Sd2rPed[NSd1sChannels]={0.};
 Bool_t S3Hit;
 
 int Sd2sMul=0;
+int Sd2sADC[NSd1rChannels];
 float Sd2s[NSd2sChannels];
 float Sd2sEnergy[NSd2sChannels]={0.}; //  Sd2sEnergy2= 0; //Dummy for Sd2s energy  
 int Sd2sChannel[NSd2sChannels]={-1}; // Sd2sChannel2; // channel with the greatest value
@@ -142,6 +148,7 @@ float SusOffset[NSusChannels]={0.};
 float SusPed[NSusChannels]={0.};
 
 int YdMul=0;
+int YdADC[NYdChannels] ={0.}; 
 float Yd[NYdChannels] ={0.}; 
 float YdEnergy[NYdChannels]={0.};//, YdEnergy2=0; //Dummy for Yd energy
 int YdChannel[NYdChannels]={-1};//, YdChannel2; // channel with the greatest value
@@ -199,6 +206,8 @@ int clearDetectors()
 	//	CsI[j] = 0;
 		CsI1[j] = 0;
 		CsI2[j] = 0;
+		CsI1ADC[j] = 0;
+		CsI2ADC[j] = 0;
 	//	CsIEnergy[j]=0;
 		CsI1Energy[j]=0;
 		CsI2Energy[j]=0;
@@ -209,30 +218,35 @@ int clearDetectors()
 	Sd1rMul=0;
 	for (int j=0; j<NSd1rChannels; j++){
    		Sd1r[j] = 0;
+   		Sd1rADC[j] = 0;
 		Sd1rEnergy[j] =0;
 		Sd1rChannel[j] =-1;
 	}
 	Sd1sMul=0;
 	for (int j=0; j<NSd1sChannels; j++){
    		Sd1s[j] = 0;
+   		Sd1sADC[j] = 0;
 		Sd1sEnergy[j] =0;
 		Sd1sChannel[j] =-1;
 	}
 	Sd2rMul=0;
 	for (int j=0; j<NSd2rChannels; j++){
    		Sd2r[j] = 0;
+   		Sd2rADC[j] = 0;
 		Sd2rEnergy[j] =0;
 		Sd2rChannel[j] =-1;
 	}
 	Sd2sMul=0;
 	for (int j=0; j<NSd2sChannels; j++){
    		Sd2s[j] = 0;
+   		Sd2sADC[j] = 0;
 		Sd2sEnergy[j] =0;
 		Sd2sChannel[j] =-1;
 	}
 	YdMul=0;
 	for (int j=0; j<NYdChannels; j++){
 	 	Yd[j] = 0;
+	 	YdADC[j] = 0;
 		YdEnergy[j]=0.;
 		YdChannel[j]=-1;
     	YdTheta[j] = 0; 
@@ -263,7 +277,7 @@ int clearDetectors()
  	return 0;
 }
 
-void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pdet, TString CalibFile)
+void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pdet, TString CalibFile, bool gUseRaw)
 {
 	IDet det;
   	uint32_t *data;
@@ -344,7 +358,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				}
 	
 	  				if (modid==2 && vpeak > adcThresh && vpeak<3840){
-	 					S3Hit = 1; 	    
+	 					S3Hit = 1;
+						Sd2rADC[channel]=vpeak;		
 	 					if (!usePeds){
 	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*(float)vpeak;
 						}
@@ -355,6 +370,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  
 	  				if (modid==3 && vpeak > adcThresh && vpeak<3840){
 	    				S3Hit = 1;
+						Sd2sADC[channel]=vpeak;		
 	    				if (!usePeds){	
 	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*(float)vpeak;
 						}
@@ -365,6 +381,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 	  				if (modid==4 && vpeak > adcThresh  && vpeak<3840){
 	 					S3Hit = 1; 
+						Sd1rADC[channel]=vpeak;		
 						if (!usePeds){
 	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*(float)vpeak;
 						}
@@ -375,6 +392,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						}	
 	  				if (modid==5 && vpeak > adcThresh  && vpeak<3840){
 	     				S3Hit = 1;
+						Sd1sADC[channel]=vpeak;		
 	     				if (!usePeds){
 	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*(float)vpeak;
 						}
@@ -398,6 +416,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid>5 && modid<10 && vpeak>adcThresh  && vpeak<3840){
 	    				//YdEnergy = YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*(float)vpeak;
 	 					//Yd[channel+(modid-6)*32]=YdEnergy;
+						YdADC[channel+(modid-6)*32]=vpeak;
 	 					Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*(float)vpeak;
 	    				//printf("YdEnergy: %f, vpeak: %d, gain: %f\n",YdEnergy, vpeak, YdGain[channel+(modid-6)*32]);
 	    				if (channel<16) ydNo = (modid-6)*2+1; //Yd number
@@ -444,6 +463,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	if (modid>5 && modid<10) {// check last bank
 
  		for (Int_t i=0;i<NSd1rChannels;i++){
+			if(gUseRaw) det.TSd1rADC.push_back(Sd1rADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd1rChannels;j++){
@@ -468,6 +488,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		}
 		
 		for (Int_t i=0;i<NSd1sChannels;i++){
+			if(gUseRaw) det.TSd1sADC.push_back(Sd1sADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd1sChannels;j++){
@@ -506,6 +527,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			Sd1sChannel[0]+96, (int)Sd1sEnergy[0],  Sd1sChannel[1]+96, (int)Sd1sEnergy[1]);
 
 		for (Int_t i=0;i<NSd2rChannels;i++){
+			if(gUseRaw) det.TSd2rADC.push_back(Sd2rADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd2rChannels;j++){
@@ -528,6 +550,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		}
 				
 		for (Int_t i=0;i<NSd2sChannels;i++){
+			if(gUseRaw) det.TSd2sADC.push_back(Sd2sADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd2sChannels;j++){
@@ -559,6 +582,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		det.SSB = SSBEnergy;
 		 		
 		for (Int_t i=0;i<NYdChannels;i++){
+			if(gUseRaw) det.TYdADC.push_back(YdADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NYdChannels;j++){
@@ -590,6 +614,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	    	fprintf(ASCIIYY1," %d  %d %d %d %d \n",event.GetSerialNumber(), YdChannel[0]+192, (int)YdEnergy[0],  YdChannel[1]+192, (int)YdEnergy[1]);
 	
 		for (Int_t i=0;i<NCsIChannels;i++){
+			if(gUseRaw) det.TCsI1ADC.push_back(CsI1Energy[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -607,7 +632,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TCsI1Mul = CsI1Mul;
 		for(int i=0; i<CsI1Mul; i++){
-			// det.TCsI1ADC.push_back(CsI1Energy[i]);
 	
 			if (YdMul>0){
 	      		int m = (YdChannel[0]%16)/(16/NCsI1GroupRing);
@@ -623,6 +647,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		}
 	
 		for (Int_t i=0;i<NCsIChannels;i++){
+			if(gUseRaw) det.TCsI2ADC.push_back(CsI2Energy[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -640,7 +665,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 		det.TCsI2Mul = CsI2Mul;
 		for(int i=0; i<CsI2Mul; i++){
-			// det.TCsI2ADC.push_back(CsI2Energy[i]);
+			det.TCsI2ADC.push_back(CsI2Energy[i]);
 	  		
 			if (CsI2Energy[i] < 4000. && YdMul>0){
 				int m = (YdChannel[0]%16)/(16/NCsI2Group);
