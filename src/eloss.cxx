@@ -25,7 +25,7 @@ void loadELoss(std::string filename, Double_t e[100], Double_t dedx[100], Double
 	for(UInt_t i=0; i<100; i++){
 		infile.getline(line,2000);
 		sscanf(line,"%*f\t%*f\t%lf\t%lf\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t\n",&e[i],&dedx[i]);
-		e[i] *= m/0.931494061; //stopping power for this mass
+		e[i] *= m/931.94061; //stopping power for this mass
 	}
 	infile.close();
 }
