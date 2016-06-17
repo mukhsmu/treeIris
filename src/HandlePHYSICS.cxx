@@ -245,20 +245,24 @@ void HandlePHYSICS(IDet *det)
 	
  	//adding dead layer energy losses
 	//Sd2 ring side
-	energy = (det->TSd2rEnergy.size()>0) ? det->TSd2rEnergy.at(0) : 0.;
-	if (eBB[nGate]) energy = energy+elossFi(energy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
-	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
-	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
-	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
-	//Sd1 ring side
-	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
-	if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
-	if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
-	energy = energy + det->TSd1rEnergy.at(0);// energy lost and measured in Sd1
+	if(det->TSd1rEnergy.size()>0 && det->TSd2rEnergy.size()>0){
+		if(det->TSd1rEnergy.at(0)>0. && det->TSd2rEnery.at(0)>0.){
+			energy = det->TSd2rEnergy.at(0);
+			if (eBB[nGate]) energy = energy+elossFi(energy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
+			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
+			if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
+			//Sd1 ring side
+			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*1.5/cosTheta,eBAl[nGate],dedxBAl[nGate]); //second metal
+			if (eBSiO2[nGate]) energy = energy+elossFi(energy,0.1*2.65*2.5/cosTheta,eBSiO2[nGate],dedxBSiO2[nGate]); //SiO2
+			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
+			energy = energy + det->TSd1rEnergy.at(0);// energy lost and measured in Sd1
 
-	//sector side
-	if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
-	if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
+			//sector side
+			if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
+			if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
+		}
+	}
 
 	PResid = sqrt(2.*det->TSdETot*mA);     //Beam momentum in MeV/c
 	A = kBF-1.;                              //Quadratic equation parameters
