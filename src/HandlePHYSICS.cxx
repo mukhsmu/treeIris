@@ -146,13 +146,13 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 				printf("\n\nLoading dedx Graphs for ion %d...\n",(i+1));
 				dedx_i[i].Load(calPhys.fileIdedx[i]);
 				dedx_i[i].Print();
-				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA/1000.);	
-				if(dedx_i[i].boolTgt==kTRUE) loadELoss(dedx_i[i].Tgt,eATgt[i],dedxATgt[i],mA/1000.);	
+				if(dedx_i[i].boolAg==kTRUE) loadELoss(dedx_i[i].Ag,eAAg[i],dedxAAg[i],mA);	
+				if(dedx_i[i].boolTgt==kTRUE) loadELoss(dedx_i[i].Tgt,eATgt[i],dedxATgt[i],mA);	
 				if(dedx_i[i].boolSi==kTRUE) loadELoss(dedx_i[i].Si,eBSi[i],dedxBSi[i],mB);	
 				if(dedx_i[i].boolAl==kTRUE) loadELoss(dedx_i[i].Al,eBAl[i],dedxBAl[i],mB);	
 				if(dedx_i[i].boolB==kTRUE) loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
 				if(dedx_i[i].boolP==kTRUE) loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
-				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBTgt[i],dedxBTgt[i],mB);	
+				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBSiO2[i],dedxBSiO2[i],mB);	
 			}
 		
 			if (eATgt[i]){
@@ -175,8 +175,8 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			printf("Beam momentum: %f\n",PA);
 			printf("Beam beta: %f\tBeam gamma: %f\n",betaCM,gammaCM);
 			printf("MBeam: %f\t MFoil: %f\t kBF: %f\n",beam[i].mass,MFoil,kBF);
-			printf("beam mass: %f\ttarget mass: %f\n",mA,ma);
-			printf("heavy ejectile mass: %f\tlight ejectile mass: %f\n",mB,mb);
+			printf("beam mass: %f MeV (%f)\ttarget mass: %f MeV (%f)\n",mA,mA/931.494061,ma,ma/931.494061);
+			printf("heavy ejectile mass: %f MeV (%f)\tlight ejectile mass: %f MeV (%f)\n",mB,mB/931.494061,mb,mb/931.494061);
 		}
 	}
 	//---------------for protons in various layers---Jaspreet ----------------------------------

@@ -52,10 +52,6 @@ void Graphsdedx::ReadGraphnames(char* line)
 		Tgt = strval;
 		boolTgt = kTRUE;
 	}
-	// if (strcmp(line,"H2")==0){
-	// 	H2 = strval;
-	// 	boolH2 = kTRUE;
-	// }
 	if (strcmp(line,"My")==0){
 		My = strval;
 		boolMy = kTRUE;
@@ -79,7 +75,6 @@ void Graphsdedx::Load(TString filename){
 	boolAl=kFALSE;
 	boolB=kFALSE;
 	boolTgt=kFALSE;
-	// boolH2=kFALSE;
 	boolMy=kFALSE;
 	boolP=kFALSE;
 	boolSi=kFALSE;
@@ -116,24 +111,22 @@ void Graphsdedx::Load(TString filename){
 }
 
 void Graphsdedx::Print(){
-	if(boolAg==kTRUE)	printf("Ag graph: %s\n",Ag.data());
-	else	printf("Ag graph not specified.\n");
-	if(boolAl==kTRUE)	printf("Al graph: %s\n",Al.data());
-	else	printf("Al graph not specified.\n");
-	if(boolB==kTRUE)	printf("B graph: %s\n",B.data());
-	else	printf("B graph not specified.\n");
-	if(boolTgt==kTRUE)	printf("Target graph: %s\n",P.data());
-	else	printf("Target graph not specified.\n");
-	// if(boolH2==kTRUE)	printf("H2 graph: %s\n",H2.data());
-	// else	printf("H2 graph not specified.\n");
-	if(boolMy==kTRUE)	printf("My graph: %s\n",My.data());
-	else	printf("My graph not specified.\n");
-	if(boolP==kTRUE)	printf("P graph: %s\n",P.data());
-	else	printf("P graph not specified.\n");
-	if(boolSi==kTRUE)	printf("Si graph: %s\n",Si.data());
-	else	printf("Si graph not specified.\n");
-	if(boolSiO2==kTRUE)	printf("SiO2 graph: %s\n",SiO2.data());
-	else	printf("SiO2 graph not specified.\n");
+	if(boolAg==kTRUE)	printf("Ag stopping power file: %s\n",Ag.data());
+	else	printf("Ag stopping power file not specified.\n");
+	if(boolAl==kTRUE)	printf("Al stopping power file: %s\n",Al.data());
+	else	printf("Al stopping power file not specified.\n");
+	if(boolB==kTRUE)	printf("B stopping power file: %s\n",B.data());
+	else	printf("B stopping power file not specified.\n");
+	if(boolTgt==kTRUE)	printf("Target stopping power file: %s\n",Tgt.data());
+	else	printf("Target stopping power file not specified.\n");
+	if(boolMy==kTRUE)	printf("My stopping power file: %s\n",My.data());
+	else	printf("My stopping power file not specified.\n");
+	if(boolP==kTRUE)	printf("P stopping power file: %s\n",P.data());
+	else	printf("P stopping power file not specified.\n");
+	if(boolSi==kTRUE)	printf("Si stopping power file: %s\n",Si.data());
+	else	printf("Si stopping power file not specified.\n");
+	if(boolSiO2==kTRUE)	printf("SiO2 stopping power file: %s\n",SiO2.data());
+	else	printf("SiO2 stopping power file not specified.\n");
 }
 
 void Graphsdedx::Clear(){
