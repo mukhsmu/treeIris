@@ -246,7 +246,7 @@ void HandlePHYSICS(IDet *det)
  	//adding dead layer energy losses
 	//Sd2 ring side
 	if(det->TSd1rEnergy.size()>0 && det->TSd2rEnergy.size()>0){
-		if(det->TSd1rEnergy.at(0)>0. && det->TSd2rEnery.at(0)>0.){
+		if(det->TSd1rEnergy.at(0)>0. && det->TSd2rEnergy.at(0)>0.){
 			energy = det->TSd2rEnergy.at(0);
 			if (eBB[nGate]) energy = energy+elossFi(energy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
 			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
