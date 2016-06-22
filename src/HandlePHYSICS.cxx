@@ -1,18 +1,5 @@
-//
-// ROOT analyzer
-//
-// PHYSICS detector handling
-//
-// $Id$
-//
-/// \mainpage
-///
-/// \section intro_sec Introduction
-///
-///
-/// \section features_sec Features
-///  
-///   state = gOdb->odbReadInt("/runinfo/State");
+// HandlePhysics.cxx
+// calculating Physics variables requiring data from more than one detector
 
 #include <iostream>
 #include <assert.h>
@@ -78,7 +65,6 @@ Double_t energy = 0;
 Double_t cosTheta = 1.;// S3 angle cosine
 Double_t EBeam;
 Double_t betaCM, gammaCM; //CM velocity
-//Double_t geoP.Sd1Thickness = 61.*2.321/10.; //Sd1 thickness ==> param file
 
 Double_t mA= 0.; //11.;//Beam mass //Reassigned in HandleBOR
 Double_t ma = 0.; //target mass
@@ -89,8 +75,6 @@ Double_t  b1,j,thetaD, Q,E1,Eb,thetaR,ECsI,ECsI1,EYY1;
 
 TCutG * protons;
 TCutG * deuterons;
-
-//Double_t geoP.YdThickness[8]= {104.65, 101.15, 106.125, 101.75,100.052, 105.65,102.48, 105.84}; // Nov 25,2014 // should probably go to parameter file (geometry.txt) 
 
 int nGate = 0; // for selecting incoming ion
 
@@ -131,7 +115,6 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			lej.getInfo(runDepPar[i].nb);
 
 			EBAC = runDepPar[i].EBAC;
-			// MBeam = runDepPar[i].mass;
 			mA = beam[i].mass; //Beam mass //Reassigned in HandleBOR
 			ma = target.mass;
 			mb = lej.mass; //Light ejectile mass
@@ -213,10 +196,8 @@ void HandlePHYSICS(IDet *det)
 	   tree->Fill();
    	   return;
 	} 
-   	   //  printf("calling HandlePHYSICS %d %d \n", gCSInitems, gPHOSnitems);
-  	//TTree *eventPhy = new TTree ("eventPhy","Physics event"); //Physics event
-  	//eventPhy->Branch("fLp",&fLp,"fLp/F"); //Light particle detected at YY1 and CsI
-  	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta.at(0)));
+  	
+	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta.at(0)));
 
 	// Selecting an incoming isotope:	
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
@@ -229,7 +210,6 @@ void HandlePHYSICS(IDet *det)
 	} 
 
 	EBAC = runDepPar[nGate].EBAC;
-	// MBeam = runDepPar[nGate].mass;
 	mA = beam[nGate].mass; 
 	ma = target.mass; 
 	mB = hej[nGate].mass;
@@ -239,9 +219,6 @@ void HandlePHYSICS(IDet *det)
 	betaCM = runDepPar[nGate].beta;
 	gammaCM = runDepPar[nGate].gamma;
 	PA = runDepPar[nGate].momentum; // beam momentum
-	// betaCM = sqrt(EBeam*EBeam+2.*EBeam*MBeam)/(EBeam + MBeam + mb);
-	// gammaCM = 1./sqrt(1.-betaCM*betaCM);
-	// PA = sqrt(EBeam*EBeam+2.*EBeam*MBeam);//beam momentum
 	
  	//adding dead layer energy losses
 	//Sd2 ring side
@@ -269,21 +246,10 @@ void HandlePHYSICS(IDet *det)
     B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta.at(0));
     C = -1.*(kBF+1)*PResid*PResid; 
     if (A!=0)    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
-  	//cout<<"reaching here"<<endl;
   	//to calculate residue energy from beam
- 
-    // PBeam = sqrt(2.*EBAC*MBeam); //Beam momentum in MeV/c
-    // A = kBF+1.; //Quadratic equation parameters
-    // B = -2.0*PBeam* cos(TMath::DegToRad()*det->TSdTheta);
-    // C = -1.*(kBF-1)*PBeam*PBeam; 
-    // if (A!=0)
-    // PResid = (sqrt(B*B-4.*A*C)-B)/(2*A);
-
-    det->TBE = PBeam*PBeam/(2.*mA);
+    
+	det->TBE = PBeam*PBeam/(2.*mA);
    
-    //  det->TSdETot = EBAC; //tk remove
-    //det->TSdThetaCM = TMath::RadToDeg()*atan(sin(TMath::DegToRad()*det->TSdTheta)*PResid/(PResid*cos(TMath::DegToRad()*det->TSdTheta)-PBeam*MBeam/(MBeam+MFoil)));
-
     // printf("thetaCM: %f\n",det->TSdThetaCM);
     if (eAAg[nGate]) det->TBE=  det->TBE + elossFi(det->TSdETot,geoP.FoilThickness/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
     det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta.at(0))/sqrt(gammaCM-gammaCM*betaCM*(mA+det->TBE)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta.at(0)))));// check if this is still correct for H2 target tk
@@ -303,7 +269,6 @@ void HandlePHYSICS(IDet *det)
 	  	thetaD = thetaR*TMath::RadToDeg();
 	
 	  	if (mb == target.mass) //proton energy loss in dead layers between YY1 and CsI                                                                                       
-	  	//if (mb == M2H) //proton energy loss in dead layers between YY1 and CsI                                                                                       
 	    {
 	      	if (ebMy[1])  ECsI= ECsI+elossFi(ECsI,0.1*1.4*6./cos(thetaR),ebMy[1],dedxbMy[1]); //Mylar                                                                                  
 	      	else std::cout << "ebMy doesn't exist"<< std::endl;
@@ -315,7 +280,6 @@ void HandlePHYSICS(IDet *det)
 	
 	//---------------YY1 Energy-----------------------------------------------------------------
 		EYY1 = det->TYdEnergy.at(0);
-	  	//  cout<<"EYY ENERGY IS"<<EYY1<<endl;
 	 	if(useYCalc){
 			if (mb == target.mass){
 	  			if (ebSi[1])  Eb= ECsI + elossFi(ECsI,geoP.YdThickness[det->TYdNo.at(0)]/cos(thetaR),ebSi[1],dedxbSi[1]); //Energy loss in YY1 detector // Why calculate a value that you have measured ????? MH
@@ -328,7 +292,7 @@ void HandlePHYSICS(IDet *det)
 	   	if (mb == target.mass){
 	      	if (ebSi[1])  Eb= Eb+elossFi(Eb,0.1*2.32*0.35/cos(thetaR),ebSi[1],dedxbSi[1]); //0.3 u Al + 1 um B equivalent in 0.35 um Si                                                            
 	    	else std::cout << "ebSi doesn't exist"<< std::endl;
-	    	if (ebTgt[1])  Eb= Eb+elossFi(Eb,geoP.TargetThickness/2./cos(thetaR),ebTgt[1],dedxbTgt[1]); //deuteron energy  in mid target midtarget                                                                             
+	    	if (ebTgt[1])  Eb= Eb+elossFi(Eb,geoP.TargetThickness/2./cos(thetaR),ebTgt[1],dedxbTgt[1]); //deuteron energy  in mid target midtarget
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
 	
@@ -339,18 +303,14 @@ void HandlePHYSICS(IDet *det)
 		Double_t Pbxcm = gammaCM*betaCM*(Eb+mb)- gammaCM*Pb*cos(thetaR);
 	
 	 	// cout<<"Beam energy used for QValue is "<< EBeam <<endl;
-	  	// cout<<"deuteron energy at interaction at angle "<< thetaD<< " is equal ="<<Eb<<endl;
 	 	Q = mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb)+2.*PA*Pb*cos(thetaR)+2.*(EBeam+mA+ma-Eb-mb)*ma);  //Alisher's equation 
+		//	Q = mA+ma-mb-sqrt((EBeam+mA+ma-Eb-mb)*(EBeam+mA+ma-Eb-mb)-(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR))); //Equivalent to the previous equation
 	
-	//	EB = EBeam+mA+ma-Eb-mb; // rel. kinetic energy of recoil.
-	//	PB = sqrt(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR));// momentum of the recoil
-	//	mB = sqrt(EB^2-PB^2);
-	//	cout << "Q= " << Q <<endl;   
-	//	Q = mA+ma-mb-sqrt((EBeam+mA+ma-Eb-mb)*(EBeam+mA+ma-Eb-mb)-(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR))); //Equivalent to the previous equation
-	//	cout << "Q= " << Q <<endl;   
+		// EB = EBeam+mA+ma-Eb-mb; // rel. kinetic energy of recoil.
+		// PB = sqrt(PA*PA+Pb*Pb-2.*PA*Pb*cos(thetaR));// momentum of the recoil
+		// mB = sqrt(EB^2-PB^2);
 	  	det->QValue = Q;
 	  	IrisEvent->fQv = det->QValue;
-	  	// IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
 		IrisEvent->fThetacm = TMath::RadToDeg()*atan(Pby/Pbxcm);
 		if (IrisEvent->fThetacm < 0) 
 	  		IrisEvent->fThetacm = IrisEvent->fThetacm+180.;
@@ -358,21 +318,9 @@ void HandlePHYSICS(IDet *det)
 				csv_file << det->QValue <<"," << det->TYdEnergy<<","<<IrisEvent->fPart.fThetacm <<","<< det->TYdTheta<< endl;
 			#endif
 	}//isinside proton (deuteron) gate
-  	//IrisEvent->fEYY1 = det->TYdEnergy[0];
-  	// IrisEvent->fEYY1 = EYY1;
-  	// IrisEvent->fCsI = ECsI;
-  	// IrisEvent->fPart.fE=Eb;// proton (deuteron) energy after reaction
 
 	tree->Fill();
 }
- //HandlePhysics
-
-// Double_t Qvalue (Double_t ma, Double_t mA, Double_t mb,Double_t EBeam, Double_t Eb, Double_t thetaR)
-// {
-//   Double_t PA = sqrt(EBeam*EBeam+2.*EBeam*mA);
-//   Double_t Pb = sqrt(Eb*Eb+2.*Eb*mb);
-//   return mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb)+2.*PA*Pb*cos(thetaR)+2.*(EBeam+mA+ma-Eb-mb)*ma);
-// }
 
 void HandleEOR_PHYSICS(int run, int time)
 {
