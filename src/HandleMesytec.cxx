@@ -45,7 +45,6 @@ CalibMesytec calMesy;
 geometry geoM;
 
 int usePeds = 1; //using pedestals instead of offsets for Silicon detectors AS
-bool useCsI2Slope = 0; //1;
 TVector3 aVector;
 const int NCsI2Group = 16;
 const int NCsI1GroupRing = 4;
@@ -89,7 +88,6 @@ float CsI2[16]={0}, CsI2Energy[16];//, CsI2Energy2; //CsI energy
 int CsI2Channel[16];  // channel with the greatest value
 double CsI2Gain[NCsI2Group][NCsIChannels]={{0.}};
 double CsI2Ped[NCsIChannels]={0.};
-double CsI2Slope[NCsIChannels]={0.};//YY1 ring dependence
 
 //AS S3
 int Sd1rMul=0;
@@ -682,8 +680,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			// det.TCsIEnergy.push_back(CsIEnergy[i]); //for filling the tree
 			// det.TCsIChannel.push_back(CsIChannel[i]);
 		
-			if (useCsI2Slope && det.TYdRing.at(0) >-1)   
-	 		 	{det.TCsI2Energy.at(i)= det.TCsI2Energy.at(i)+det.TYdRing.at(0)*CsI2Slope[det.TCsI2Channel.at(i)];}
 		}
 //	Has to be fixed for multi-hit!!!
  		 if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
@@ -727,7 +723,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 //---------------------------------------------------------------------------------
 void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 {
-	if(CalibFile=="0") printf("No calibration file specified!\n\n");
+	if(CalibFile=="") printf("No calibration file specified!\n\n");
 	calMesy.Load(CalibFile);
 	calMesy.Print();
 
@@ -776,7 +772,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 // Temporary variables for calibration 
  	Int_t Chan=-10000;
-	double a,b,c;
+	double a,b;
 	int g; //for ringwise calibration of CsI
 
 //************** Calibrate IC, not yet implemented! *********************************
@@ -854,71 +850,32 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 // ******************************************************************
 //
 // ******************** Calibrate CsI2 *****************************
-	if (useCsI2Slope)       // not using CsIslope
-   	{
-  		//sprintf(fileName,"%s/calib-files/CsI2PedGainSlopeS1147_11Li.txt",installPath);
-		pFile = fopen (calMesy.fileCsI2.data(),"r");
+	pFile = fopen (calMesy.fileCsI2.data(),"r");
 
-   		if (pFile == NULL || calMesy.boolCsI2==false) {
-			fprintf(logFile,"No calibration file for CsI2. Skipping CsI2 calibration.\n");
-			printf("No calibration file for CsI2. Skipping CsI2 calibration.\n");
-   			for (int i =0; i<16; i++){
-				CsI2Ped[i] = 0.;
-				for (int j=0; j<NCsI2Group; j++){
-					CsI2Gain[j][i] = 1.;
- 				}//for
-			}
-		}  
+	if (pFile == NULL || calMesy.boolCsI2==false) {
+		fprintf(logFile,"No calibration file for CsI2. Skipping CsI2 calibration.\n");
+		printf("No calibration file for CsI2. Skipping CsI2 calibration.\n");
+	}  
 
- 		else  {
-			printf("Reading config file '%s'\n",calMesy.fileCsI2.data());
-			// Skip first line
-  			fscanf(pFile,"%s",buffer);
-  			fscanf(pFile,"%s",buffer);
- 			fscanf(pFile,"%s",buffer);
- 			fscanf(pFile,"%s",buffer);
-
-			for (int i =0;i<16;i++  ){
-  				//Double_t c;
-  				fscanf(pFile,"%d%lf%lf %lf",&Chan,&a,&b, &c);
-				CsI2Ped[Chan] = a;
-				CsI2Gain[0][Chan] = b;
-				CsI2Slope[Chan] = c;
- 				printf("a %lf b %lf c%lf \n",a,b,c);
-      		}
-     		fclose (pFile);
-			printf("\n");
-   		}
-   	}
- 	else {	 // not using CsIslope thingy so, it is reading this file
-
-		pFile = fopen (calMesy.fileCsI2.data(),"r");
-
-		if (pFile == NULL || calMesy.boolCsI2==false) {
-			fprintf(logFile,"No calibration file for CsI2. Skipping CsI2 calibration.\n");
-			printf("No calibration file for CsI2. Skipping CsI2 calibration.\n");
-   		}  
-
- 		else  {
-			printf("Reading config file '%s'\n",calMesy.fileCsI2.data());
-			// Skip first line
-  			fscanf(pFile,"%s",buffer);
-			fscanf(pFile,"%s",buffer);
-			fscanf(pFile,"%s",buffer);
-			fscanf(pFile,"%s",buffer);
-			for(int i=0; i<16; i++){
-				for (int j=0; j<NCsI2Group; j++){
-       				fscanf(pFile,"%d%d%lf%lf",&Chan,&g,&a,&b);
-					CsI2Ped[Chan-48] = a;  
-					CsI2Gain[g][Chan-48] = b;  
-					//printf("CsIPed %lf CsIgain %lf\n",a,b);
-              		printf("CsI2 calibration par: adc =%d\tc=%d\tpeds=%f\tgain=%f\n",Chan,g,a,b);
-     			}
-			}
-    		fclose (pFile);
-			printf("\n");
-  		}
-	}//else
+	else  {
+		printf("Reading config file '%s'\n",calMesy.fileCsI2.data());
+		// Skip first line
+		fscanf(pFile,"%s",buffer);
+		fscanf(pFile,"%s",buffer);
+		fscanf(pFile,"%s",buffer);
+		fscanf(pFile,"%s",buffer);
+		for(int i=0; i<16; i++){
+			for (int j=0; j<NCsI2Group; j++){
+   				fscanf(pFile,"%d%d%lf%lf",&Chan,&g,&a,&b);
+				CsI2Ped[Chan-48] = a;  
+				CsI2Gain[g][Chan-48] = b;  
+				//printf("CsIPed %lf CsIgain %lf\n",a,b);
+          		printf("CsI2 calibration par: adc =%d\tc=%d\tpeds=%f\tgain=%f\n",Chan,g,a,b);
+ 			}
+		}
+		fclose (pFile);
+		printf("\n");
+	}
 
  	printf(" Reading CsI calibration parameters Done ....\n\n");
 //************************************************************************
