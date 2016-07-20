@@ -312,7 +312,8 @@ int main(int argc, char *argv[])
 
       	if (arg[0] != '-')  
 	 	{  
-			if(have_output==true&&have_calib==true){	   
+			//if(have_output==true&&have_calib==true){	   
+			if(have_output==true){	   
 				ProcessMidasFile(/*app,*/arg);
 			}
 			else{
@@ -320,10 +321,10 @@ int main(int argc, char *argv[])
 					printf("No output file specified!\n");
 					printf("Use -o=/path/to/your/output-file!\n");
 				}
-				if(have_calib==false){ 
-					printf("No calibration file specified!\n");
-					printf("Use -c=/path/to/your/calib-file!\n");
-				}
+			//	if(have_calib==false){ 
+			//		printf("No calibration file specified!\n");
+			//		printf("Use -c=/path/to/your/calib-file!\n");
+			//	}
 	 		}
      	}
 	}

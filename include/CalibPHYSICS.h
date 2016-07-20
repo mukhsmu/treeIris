@@ -30,6 +30,7 @@ class CalibPHYSICS : public TObject {
 		Bool_t boolIdedx[3];
 		Bool_t boolRunDepPar[3];
 		Bool_t boolGeometry;
+		Bool_t boolEssential;
 
 		//virtual void ReadCalibPar(char* line);
 		virtual void ReadFilenames(char* line);

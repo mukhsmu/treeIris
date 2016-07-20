@@ -4,6 +4,7 @@
 #define HandleMesytec_H
 #include "TMidasEvent.h"
 #include "TEvent.h"
+#include "IDet.h"
 #include <string>
 
 int clearDetectors();

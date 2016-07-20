@@ -107,39 +107,47 @@ void CalibPHYSICS::Load(TString filename){
 	boolGates=kFALSE;
 	boolELoss=kFALSE;
 	boolPdedx=kFALSE;
+	boolDdedx=kFALSE;
+	boolIdedx[0]=kFALSE;
+	boolIdedx[1]=kFALSE;
+	boolIdedx[2]=kFALSE;
 	boolRunDepPar[0]=kFALSE;
 	boolRunDepPar[1]=kFALSE;
 	boolRunDepPar[2]=kFALSE;
 	boolGeometry=kFALSE;
+	boolEssential=kFALSE;
 
 	char line[256];
 	FILE* file=fopen(filename.Data(),"rb");
 	if (!file)
 	{
-		printf("Cannot open config file '%s' for reading. Stop.\n",filename.Data());
-		exit(0);
+		printf("CalibPHYSICS: Cannot open config file '%s' for reading.\n",filename.Data());
+		//exit(0);
 	}
-	
-	printf("Reading config file '%s'\n",filename.Data());
-	
-	while (!feof(file))
+	else
 	{
-		if (!fgets(line,256,file)) break;
-		printf("%s",line);
-		// skip leading white spaces
-		char* ptr=line;
-		while ((*ptr>0) && (*ptr<32)) ptr++;
-		//printf("%s\n",ptr[0]);
-		switch (ptr[0])
+		printf("Reading config file '%s'\n",filename.Data());
+		
+		while (!feof(file))
 		{
-			case 0   :
-			case '#' :
-			case '/' :  continue;
-			default  :  ReadFilenames(ptr);
+			if (!fgets(line,256,file)) break;
+			printf("%s",line);
+			// skip leading white spaces
+			char* ptr=line;
+			while ((*ptr>0) && (*ptr<32)) ptr++;
+			//printf("%s\n",ptr[0]);
+			switch (ptr[0])
+			{
+				case 0   :
+				case '#' :
+				case '/' :  continue;
+				default  :  ReadFilenames(ptr);
+			}
 		}
+		fclose(file);
+		file=NULL;
 	}
-	fclose(file);
-	file=NULL;
+	boolEssential = (boolGeometry&&boolRunDepPar[0]&&boolIdedx[0]&&(boolPdedx||boolDdedx));
 }
 
 void CalibPHYSICS::Print(){

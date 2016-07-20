@@ -11,9 +11,9 @@
 #include <TROOT.h>
 #include <TClonesArray.h>
 #include <TVector3.h>
-#include "IParticle.h"
-#include "IDet.h"
-#include "ITdc.h"
+//#include "IParticle.h"
+//#include "IDet.h"
+//#include "ITdc.h"
 
 using namespace std;
 
@@ -24,7 +24,7 @@ class TEvent : public TObject {
 		TEvent(const TEvent &); //!
 		virtual ~TEvent() {} //!
 		
-		TTree *fChain;          //! pointer to the analyzed TTree or TChain
+		// TTree *fChain;          //! pointer to the analyzed TTree or TChain
 		
 		// IParticle fPart;        //
 		

@@ -4,8 +4,7 @@
 #define HandleV1190_H
 #include "TMidasEvent.h"
 #include "TEvent.h"
-
-
+#include "ITdc.h"
 
 //Extern
 extern int gV1190nitems;

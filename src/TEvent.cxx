@@ -11,14 +11,14 @@
 
 //#include "PhysicalConstants.h"
 #include "TEvent.h"
-#include "IParticle.h"
+//#include "IParticle.h"
 #ifndef kAmu
 #define kAmu 931.494013
 #endif
 
 //ClassImp(TEvent);
 //ClassImp(IParticle);
-using namespace TMath;
+//using namespace TMath;
 
 using namespace std;
 
@@ -30,7 +30,7 @@ TEvent::TEvent() {
    TTree        *fChain;                       // pointer to the analyzed TTree or TChain
 
   TEvent::Class()->IgnoreTObjectStreamer();
-  IParticle::Class()->IgnoreTObjectStreamer();   
+  //IParticle::Class()->IgnoreTObjectStreamer();   
   //fPart = new TParticle();        //
 
   // fEYY1 =0;             //

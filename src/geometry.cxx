@@ -26,52 +26,54 @@ void geometry::ReadGeometry(std::string filename)
 
 	if (parFile == NULL) {
 		perror ("Error opening file");
-   	}	
-	printf("Reading config file '%s'\n",filename.data());
-	
-	while (!feof(parFile))
-	{
-		if (!fgets(buffer,256,parFile)) break;
-		printf("%s",buffer);
+   	}
+	else{	
+		printf("Reading config file '%s'\n",filename.data());
 		
-		char* val=strchr(buffer,'=');
-		if (!val) printf("Missing = in input parFile, line: '%s'\n",buffer);
-		*val=0;	
+		while (!feof(parFile))
+		{
+			if (!fgets(buffer,256,parFile)) break;
+			printf("%s",buffer);
+			
+			char* val=strchr(buffer,'=');
+			if (!val) printf("Missing = in input parFile, line: '%s'\n",buffer);
+			*val=0;	
+			
+			// trim param name
+			char* trm=val-1;
+			while (*trm<=32) *(trm--)=0;
 		
-		// trim param name
-		char* trm=val-1;
-		while (*trm<=32) *(trm--)=0;
-	
-		val++;
-		if (*val==0) printf("Value missing for parameter %s",buffer);
-		
-		// parse float parameter (if any)
-		Double_t v;
-		sscanf(val,"%lf",&v);
+			val++;
+			if (*val==0) printf("Value missing for parameter %s",buffer);
+			
+			// parse float parameter (if any)
+			Double_t v;
+			sscanf(val,"%lf",&v);
 
-		if (strcmp(buffer,"YD1_THICKNESS")==0)	YdThickness[0] = v;
-		if (strcmp(buffer,"YD2_THICKNESS")==0)	YdThickness[1] = v;
-		if (strcmp(buffer,"YD3_THICKNESS")==0)	YdThickness[2] = v;
-		if (strcmp(buffer,"YD4_THICKNESS")==0)	YdThickness[3] = v;
-		if (strcmp(buffer,"YD5_THICKNESS")==0)	YdThickness[4] = v;
-		if (strcmp(buffer,"YD6_THICKNESS")==0)	YdThickness[5] = v;
-		if (strcmp(buffer,"YD7_THICKNESS")==0)	YdThickness[6] = v;
-		if (strcmp(buffer,"YD8_THICKNESS")==0)	YdThickness[7] = v;
-		if (strcmp(buffer,"YD_DISTANCE")==0)	YdDistance = v;
-		if (strcmp(buffer,"YD_INNER_RADIUS")==0)	YdInnerRadius = v;
-		if (strcmp(buffer,"YD_OUTER_RADIUS")==0)	YdOuterRadius = v;
-		if (strcmp(buffer,"SD1_THICKNESS")==0)	Sd1Thickness = v;
-		if (strcmp(buffer,"SD1_DISTANCE")==0)	Sd1Distance = v;
-		if (strcmp(buffer,"SD2_THICKNESS")==0)	Sd2Thickness = v;
-		if (strcmp(buffer,"SD2_DISTANCE")==0)	Sd2Distance = v;
-		if (strcmp(buffer,"SD_INNER_RADIUS")==0)	SdInnerRadius = v;
-		if (strcmp(buffer,"SD_OUTER_RADIUS")==0)	SdOuterRadius = v;
-		if (strcmp(buffer,"X_SHIFT")==0)	xShift = v;
-		if (strcmp(buffer,"Y_SHIFT")==0)	yShift = v;
-		if (strcmp(buffer,"TARGET_THICKNESS")==0)	TargetThickness = v;
-		if (strcmp(buffer,"FOIL_THICKNESS")==0)	FoilThickness = v;
+			if (strcmp(buffer,"YD1_THICKNESS")==0)	YdThickness[0] = v;
+			if (strcmp(buffer,"YD2_THICKNESS")==0)	YdThickness[1] = v;
+			if (strcmp(buffer,"YD3_THICKNESS")==0)	YdThickness[2] = v;
+			if (strcmp(buffer,"YD4_THICKNESS")==0)	YdThickness[3] = v;
+			if (strcmp(buffer,"YD5_THICKNESS")==0)	YdThickness[4] = v;
+			if (strcmp(buffer,"YD6_THICKNESS")==0)	YdThickness[5] = v;
+			if (strcmp(buffer,"YD7_THICKNESS")==0)	YdThickness[6] = v;
+			if (strcmp(buffer,"YD8_THICKNESS")==0)	YdThickness[7] = v;
+			if (strcmp(buffer,"YD_DISTANCE")==0)	YdDistance = v;
+			if (strcmp(buffer,"YD_INNER_RADIUS")==0)	YdInnerRadius = v;
+			if (strcmp(buffer,"YD_OUTER_RADIUS")==0)	YdOuterRadius = v;
+			if (strcmp(buffer,"SD1_THICKNESS")==0)	Sd1Thickness = v;
+			if (strcmp(buffer,"SD1_DISTANCE")==0)	Sd1Distance = v;
+			if (strcmp(buffer,"SD2_THICKNESS")==0)	Sd2Thickness = v;
+			if (strcmp(buffer,"SD2_DISTANCE")==0)	Sd2Distance = v;
+			if (strcmp(buffer,"SD_INNER_RADIUS")==0)	SdInnerRadius = v;
+			if (strcmp(buffer,"SD_OUTER_RADIUS")==0)	SdOuterRadius = v;
+			if (strcmp(buffer,"X_SHIFT")==0)	xShift = v;
+			if (strcmp(buffer,"Y_SHIFT")==0)	yShift = v;
+			if (strcmp(buffer,"TARGET_THICKNESS")==0)	TargetThickness = v;
+			if (strcmp(buffer,"FOIL_THICKNESS")==0)	FoilThickness = v;
+		}
+		fclose(parFile);
 	}
-	fclose(parFile);
 }
 
 void geometry::Print()

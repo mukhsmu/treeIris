@@ -82,32 +82,33 @@ void Graphsdedx::Load(TString filename){
 
 	char line[256];
 	FILE* file=fopen(filename.Data(),"rb");
-	if (!file)
+	if (file==NULL)
 	{
-		printf("Cannot open config file '%s' for reading. Stop.\n",filename.Data());
-		exit(0);
+		printf("dedx: Cannot open config file '%s' for reading.\n",filename.Data());
+		//exit(0);
 	}
-	
-	printf("Reading config file '%s'\n",filename.Data());
-	
-	while (!feof(file))
-	{
-		if (!fgets(line,256,file)) break;
-		printf("%s",line);
-		// skip leading white spaces
-		char* ptr=line;
-		while ((*ptr>0) && (*ptr<32)) ptr++;
-		//printf("%s\n",ptr[0]);
-		switch (ptr[0])
+	else{
+		printf("Reading config file '%s'\n",filename.Data());
+		
+		while (!feof(file))
 		{
-			case 0   :
-			case '#' :
-			case '/' :  continue;
-			default  :  ReadGraphnames(ptr);
+			if (!fgets(line,256,file)) break;
+			printf("%s",line);
+			// skip leading white spaces
+			char* ptr=line;
+			while ((*ptr>0) && (*ptr<32)) ptr++;
+			//printf("%s\n",ptr[0]);
+			switch (ptr[0])
+			{
+				case 0   :
+				case '#' :
+				case '/' :  continue;
+				default  :  ReadGraphnames(ptr);
+			}
 		}
+		fclose(file);
+		file=NULL;
 	}
-	fclose(file);
-	file=NULL;
 }
 
 void Graphsdedx::Print(){

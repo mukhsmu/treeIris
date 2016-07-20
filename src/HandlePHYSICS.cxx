@@ -58,7 +58,7 @@ Double_t Pb; //Light ejectile momentum
 
 Double_t A,B,C; //Used for quadratic equations
 Double_t MBeam = 0.; // Beam mass
-Double_t kBF = 108.904752/(MBeam/kAmu); //Ratio of Beam particle mass and 109-Ag foil nucleus mass
+Double_t kBF = 108.904752/(MBeam/931.494013); //Ratio of Beam particle mass and 109-Ag foil nucleus mass
 const Double_t MFoil = 931.494013*108.; //Ag foil mass AS
 //Double_t geoP.FoilThickness = 5.7;                      /// ?????????? confrim if 5.7 or 5.44 --Jaspreet
 Double_t energy = 0;
@@ -82,7 +82,6 @@ int nGate = 0; // for selecting incoming ion
 void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 {
   	printf("In HandleBOR_PHYSICS...\n");	
-	if(CalibFile=="0") printf("No calibration file specified");
 	calPhys.Load(CalibFile);
 	calPhys.Print();
 
@@ -93,13 +92,13 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
   	if(!protons) printf("No proton gate.\n");  
  	deuterons = (TCutG*)fgates->FindObjectAny("deuteron");   // to be define for Mg experiment using 20Ne runs
   	if(!deuterons) printf("No deuteron gate.\n");  
-  	deuterons->SetName("deuterons");
+	else deuterons->SetName("deuterons");
 	printf("Grabbed gates.\n");
 	
-#ifdef csv_output  
-  	csv_file.open("S1147pd.csv", ios::out);
-  	assert(csv_file.is_open());
-#endif
+	#ifdef csv_output  
+	  	csv_file.open("S1147pd.csv", ios::out);
+	  	assert(csv_file.is_open());
+	#endif
 
 	geoP.ReadGeometry(calPhys.fileGeometry.data());
 	geoP.Print();
@@ -119,7 +118,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 			ma = target.mass;
 			mb = lej.mass; //Light ejectile mass
 			mB = hej[i].mass;
-      printf("mA=%f, ma=%f, mb=%f, mB=%f\n",mA,ma,mb,mB); 
+      		printf("mA=%f, ma=%f, mb=%f, mB=%f\n",mA,ma,mb,mB); 
 			kBF = MFoil/mA;
 	
 			printf("Beam energy: %f\n", runDepPar[i].energy);
@@ -192,7 +191,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 void HandlePHYSICS(IDet *det)
 {
-	if(det->TSd1rMul==0){
+	if(calPhys.boolEssential==false || det->TSd1rMul==0){ // not enough calibration information or no hit in first S3
 	   tree->Fill();
    	   return;
 	} 
