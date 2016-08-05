@@ -688,7 +688,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     	if (ascii)  fprintf(ASCIICsI1," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI1Channel[0]+32, (int)CsI1Energy[0],  CsI1Channel[1]+32, (int)CsI1Energy[1]);
     	if (ascii)  fprintf(ASCIICsI2," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI2Channel[0]+32, (int)CsI2Energy[0],  CsI2Channel[1]+32, (int)CsI2Energy[1]);
     	
-		ICEnergy=0; ICEnergy2 =0; ICChannel = -10000; ICChannel2 =-10000;
+		ICEnergy=0; ICEnergy2 =0; ICChannel = -1; ICChannel2 =-1;
     	for (int i =0; i< NICChannels;i++) {
     		// printf("IC ch: %d, value %f\n", i, IC[i]);
     		if (ICEnergy<IC[i]){
@@ -771,7 +771,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
  	tree->Branch("IrisEvent","TEvent",&IrisEvent,32000,99);
 
 // Temporary variables for calibration 
- 	Int_t Chan=-10000;
+ 	Int_t Chan=-1;
 	double a,b;
 	int g; //for ringwise calibration of CsI
 
@@ -813,7 +813,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //*****************************************************************
 
 //*************** Calibrate CsI1 ******************************
- 	Chan=-10000;  
+ 	Chan=-1;  
  	
  	pFile = fopen (calMesy.fileCsI1.data(), "r");
    	if (pFile == NULL || calMesy.boolCsI1==false) {
@@ -881,7 +881,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Sd2 rings ****************************************
-	Chan=-10000;
+	Chan=-1;
 
 	pFile = fopen (calMesy.fileSd2r.data(), "r");
 	usePeds = 1;
@@ -918,7 +918,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Sd2 sectors ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen (calMesy.fileSd2s.data(), "r");
 
  	if (pFile == NULL || calMesy.boolSd2s==false) {
@@ -955,7 +955,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 
 //**************** Calibrate Sd1 rings ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen(calMesy.fileSd1r.data(), "r");
 
 	if (pFile == NULL || calMesy.boolSd1r==false) {
@@ -988,7 +988,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Sd1 sectors ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen (calMesy.fileSd1s.data(), "r");
 
 	if (pFile == NULL || calMesy.boolSd1s==false) {
@@ -1023,7 +1023,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Su rings ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen(calMesy.fileSur.data(), "r");
 
 	if (pFile == NULL || calMesy.boolSur==false) {
@@ -1056,7 +1056,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Su sectors ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen (calMesy.fileSus.data(), "r");
 
 	if (pFile == NULL || calMesy.boolSus==false) {
@@ -1091,7 +1091,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Yd ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen (calMesy.fileYd.data(), "r");
 
 	if (pFile == NULL || calMesy.boolYd==false) {
@@ -1121,7 +1121,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 //************************************************************************
 
 //**************** Calibrate Yu, not yet impemented!  ****************************************
-	Chan=-10000;
+	Chan=-1;
    	pFile = fopen (calMesy.fileYu.data(), "r");
 
 	if (pFile == NULL || calMesy.boolYu==false) {
