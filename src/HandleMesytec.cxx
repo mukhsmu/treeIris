@@ -79,14 +79,14 @@ int CsI1Mul=0;
 int CsI1ADC[16]={0};
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
 int CsI1Channel[16];  // channel with the greatest value
-double CsI1Gain[NCsI1GroupRing][NCsIChannels]={{0.}};
+double CsI1Gain[NCsI1GroupRing][NCsIChannels]={{1.}};
 double CsI1Ped[NCsIChannels]={0.};
 
 int CsI2Mul=0;
 int CsI2ADC[16]={0};
 float CsI2[16]={0}, CsI2Energy[16];//, CsI2Energy2; //CsI energy
 int CsI2Channel[16];  // channel with the greatest value
-double CsI2Gain[NCsI2Group][NCsIChannels]={{0.}};
+double CsI2Gain[NCsI2Group][NCsIChannels]={{1.}};
 double CsI2Ped[NCsIChannels]={0.};
 
 //AS S3
@@ -663,7 +663,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 		det.TCsI2Mul = CsI2Mul;
 		for(int i=0; i<CsI2Mul; i++){
-			det.TCsI2ADC.push_back(CsI2Energy[i]);
 	  		
 			if (CsI2Energy[i] < 4000. && YdMul>0){
 				int m = (YdChannel[0]%16)/(16/NCsI2Group);
@@ -855,6 +854,12 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 	if (pFile == NULL || calMesy.boolCsI2==false) {
 		fprintf(logFile,"No calibration file for CsI2. Skipping CsI2 calibration.\n");
 		printf("No calibration file for CsI2. Skipping CsI2 calibration.\n");
+		for (int i =0; i<16; i++){
+			CsI2Ped[i] = 0.;
+			for (int j=0; j<NCsI2Group; j++){
+				CsI2Gain[j][i] = 1.;
+ 			}//for
+		}
 	}  
 
 	else  {
