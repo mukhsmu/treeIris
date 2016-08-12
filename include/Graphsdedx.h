@@ -21,6 +21,8 @@ class Graphsdedx : public TObject {
 		std::string P;
 		std::string Si;
 		std::string SiO2;
+		std::string Iso;
+		std::string Wndw;
 
 		Bool_t boolAg;
 		Bool_t boolAl;
@@ -31,6 +33,8 @@ class Graphsdedx : public TObject {
 		Bool_t boolP;
 		Bool_t boolSi;
 		Bool_t boolSiO2;
+		Bool_t boolIso;
+		Bool_t boolWndw;
 
 		//virtual void ReadCalibPar(char* line);
 		virtual void ReadGraphnames(char* line);

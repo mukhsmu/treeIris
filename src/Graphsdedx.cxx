@@ -67,7 +67,15 @@ void Graphsdedx::ReadGraphnames(char* line)
 	if (strcmp(line,"SiO2")==0){
 		SiO2 = strval;
 		boolSiO2 = kTRUE;
-	} 
+	}
+	if (strcmp(line,"Iso")==0){
+		Iso = strval;
+		boolIso = kTRUE;
+	}
+	if (strcmp(line,"Si3N4")==0||strcmp(line,"Window")==0){
+		Wndw = strval;
+		boolWndw = kTRUE;
+	}
 }
 
 void Graphsdedx::Load(TString filename){
@@ -79,6 +87,8 @@ void Graphsdedx::Load(TString filename){
 	boolP=kFALSE;
 	boolSi=kFALSE;
 	boolSiO2=kFALSE;
+	boolIso=kFALSE;
+	boolWndw=kFALSE;
 
 	char line[256];
 	FILE* file=fopen(filename.Data(),"rb");
@@ -128,6 +138,10 @@ void Graphsdedx::Print(){
 	else	printf("Si stopping power file not specified.\n");
 	if(boolSiO2==kTRUE)	printf("SiO2 stopping power file: %s\n",SiO2.data());
 	else	printf("SiO2 stopping power file not specified.\n");
+	if(boolIso==kTRUE)	printf("Isobutane stopping power file: %s\n",SiO2.data());
+	else	printf("Isobutane stopping power file not specified.\n");
+	if(boolIso==kTRUE)	printf("IC window (Si3N4) stopping power file: %s\n",SiO2.data());
+	else	printf("IC window (Si3N4) stopping power file not specified.\n");
 }
 
 void Graphsdedx::Clear(){

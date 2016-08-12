@@ -164,6 +164,10 @@ float SSBEnergy = 0;
 float SSBOffset=0;
 float SSBGain=0;
 
+// Time dependent corrections
+float SiTCorrFactor = 1.;
+float ICTCorrFactor = 1.;
+
 extern FILE* ASCIIYY1;
 extern FILE* ASCIICsI1;
 extern FILE* ASCIICsI2;
@@ -336,8 +340,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				
 	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ // Why 3840? MH
 	    				//AS Fill histogram
-						IC[channel] = (float)vpeak;
-						// ICEnergy = ((float)vpeak-ICPed[channel])*ICGain[channel];
+						//IC[channel] = (float)vpeak;
+						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];
 						// if (channel==16) // change MA july3
 	        			if (channel==31){
 	          				SSBEnergy = float(vpeak);// *SSBGain + SSBOffset;
@@ -771,7 +775,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 // Temporary variables for calibration 
  	Int_t Chan=-1;
-	double a,b;
+	double a,b,c;
 	int g; //for ringwise calibration of CsI
 
 //************** Calibrate IC, not yet implemented! *********************************
@@ -1124,7 +1128,6 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("\n");
   	}
 //************************************************************************
-
 //**************** Calibrate Yu, not yet impemented!  ****************************************
 	Chan=-1;
    	pFile = fopen (calMesy.fileYu.data(), "r");
@@ -1155,6 +1158,104 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("\n");
   	}
 //************************************************************************
+
+//**************** Apply time dependent correction to gains!  ****************************************
+   	pFile = fopen (calMesy.fileTCorrIC.data(), "r");
+	
+	int run_for_corr = 0;
+	
+	if (pFile == NULL || calMesy.boolTCorrIC==false) {
+		fprintf(logFile,"No time dependent correction for IC Energy. Skipping time dependent IC correction.\n");
+		printf("No time dependent correction for IC Energy. Skipping time dependent IC correction.\n");
+		ICTCorrFactor =1.;
+	}
+	else  {
+		printf("Reading config file '%s'\n",calMesy.fileTCorrIC.data());
+
+		while (!feof(pFile)){
+    		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
+			if(Chan==run){ 
+				run_for_corr = Chan;
+				ICTCorrFactor = b; 
+			}
+    	}
+    	fclose (pFile);	
+
+		if(run_for_corr==0){ 
+			printf("Run %d not in list. No correction applied!\n",run);
+		}
+		else{
+			printf("Run: %d\tIC Gain correction: %f\n\n",Chan,ICTCorrFactor);
+			for(int i=0; i<NICChannels; i++){
+				ICGain[i] *= 1/ICTCorrFactor;
+			}
+		}
+  	}
+
+	pFile = fopen (calMesy.fileTCorrSi.data(), "r");
+	
+	run_for_corr = 0;
+
+	if (pFile == NULL || calMesy.boolTCorrSi==false) {
+		fprintf(logFile,"No time dependent correction for Si Energy. Skipping time dependent Si correction.\n");
+		printf("No time dependent correction for Si Energy. Skipping time dependent Si correction.\n");
+		SiTCorrFactor =1.;
+	}
+	else  {
+		printf("Reading config file '%s'\n",calMesy.fileTCorrSi.data());
+
+		while (!feof(pFile)){
+    		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
+			if(Chan==run){
+				run_for_corr = Chan;
+				SiTCorrFactor = b;
+			}	   
+    	}
+    	fclose (pFile);
+		if(run_for_corr==0){ 
+			printf("Run %d not in list. No correction applied!\n",run);
+		}
+		else{
+			printf("Run: %d\tSi Gain correction: %f\n",run_for_corr,SiTCorrFactor);
+			for(int i=0; i<NCsIChannels; i++){
+				for(int j=0; j<NCsI1GroupRing; j++){
+					CsI1Gain[j][i] *= 1/SiTCorrFactor;
+				}
+				for(int j=0; j<NCsI2Group; j++){
+					CsI2Gain[j][i] *= 1/SiTCorrFactor;
+				}
+			}
+			for(int i=0; i<NSd1rChannels; i++){
+				Sd1rGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NSd1sChannels; i++){
+				Sd1sGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NSd2rChannels; i++){
+				Sd2rGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NSd2sChannels; i++){
+				Sd2sGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NSurChannels; i++){
+				SurGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NSusChannels; i++){
+				SusGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NYdChannels; i++){
+				YdGain[i] *= 1/SiTCorrFactor;
+			}
+			for(int i=0; i<NYuChannels; i++){
+				YuGain[i] *= 1/SiTCorrFactor;
+			}
+			printf("Applied correction to detector gains.\n\n");
+		}
+  	}
+
+//************************************************************************
+
+
 }
 
 void HandleEOR_Mesytec(int run, int time)

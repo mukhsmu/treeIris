@@ -54,6 +54,8 @@ void CalibMesytec::ReadFilenames(char* line)
 		fileSus = strval;
 		fileYd = strval;
 		fileYu = strval;
+		fileTCorrIC = strval;
+		fileTCorrSi = strval;
 	}
 	if (strcmp(line,"GEOMETRY")==0){
 		fileGeometry += strval;
@@ -102,10 +104,18 @@ void CalibMesytec::ReadFilenames(char* line)
 	if (strcmp(line,"YD")==0){
 		fileYd += strval;
 		boolYd =kTRUE;
-	}
-	if (strcmp(line,"YS")==0){
+	}		
+	if (strcmp(line,"YU")==0){
 		fileYu += strval;
 		boolYu =kTRUE;
+	}
+	if (strcmp(line,"TCORR_IC")==0){
+		fileTCorrIC += strval;
+		boolTCorrIC =kTRUE;
+	}
+	if (strcmp(line,"TCORR_SI")==0){
+		fileTCorrSi += strval;
+		boolTCorrSi =kTRUE;
 	}
 	if (strcmp(line,"ASCII")==0){
 		boolASCII =kTRUE;
@@ -127,6 +137,8 @@ void CalibMesytec::Load(std::string filename){
 	boolSus=kFALSE;
 	boolYd=kFALSE;
 	boolYu=kFALSE;
+	boolTCorrIC=kFALSE;
+	boolTCorrSi=kFALSE;
 	boolASCII=kFALSE;
 
 	char line[256];
@@ -190,6 +202,10 @@ void CalibMesytec::Print(){
 	else	printf("No Yd calibration specified.\n");
 	if(boolYu)	printf("Yu calibration: %s\n",fileYu.data());
 	else	printf("No Yu calibration specified.\n");
+	if(boolTCorrIC)	printf("Time dependent IC correction: %s\n",fileYu.data());
+	else	printf("No time dependent IC correction specified.\n");
+	if(boolTCorrSi)	printf("Time dependent Si correction: %s\n",fileYu.data());
+	else	printf("No time dependent Si correction specified.\n");
 	printf("********************************\n\n");
 }
 void CalibMesytec::Clear(){

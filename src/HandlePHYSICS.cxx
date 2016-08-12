@@ -34,11 +34,13 @@ CalibPHYSICS calPhys;
 geometry geoP;
 Graphsdedx dedx_p, dedx_d, dedx_t, dedx_i[3];
 
+float ICELossCorr;
+
 const int Nchannels = 24;
 const int binlimit = 1900;
  	
-Double_t eATgt[3][100], eAC4H10[3][100], eASi3N4[3][100], eAAg[3][100];	
-Double_t dedxATgt[3][100], dedxAC4H10[3][100], dedxASi3N4[3][100], dedxAAg[3][100];	
+Double_t eATgt[3][100], eAIso[3][100], eAWndw[3][100], eAAg[3][100];	
+Double_t dedxATgt[3][100], dedxAIso[3][100], dedxAWndw[3][100], dedxAAg[3][100];	
 Double_t eBSi[3][100], eBTgt[3][100], eBSiO2[3][100], eBB[3][100], eBP[3][100], eBAl[3][100], eBMy[3][100], eBCsI[3][100];	
 Double_t dedxBSi[3][100], dedxBTgt[3][100], dedxBSiO2[3][100], dedxBB[3][100], dedxBP[3][100], dedxBAl[3][100], dedxBMy[3][100], dedxBCsI[3][100];	
 Double_t ebTgt[3][100], ebSi[3][100], ebAl[3][100], ebB[3][100], ebMy[3][100], ebP[3][100], ebCsI[3][100], ebSiO2[3][100];	
@@ -103,6 +105,37 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 	geoP.ReadGeometry(calPhys.fileGeometry.data());
 	geoP.Print();
 	
+	// Time dependent correction of IC energy loss 
+	FILE * pFile;
+	int Chan = 0;
+	double a,b;
+	int run_for_corr = 0;
+	
+	if (pFile == NULL || calPhys.boolTCorrIC==false) {
+		//fprintf(logFile,"No time dependent correction for IC energy loss. Skipping correction.\n");
+		printf("No time dependent correction for IC energy loss. Skipping correction.\n");
+		ICELossCorr =1.;
+	}
+	else  {
+		printf("Reading config file '%s'\n",calPhys.fileTCorrIC.data());
+
+		while (!feof(pFile)){
+    		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
+			if(Chan==run){ 
+				run_for_corr = Chan;
+				ICELossCorr = b; 
+			}
+    	}
+    	fclose (pFile);	
+
+		if(run_for_corr==0){ 
+			printf("Run %d not in list. No correction applied!\n",run);
+		}
+		else{
+			printf("Run: %d\tIC Gain correction: %f\n\n",Chan,ICELossCorr);
+		}
+  	}
+
 	for(int i=0; i<3; i++){	
 		if(calPhys.boolRunDepPar[i]){
 			runDepPar[i].setRunDepPar(calPhys.fileRunDepPar[i]);// setting run dependent parameters.
@@ -135,14 +168,39 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 				if(dedx_i[i].boolB==kTRUE) loadELoss(dedx_i[i].B, eBB[i],dedxBB[i],mB);	
 				if(dedx_i[i].boolP==kTRUE) loadELoss(dedx_i[i].P, eBP[i],dedxBP[i],mB);	
 				if(dedx_i[i].boolSiO2==kTRUE) loadELoss(dedx_i[i].SiO2,eBSiO2[i],dedxBSiO2[i],mB);	
+				if(dedx_i[i].boolIso==kTRUE) loadELoss(dedx_i[i].Iso,eAIso[i],dedxAIso[i],mB);	
+				if(dedx_i[i].boolWndw==kTRUE) loadELoss(dedx_i[i].Wndw,eAWndw[i],dedxAWndw[i],mB);	
 			}
-		
+			//Needs to be moved!
+			const Double_t ICLength=22.9*0.062; //cm*mg/cm^3 at 19.5 Torr
+			const Double_t ICWindow1=0.03*3.44*0.1; //mu*g/cm^3*0.1
+			const Double_t ICWindow2=0.05*3.44*0.1; //mu*g/cm^3*0.1
+	
+			if (eAIso[i]&&eAWndw[i]){
+				Double_t temp_energy = runDepPar[i].energy;
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,ICWindow1,eAWndw[i],dedxAWndw[i]);  
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,ICLength,eAIso[i],dedxAIso[i])/ICELossCorr;  
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,ICWindow2,eAWndw[i],dedxAWndw[i]);  
+				printf("Energy loss in IC (including windows): %f\n" ,temp_energy-runDepPar[i].energy);
+			}
+			else printf("Energy loss in IC/IC windows not specified. EBeam not corrected.");
+
+
+			if (eAAg[i]){
+				Double_t temp_energy = runDepPar[i].energy;
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TargetThickness/2.,eAAg[i],dedxAAg[i]);  
+				printf("Energy loss in silver foil: %f\n" ,temp_energy-runDepPar[i].energy);
+			}
+			else printf("Energy loss in silver foil not specified. EBeam not corrected.");
+
+			printf("Energy after silver foil: %f\n",runDepPar[i].energy);
+
 			if (eATgt[i]){
 				Double_t temp_energy = runDepPar[i].energy;
 				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TargetThickness/2.,eATgt[i],dedxATgt[i]);  
 				printf("Energy loss in half target: %f\n" ,temp_energy-runDepPar[i].energy);
 			}
-			else printf("Energy loss in target not specified. EBeam=EBAC");
+			else printf("Energy loss in target not specified. EBeam not corrected.");
 
 			runDepPar[i].momentum = sqrt(runDepPar[i].energy*runDepPar[i].energy+2.*runDepPar[i].energy*beam[i].mass);//beam momentum
 			runDepPar[i].beta = runDepPar[i].momentum/(runDepPar[i].energy + beam[i].mass + target.mass);

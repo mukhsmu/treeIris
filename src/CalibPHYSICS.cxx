@@ -51,6 +51,7 @@ void CalibPHYSICS::ReadFilenames(char* line)
 			fileRunDepPar[i] = strval;
 		}
 		fileGeometry = strval;
+		fileTCorrIC = strval;
 	}
 
 	if (strcmp(line,"GATES")==0){
@@ -100,6 +101,10 @@ void CalibPHYSICS::ReadFilenames(char* line)
 		fileGeometry += strval;
 		boolGeometry = kTRUE;
 	}
+	if (strcmp(line,"TCORR_IC")==0){
+		fileTCorrIC += strval;
+		boolTCorrIC =kTRUE;
+	}
 }
 
 void CalibPHYSICS::Load(TString filename){
@@ -115,6 +120,7 @@ void CalibPHYSICS::Load(TString filename){
 	boolRunDepPar[1]=kFALSE;
 	boolRunDepPar[2]=kFALSE;
 	boolGeometry=kFALSE;
+	boolTCorrIC=kFALSE;
 	boolEssential=kFALSE;
 
 	char line[256];

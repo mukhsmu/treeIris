@@ -27,6 +27,8 @@ class CalibMesytec : public TObject {
 		std::string fileSus;
 		std::string fileYd;
 		std::string fileYu;
+		std::string fileTCorrIC;
+		std::string fileTCorrSi;
 
 		Bool_t boolGeometry;
 		Bool_t boolELoss;
@@ -41,6 +43,8 @@ class CalibMesytec : public TObject {
 		Bool_t boolSus;
 		Bool_t boolYd;
 		Bool_t boolYu;
+		Bool_t boolTCorrIC;
+		Bool_t boolTCorrSi;
 		Bool_t boolASCII;
 
 		virtual void ReadFilenames(char* line);
