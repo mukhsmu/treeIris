@@ -188,7 +188,7 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 			if (eAAg[i]){
 				Double_t temp_energy = runDepPar[i].energy;
-				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.TargetThickness/2.,eAAg[i],dedxAAg[i]);  
+				runDepPar[i].energy = runDepPar[i].energy-eloss(runDepPar[i].energy,geoP.FoilThickness,eAAg[i],dedxAAg[i]);  
 				printf("Energy loss in silver foil: %f\n" ,temp_energy-runDepPar[i].energy);
 			}
 			else printf("Energy loss in silver foil not specified. EBeam not corrected.");
