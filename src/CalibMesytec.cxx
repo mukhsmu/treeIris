@@ -202,9 +202,9 @@ void CalibMesytec::Print(){
 	else	printf("No Yd calibration specified.\n");
 	if(boolYu)	printf("Yu calibration: %s\n",fileYu.data());
 	else	printf("No Yu calibration specified.\n");
-	if(boolTCorrIC)	printf("Time dependent IC correction: %s\n",fileYu.data());
+	if(boolTCorrIC)	printf("Time dependent IC correction: %s\n",fileTCorrIC.data());
 	else	printf("No time dependent IC correction specified.\n");
-	if(boolTCorrSi)	printf("Time dependent Si correction: %s\n",fileYu.data());
+	if(boolTCorrSi)	printf("Time dependent Si correction: %s\n",fileTCorrSi.data());
 	else	printf("No time dependent Si correction specified.\n");
 	printf("********************************\n\n");
 }
