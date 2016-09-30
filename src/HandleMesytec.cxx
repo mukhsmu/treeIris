@@ -1003,7 +1003,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 	if (pFile == NULL || calMesy.boolSd1s==false) {
 		fprintf(logFile,"No calibration file for Sd1 sectors. Skipping Sd1s calibration.\n");
 		printf("No calibration file for Sd1 sectors. Skipping Sd1s calibration.\n");
-   		for (int i =0;i<24;i++  ){
+   		for (int i =0;i<32;i++  ){
 			Sd1sPed[i] = 0.;
 			Sd1sGain[i] = 1.;  
 		}
