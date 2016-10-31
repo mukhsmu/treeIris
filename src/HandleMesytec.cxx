@@ -44,7 +44,7 @@ extern TTree* tree;
 CalibMesytec calMesy;
 geometry geoM;
 
-int usePeds = 1; //using pedestals instead of offsets for Silicon detectors AS
+Bool_t usePeds = 0; // 1 -> using pedestals instead of offsets for Silicon detectors AS
 TVector3 aVector;
 const int NCsI2Group = 16;
 const int NCsI1GroupRing = 4;
@@ -893,13 +893,13 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 	Chan=-1;
 
 	pFile = fopen (calMesy.fileSd2r.data(), "r");
-	usePeds = 1;
 
    	if (pFile == NULL || calMesy.boolSd2r==false) {
 		fprintf(logFile,"No calibration file for Sd2 rings. Skipping Sd2r calibration.\n");
 		printf("No calibration file for Sd2 rings. Skipping Sd2r calibration.\n");
    		for (int i =0;i<24;i++  ){
 			Sd2rPed[i] = 0.;
+			Sd2rOffset[i] = 0.;
 			Sd2rGain[i] = 1.;  
 		}
 	}  
@@ -914,6 +914,8 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
        		if(!usePeds){
 				Sd2rOffset[Chan-64] = a;
+				Sd2rGain[Chan-64] =  b;  
+				printf("Sd2rOffset %lf Sd2rgain %lf\n",a,b);
 			}
        		else if (usePeds){
 				Sd2rPed[Chan-64] = a;
@@ -935,6 +937,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("No calibration file for Sd2 sectors. Skipping Sd2s calibration.\n");
    		for (int i =0;i<32;i++  ){
 			Sd2sPed[i] = 0.;
+			Sd2sOffset[i] = 0.;
 			Sd2sGain[i] = 1.;  
 		}
 	}  
@@ -949,6 +952,8 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
        		if (!usePeds){
 				Sd2sOffset[Chan-96] = a;
+				Sd2sGain[Chan-96] = b;   
+				printf("Sd2sOffset %lf Sd2sgain %lf\n",a,b);
 			}
        		else if (usePeds){
 				Sd2sPed[Chan-96] = a;
@@ -972,6 +977,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("No calibration file for Sd1 rings. Skipping Sd1r calibration.\n");
    		for (int i =0;i<24;i++  ){
 			Sd1rPed[i] = 0.;
+			Sd1rOffset[i] = 0.;
 			Sd1rGain[i] = 1.;  
 		}
 	}  
@@ -984,12 +990,16 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 		for (int i =0;i<24;i++  ){
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
-       		if (!usePeds)
+       		if (!usePeds){
 				Sd1rOffset[Chan-128] = a;
-       		else if (usePeds)
+				Sd1rGain[Chan-128] = b;
+				printf("Sd1rOffset %lf Sd1rGain %lf\n",Sd1rOffset[Chan-128],Sd1rGain[Chan-128]);
+			}
+			else if (usePeds){
 				Sd1rPed[Chan-128] = a;
 				Sd1rGain[Chan-128] = b;
-				printf("Sd1rPed %lf Sd1rgain %lf\n",Sd1rPed[Chan-128],Sd1rGain[Chan-128]);
+				printf("Sd1rPed %lf Sd1rGain %lf\n",Sd1rPed[Chan-128],Sd1rGain[Chan-128]);
+			}
      	}
      	fclose (pFile);
 		printf("\n");
@@ -1005,6 +1015,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("No calibration file for Sd1 sectors. Skipping Sd1s calibration.\n");
    		for (int i =0;i<32;i++  ){
 			Sd1sPed[i] = 0.;
+			Sd1sOffset[i] = 0.;
 			Sd1sGain[i] = 1.;  
 		}
 	}  
@@ -1019,6 +1030,8 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
        		if (!usePeds){
 				Sd1sOffset[Chan-160] = a;
+				Sd1sGain[Chan-160] = b; 
+				printf("Sd1sOffset %lf Sd1sgain %lf\n",a,b);
 			}
        		else if (usePeds){
 				Sd1sPed[Chan-160] = a;
