@@ -47,7 +47,7 @@ geometry geoM;
 Bool_t usePeds = 0; // 1 -> using pedestals instead of offsets for Silicon detectors AS
 TVector3 aVector;
 const int NCsI2Group = 16;
-const int NCsI1GroupRing = 4;
+const int NCsI1Group = 16;
 const int Nchannels = 8*64;
 const int NICChannels=16;
 const int NCsIChannels=16;
@@ -79,7 +79,7 @@ int CsI1Mul=0;
 int CsI1ADC[16]={0};
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
 int CsI1Channel[16];  // channel with the greatest value
-double CsI1Gain[NCsI1GroupRing][NCsIChannels]={{1.}};
+double CsI1Gain[NCsI1Group][NCsIChannels]={{1.}};
 double CsI1Ped[NCsIChannels]={0.};
 
 int CsI2Mul=0;
@@ -636,7 +636,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		for(int i=0; i<CsI1Mul; i++){
 	
 			if (YdMul>0){
-	      		int m = (YdChannel[0]%16)/(16/NCsI1GroupRing);
+	      		int m = (YdChannel[0]%16)/(16/NCsI1Group);
 	      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
 	      		det.TCsI1Energy.push_back(CsI1Energy[i]); 
 	      		det.TCsI1Channel.push_back(CsI1Channel[i]);
@@ -825,7 +825,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("No calibration file for CsI1. Skipping CsI1 calibration.\n");
    		for (int i =0; i<16; i++){
 			CsI1Ped[i] = 0.;
-			for (int j=0; j<NCsI1GroupRing; j++){
+			for (int j=0; j<NCsI1Group; j++){
 				CsI1Gain[j][i] = 1.;
  			}//for
 		}
@@ -840,7 +840,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 		//for (int i=0; i<1; i++){
 		for (int i =0; i<16; i++){
-			for (int j=0; j<NCsI1GroupRing; j++){
+			for (int j=0; j<NCsI1Group; j++){
 				fscanf(pFile,"%d%d%lf%lf",&Chan,&g,&a,&b);
 				CsI1Ped[Chan-32] = a;
 				CsI1Gain[g][Chan-32] = b;
@@ -1231,7 +1231,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		else{
 			printf("Run: %d\tSi Gain correction: %f\n",run_for_corr,SiTCorrFactor);
 			for(int i=0; i<NCsIChannels; i++){
-				for(int j=0; j<NCsI1GroupRing; j++){
+				for(int j=0; j<NCsI1Group; j++){
 					CsI1Gain[j][i] *= 1/SiTCorrFactor;
 				}
 				for(int j=0; j<NCsI2Group; j++){
