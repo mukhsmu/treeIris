@@ -265,12 +265,11 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 void HandlePHYSICS(IDet *det)
 {
-	if(calPhys.boolEssential==false || det->TSd1rMul==0){ // not enough calibration information or no hit in first S3
+	if(calPhys.boolEssential==false){ // not enough calibration information or no hit in first S3
 	   tree->Fill();
    	   return;
 	} 
   	
-	cosTheta = cos(TMath::DegToRad()* (det->TSdTheta.at(0)));
 
 	// Selecting an incoming isotope:	
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
@@ -297,6 +296,7 @@ void HandlePHYSICS(IDet *det)
 	//Sd2 ring side
 	if(det->TSd1rEnergy.size()>0 && det->TSd2rEnergy.size()>0){
 		if(det->TSd1rEnergy.at(0)>0. && det->TSd2rEnergy.at(0)>0.){
+			cosTheta = cos(TMath::DegToRad()* (det->TSdTheta.at(0)));
 			energy = det->TSd2rEnergy.at(0);
 			if (eBB[nGate]) energy = energy+elossFi(energy,0.1*2.35*0.5/cosTheta,eBB[nGate],dedxBB[nGate]); //boron junction implant
 			if (eBAl[nGate]) energy = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //first metal
@@ -312,25 +312,26 @@ void HandlePHYSICS(IDet *det)
 			if (eBP[nGate]) energy = energy+elossFi(energy,0.1*1.822*0.5/cosTheta,eBP[nGate],dedxBP[nGate]); //phosphorus implant
 			if (eBAl[nGate]) det->TSdETot = energy+elossFi(energy,0.1*2.7*0.3/cosTheta,eBAl[nGate],dedxBAl[nGate]); //metal
 		}
+	
+		PResid = sqrt(2.*det->TSdETot*mA);     //Beam momentum in MeV/c
+		A = kBF-1.;                              //Quadratic equation parameters
+	    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta.at(0));
+	    C = -1.*(kBF+1)*PResid*PResid; 
+	    if (A!=0)    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
+	  	//to calculate residue energy from beam
+	    
+		IrisEvent->fEB = PBeam*PBeam/(2.*mA);
+		//det->TBE = PBeam*PBeam/(2.*mA);
+	   
+	    // printf("thetaCM: %f\n",det->TSdThetaCM);
+	    if (eAAg[nGate]) IrisEvent->fEB=  IrisEvent->fEB + elossFi(det->TSdETot,geoP.FoilThickness/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
+	    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta.at(0))/sqrt(gammaCM-gammaCM*betaCM*(mA+IrisEvent->fEB)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta.at(0)))));// check if this is still correct for H2 target tk
 	}
 
-	PResid = sqrt(2.*det->TSdETot*mA);     //Beam momentum in MeV/c
-	A = kBF-1.;                              //Quadratic equation parameters
-    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta.at(0));
-    C = -1.*(kBF+1)*PResid*PResid; 
-    if (A!=0)    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
-  	//to calculate residue energy from beam
-    
-	IrisEvent->fEB = PBeam*PBeam/(2.*mA);
-	//det->TBE = PBeam*PBeam/(2.*mA);
-   
-    // printf("thetaCM: %f\n",det->TSdThetaCM);
-    if (eAAg[nGate]) IrisEvent->fEB=  IrisEvent->fEB + elossFi(det->TSdETot,geoP.FoilThickness/2.,eAAg[nGate],dedxAAg[nGate]); //energy loss from the end of H2 to the center of Ag.
-    det->TSdThetaCM = TMath::RadToDeg()*atan(tan(TMath::DegToRad()*det->TSdTheta.at(0))/sqrt(gammaCM-gammaCM*betaCM*(mA+IrisEvent->fEB)/(PBeam*cos(TMath::DegToRad()*det->TSdTheta.at(0)))));// check if this is still correct for H2 target tk
-	if(det->TYdMul==0||det->TCsI2Mul==0){
-	   tree->Fill();
-   	   return;
-	}
+//	if(det->TYdMul==0||det->TCsI2Mul==0){
+//	   tree->Fill();
+//   	   return;
+//	}
  // Calculate Q-value from YY1 and CsI// 
 	//if ((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*TMath::Pi()/180.))) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0)>0.6 ))) {    //check if in the proton/deuteron gate
 	if (det->TYdEnergy.size()>0&&det->TYdRing.size()>0) {    //check if in the proton/deuteron gate
