@@ -173,7 +173,7 @@ void CalibPHYSICS::Print(){
 	else	printf("No proton energy loss tables specified.\n");
 	if(boolDdedx)	printf("Deuteron energy loss tables: %s\n",fileDdedx.data());
 	else	printf("No deuteron energy loss tables specified.\n");
-	if(boolTdedx)	printf("Triton energy loss tables: %s\n",fileDdedx.data());
+	if(boolTdedx)	printf("Triton energy loss tables: %s\n",fileTdedx.data());
 	else	printf("No triton energy loss tables specified.\n");
 	if(boolIdedx[0])	printf("Ion energy loss tables: %s\n",fileIdedx[0].data());
 	else	printf("No ion energy loss tables specified.\n");
