@@ -249,8 +249,8 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 
 //---------------for tritons in various layers---Jaspreet ----------------------------------
 	if(calPhys.boolTdedx==kTRUE){
-		printf("\n\nLoading dedx Graphs for deuteron...\n");
-		dedx_t.Load(calPhys.fileDdedx);
+		printf("\n\nLoading dedx Graphs for triton...\n");
+		dedx_t.Load(calPhys.fileTdedx);
 		dedx_t.Print();
 		if(dedx_t.boolSi==kTRUE) loadELoss(dedx_t.Si,ebSi[2],dedxbSi[2],mb);	
 		if(dedx_t.boolAl==kTRUE) loadELoss(dedx_t.Al,ebAl[2],dedxbAl[2],mb);	
