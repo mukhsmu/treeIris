@@ -27,7 +27,10 @@ class IDet : public TObject {
 		std::vector<Int_t> TCsI2Channel;
 		std::vector<Double_t> TCsI2Energy;
 		std::vector<Double_t> TCsI2ADC;
-//		Int_t TCsIMul;
+		
+		Double_t TYdCsI1ETot;
+		Double_t TYdCsI2ETot;
+		//		Int_t TCsIMul;
 //		std::vector<Int_t> TCsIChannel;
 //		std::vector<Double_t> TCsIEnergy;
 
@@ -67,8 +70,8 @@ class IDet : public TObject {
 //		Double_t TQv2; // Q-value from S3
 //		Double_t QValue1; //Q-value from YY1 and CsI1
 //		Double_t QValue2; //Q-value from YY1 and CsI2
-		Double_t QValue; //Q-value from YY1 and CsI2
-		Double_t TBE; //Beam energy
+//		Double_t QValue; //Q-value from YY1 and CsI2
+//		Double_t TBE; //Beam energy
 	
 	void Clear();
 	ClassDef(IDet,1)

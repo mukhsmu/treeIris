@@ -33,11 +33,13 @@ class TEvent : public TObject {
 		// Double_t fSd1;              //
 		// Double_t fSd2;              //
 		// Double_t fIC;               //
-		Double_t fThetacm;          //
+		Double_t fThetacm1;          //
+		Double_t fThetacm2;          //
 		
 		Double_t fLP; //Light particle energy //
 		Double_t fHP; //Heavy particle energy //
-		Double_t fQv; //Q-value                   //
+		Double_t fQv1; //Q-value                   //
+		Double_t fQv2; //Q-value                   //
 		Double_t fEB; //Beam energy           //
 		Int_t Calculate(); //! Calculate derived variables
 		Int_t Clear(); //! Clear values

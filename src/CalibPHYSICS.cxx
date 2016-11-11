@@ -46,6 +46,7 @@ void CalibPHYSICS::ReadFilenames(char* line)
 		fileELoss = strval;
 		filePdedx = strval;
 		fileDdedx = strval;
+		fileTdedx = strval;
 		for(int i=0; i<3; i++){
 			fileIdedx[i] = strval;
 			fileRunDepPar[i] = strval;
@@ -69,6 +70,10 @@ void CalibPHYSICS::ReadFilenames(char* line)
 	if (strcmp(line,"DEDX_D")==0){
 		fileDdedx += strval;
 		boolDdedx = kTRUE;
+	}
+	if (strcmp(line,"DEDX_T")==0){
+		fileTdedx += strval;
+		boolTdedx = kTRUE;
 	}
 	if (strcmp(line,"DEDX_I1")==0){
 		fileIdedx[0] += strval;
@@ -113,6 +118,7 @@ void CalibPHYSICS::Load(TString filename){
 	boolELoss=kFALSE;
 	boolPdedx=kFALSE;
 	boolDdedx=kFALSE;
+	boolTdedx=kFALSE;
 	boolIdedx[0]=kFALSE;
 	boolIdedx[1]=kFALSE;
 	boolIdedx[2]=kFALSE;
@@ -163,16 +169,18 @@ void CalibPHYSICS::Print(){
 	else	printf("No experiment geometry specified.\n");
 	if(boolELoss)	printf("Energy loss root file: %s\n",fileELoss.data());
 	else	printf("No energy loss root file specified.\n");
-	if(boolPdedx)	printf("Proton energy loss graphs: %s\n",filePdedx.data());
-	else	printf("No proton energy loss graphs specified.\n");
-	if(boolDdedx)	printf("Deuteron energy loss graphs: %s\n",fileDdedx.data());
-	else	printf("No deuteron energy loss graphs specified.\n");
-	if(boolIdedx[0])	printf("Ion energy loss graphs: %s\n",fileIdedx[0].data());
-	else	printf("No ion energy loss graphs specified.\n");
-	if(boolIdedx[1])	printf("Ion energy loss graphs: %s\n",fileIdedx[1].data());
-	else	printf("No ion energy loss graphs specified.\n");
-	if(boolIdedx[2])	printf("Ion energy loss graphs: %s\n",fileIdedx[2].data());
-	else	printf("No ion energy loss graphs specified.\n");
+	if(boolPdedx)	printf("Proton energy loss tables: %s\n",filePdedx.data());
+	else	printf("No proton energy loss tables specified.\n");
+	if(boolDdedx)	printf("Deuteron energy loss tables: %s\n",fileDdedx.data());
+	else	printf("No deuteron energy loss tables specified.\n");
+	if(boolTdedx)	printf("Triton energy loss tables: %s\n",fileDdedx.data());
+	else	printf("No triton energy loss tables specified.\n");
+	if(boolIdedx[0])	printf("Ion energy loss tables: %s\n",fileIdedx[0].data());
+	else	printf("No ion energy loss tables specified.\n");
+	if(boolIdedx[1])	printf("Ion energy loss tables: %s\n",fileIdedx[1].data());
+	else	printf("No ion energy loss tables specified.\n");
+	if(boolIdedx[2])	printf("Ion energy loss tables: %s\n",fileIdedx[2].data());
+	else	printf("No ion energy loss tables specified.\n");
 	if(boolGates)	printf("Deuteron/proton gates: %s\n",fileGates.data());
 	else	printf("No deuteron/proton gates specified.\n");
 	if(boolRunDepPar[0])	printf("Run dependant parameters: %s\n",fileRunDepPar[0].data());

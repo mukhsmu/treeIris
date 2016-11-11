@@ -18,6 +18,7 @@ class CalibPHYSICS : public TObject {
 		std::string fileELoss;
 		std::string filePdedx;
 		std::string fileDdedx;
+		std::string fileTdedx;
 		std::string fileIdedx[3];
 		std::string fileRunDepPar[3];
 		std::string fileGeometry;
@@ -28,6 +29,7 @@ class CalibPHYSICS : public TObject {
 		Bool_t boolELoss;
 		Bool_t boolPdedx;
 		Bool_t boolDdedx;
+		Bool_t boolTdedx;
 		Bool_t boolIdedx[3];
 		Bool_t boolRunDepPar[3];
 		Bool_t boolGeometry;

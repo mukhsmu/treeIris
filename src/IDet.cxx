@@ -28,7 +28,10 @@ void IDet::Clear()
 	TCsI1Channel.clear();
 	TCsI2Channel.clear();
 
-  	SSB=0;
+  	TYdCsI1ETot=0;
+  	TYdCsI2ETot=0;
+  	
+	SSB=0;
    	TICEnergy=0;
 	TICChannel=-1;
 	for(int i=0;i<16;i++){
@@ -55,11 +58,11 @@ void IDet::Clear()
   	TSd2sADC.clear();
   	TSdTheta.clear();
   	TSdPhi.clear();
-  //	TQv1=0; // Q-value  
-  //	TQv2=0; // Q-value
-  //	QValue1=sqrt(-1.);//Not a number (nan) AS
-  //	QValue2=sqrt(-1.);//                                                                                
-  	QValue=sqrt(-1.);//                                                                                
-  	TBE=0; //Beam energy                                                                             
+//	TQv1=0; // Q-value  
+//	TQv2=0; // Q-value
+// 	QValue1=sqrt(-1.);//Not a number (nan) AS
+// 	QValue2=sqrt(-1.);//                                                                                
+// 	QValue=sqrt(-1.);//                                                                                
+// 	TBE=0; //Beam energy                                                                             
 }
 

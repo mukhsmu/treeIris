@@ -41,8 +41,10 @@ TEvent::TEvent() {
 
   fLP=0; //Light particle energy //
   fHP=0; //Heavy particle energy //
-  fQv=0;                         //
-  fThetacm=0;                         //
+  fQv1=0;                         //
+  fQv2=0;                         //
+  fThetacm1=0;                         //
+  fThetacm2=0;                         //
   fEB=0; //Beam energy           //
 
 
@@ -63,8 +65,10 @@ Int_t TEvent::Clear(){
 
   fLP=0; //Light particle energy //
   fHP=0; //Heavy particle energy //
-  fQv=0;                         //
-  fThetacm=0;                         //
+  fQv1=0;                         //
+  fQv2=0;                         //
+  fThetacm1=0;                         //
+  fThetacm2=0;                         //
   fEB=0; //Beam energy           //
   // fPart.Clear();
 return 1;
@@ -73,6 +77,6 @@ return 1;
 Int_t TEvent::Calculate(){
 
   //  fEB = fHP;
-  fQv = 1.;
+  //fQv = 1.;
    return 1;
 }
