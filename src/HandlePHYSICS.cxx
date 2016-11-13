@@ -74,9 +74,24 @@ Double_t ma = 0.; //target mass
 Double_t mb= 0.; //1.;//Light ejectile mass
 Double_t mB= 0.; // Heavy ejectile mass
 
-Double_t b1,j,thetaD,E1,Eb1,Eb2,thetaR,ECsI1,ECsI2,EYY1;
-Double_t Q1,Q2,thetaCM1,thetaCM2;
-Double_t Pb1y,Pb2y,Pb1xcm,Pb2xcm;
+//Double_t b1;
+//Double_t j;
+Double_t thetaR=sqrt(-1.);
+Double_t thetaD=sqrt(-1.);
+//Double_t E1;
+Double_t Eb1=sqrt(-1.);
+Double_t Eb2=sqrt(-1.);
+Double_t ECsI1=sqrt(-1.);
+Double_t ECsI2=sqrt(-1.);
+Double_t EYY1=sqrt(-1.);
+Double_t Q1=sqrt(-1.);
+Double_t Q2=sqrt(-1.);
+Double_t thetaCM1=sqrt(-1.);
+Double_t thetaCM2=sqrt(-1.);
+Double_t Pb1y=sqrt(-1.);
+Double_t Pb2y=sqrt(-1.);
+Double_t Pb1xcm=sqrt(-1.);
+Double_t Pb2xcm=sqrt(-1.);
 	
 //TCutG * protons;
 //TCutG * deuterons;
@@ -335,7 +350,8 @@ void HandlePHYSICS(IDet *det)
  // Calculate Q-value from YY1 and CsI// 
 	//if ((deuterons->IsInside(det->TCsI2Energy.at(0),det->TYdEnergy.at(0)*cos(det->TYdTheta.at(0)*TMath::Pi()/180.))) && ((det->TYdEnergy.at(0)>0.2)  && (det->TCsI2Energy.at(0)>0.6 ))) {    //check if in the proton/deuteron gate
 	if (det->TYdEnergy.size()>0&&det->TYdRing.size()>0) {    //check if in the proton/deuteron gate
-	  	thetaR =( atan((geoP.YdInnerRadius+((det->TYdRing.at(0)+1)*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance) + atan((geoP.YdInnerRadius+((det->TYdRing.at(0))*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance) )/2.;
+	  	thetaR =( atan((geoP.YdInnerRadius+((det->TYdRing.at(0)+1)*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance)
+			   	+ atan((geoP.YdInnerRadius+((det->TYdRing.at(0))*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance) )/2.;
 	  	thetaD = thetaR*TMath::RadToDeg();
 		EYY1 = det->TYdEnergy.at(0);
 	}	
@@ -361,6 +377,8 @@ void HandlePHYSICS(IDet *det)
 	    	if (ebTgt[0])  Eb1= Eb1+elossFi(Eb1,geoP.TargetThickness/2./cos(thetaR),ebTgt[0],dedxbTgt[0]); //deuteron energy  in mid target midtarget
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
+	
+		det->TYdCsI1ETot = Eb1;
 		Pb1 = sqrt(Eb1*Eb1+2.*Eb1*mb);
 		Pb1y = Pb1*sin(thetaR);
 		Pb1xcm = gammaCM*betaCM*(Eb1+mb)- gammaCM*Pb1*cos(thetaR);
@@ -393,6 +411,7 @@ void HandlePHYSICS(IDet *det)
 	    	if (ebTgt[0])  Eb2= Eb2+elossFi(Eb2,geoP.TargetThickness/2./cos(thetaR),ebTgt[0],dedxbTgt[0]); //deuteron energy  in mid target midtarget
 	     	else std::cout << "ebD2 doesn't exist"<< std::endl;
 		}
+		det->TYdCsI2ETot = Eb2;
 		Pb2 = sqrt(Eb2*Eb2+2.*Eb2*mb);
 		Pb2y = Pb2*sin(thetaR);
 		Pb2xcm = gammaCM*betaCM*(Eb2+mb)- gammaCM*Pb2*cos(thetaR);

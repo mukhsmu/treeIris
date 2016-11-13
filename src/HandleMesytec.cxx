@@ -193,7 +193,7 @@ Double_t yShift = 0;//1.3;
 float SuDistance = 200; //AS distance from target in mm
 float YdTheta[128] = {0.}, SdTheta=0., phi = 0, theta1 = 0, phi1=0; //AS Dummies for theta and phi, to be used for filling histograms
 TRandom3 fRandom(0);
-Double_t randm; //random number between 0 and 1 for each event
+Double_t rndm; //random number between 0 and 1 for each event
 
 uint32_t modid, oformat, vpeak, resolution, evlength, timestamp;
 uint32_t channel, overflow;
@@ -485,8 +485,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
  		for (Int_t i=0;i<Sd1rMul;i++){
  			det.TSd1rEnergy.push_back(Sd1rEnergy[i]);
 			det.TSd1rChannel.push_back(Sd1rChannel[i]);
-			randm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
-			det.TSdTheta.push_back(TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd1rChannel[i]-randm)+geoM.SdOuterRadius*(Sd1rChannel[i]+randm))/24./geoM.Sd1Distance)); //AS theta angle for Sd (24 - number of rings)
+			rndm = 0.95*fRandom.Rndm(); //random number between 0 and 0.95 for each event
+			det.TSdTheta.push_back(TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd1rChannel[i]-rndm)+geoM.SdOuterRadius*(Sd1rChannel[i]+rndm))/24./geoM.Sd1Distance)); //AS theta angle for Sd (24 - number of rings)
 		}
 		
 		for (Int_t i=0;i<NSd1sChannels;i++){
@@ -608,7 +608,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TYdNo.push_back(int(YdChannel[i]/16));
 			det.TYdRing.push_back(YdChannel[i]%16);
 			//here
-			YdTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YdChannel[i]%16-randm)+geoM.YdOuterRadius*(YdChannel[i]%16+randm))/16./geoM.YdDistance);
+			rndm = fRandom.Uniform();
+			YdTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YdChannel[i]%16-rndm)+geoM.YdOuterRadius*(YdChannel[i]%16+rndm))/16./geoM.YdDistance);
 			det.TYdTheta.push_back(YdTheta[i]);
 		}
 	 
