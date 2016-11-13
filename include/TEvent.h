@@ -28,15 +28,36 @@ class TEvent : public TObject {
 		
 		// IParticle fPart;        //
 		
-		// Double_t fEYY1;             //
-		// Double_t fCsI;              //
+		Double_t fEYY1;             //
+		Double_t fCsI1;              //
+		Double_t fCsI2;              //
 		// Double_t fSd1;              //
 		// Double_t fSd2;              //
 		// Double_t fIC;               //
 		Double_t fThetacm1;          //
 		Double_t fThetacm2;          //
 		Double_t fThetaD;          //
-		
+			
+		Double_t fEBAC;
+		Double_t fmA;
+		Double_t fma;
+		Double_t fmB;
+		Double_t fmb;
+		Double_t fkBF;
+		Double_t fEBeam;
+		Double_t fbetaCM;
+		Double_t fgammaCM;
+		Double_t fPA;
+	  	Double_t fPBeam;
+	  	Double_t fPResid;
+	  	Double_t fA;
+	  	Double_t fB;
+	  	Double_t fC;
+	  	Double_t fEb1;
+	  	Double_t fPb1;
+	  	Double_t fPb1y;
+	  	Double_t fPb1xcm;
+
 		Double_t fLP; //Light particle energy //
 		Double_t fHP; //Heavy particle energy //
 		Double_t fQv1; //Q-value                   //

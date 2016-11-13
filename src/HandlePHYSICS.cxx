@@ -304,7 +304,18 @@ void HandlePHYSICS(IDet *det)
 	gammaCM = runDepPar[nGate].gamma;
 	PA = runDepPar[nGate].momentum; // beam momentum
 	
- 	//adding dead layer energy losses
+	IrisEvent->fEBAC = EBAC;
+	IrisEvent->fmA = mA;
+	IrisEvent->fma = ma;
+	IrisEvent->fmB = mB;
+	IrisEvent->fmb = mb;
+	IrisEvent->fkBF = kBF;
+	IrisEvent->fEBeam = EBeam;
+	IrisEvent->fbetaCM = betaCM;
+	IrisEvent->fgammaCM = gammaCM;
+	IrisEvent->fPA = PA;
+ 	
+	//adding dead layer energy losses
 	//Sd2 ring side
 	if(det->TSd1rEnergy.size()>0 && det->TSd2rEnergy.size()>0){
 		if(det->TSd1rEnergy.at(0)>0. && det->TSd2rEnergy.at(0)>0.){
@@ -330,6 +341,11 @@ void HandlePHYSICS(IDet *det)
 	    B = 2.0*PResid* cos(TMath::DegToRad()*det->TSdTheta.at(0));
 	    C = -1.*(kBF+1)*PResid*PResid; 
 	    if (A!=0)    PBeam = (sqrt(B*B-4.*A*C)-B)/(2*A);
+	  	IrisEvent->fPBeam = PBeam;
+	  	IrisEvent->fPResid = PResid;
+	  	IrisEvent->fA = A;
+	  	IrisEvent->fB = B;
+	  	IrisEvent->fC = C;
 	  	//to calculate residue energy from beam
 	    
 		IrisEvent->fEB = PBeam*PBeam/(2.*mA);
@@ -381,6 +397,10 @@ void HandlePHYSICS(IDet *det)
 		Pb1y = Pb1*sin(thetaR);
 		Pb1xcm = gammaCM*betaCM*(Eb1+mb)- gammaCM*Pb1*cos(thetaR);
 	 	Q1 = mA+ma-mb- sqrt(mA*mA+mb*mb-ma*ma-2.*(mA+EBeam)*(mb+Eb1)+2.*PA*Pb1*cos(thetaR)+2.*(EBeam+mA+ma-Eb1-mb)*ma);  //Alisher's equation 
+	  	IrisEvent->fEb1 = Eb1;
+	  	IrisEvent->fPb1 = Pb1;
+	  	IrisEvent->fPb1y = Pb1y;
+	  	IrisEvent->fPb1xcm = Pb1xcm;
 	  	IrisEvent->fQv1 = Q1;
 		thetaCM1 = TMath::RadToDeg()*atan(Pb1y/Pb1xcm);
 		thetaCM1 = (thetaCM1<0) ? thetaCM1+180. : thetaCM1;

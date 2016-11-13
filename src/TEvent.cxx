@@ -57,21 +57,42 @@ TEvent::TEvent(const TEvent &evt) : TObject(evt) //
 }
 
 Int_t TEvent::Clear(){
-  // fEYY1 =0;             //
-  // fCsI=0;              //
-  // fSd1=0;              //
-  // fSd2=0;              //
-  // fIC=0;               //
+	fEYY1 =0;             //
+	fCsI1=0;              //
+	fCsI2=0;              //
+	// fSd1=0;              //
+	// fSd2=0;              //
+	// fIC=0;               //
+	
+	fEBAC = sqrt(-1.);
+	fmA = sqrt(-1.);
+	fma = sqrt(-1.);
+	fmB = sqrt(-1.);
+	fmb = sqrt(-1.);
+	fkBF = sqrt(-1.);
+	fEBeam = sqrt(-1.);
+	fbetaCM = sqrt(-1.);
+	fgammaCM = sqrt(-1.);
+	fPA = sqrt(-1.);
+  	fPBeam = sqrt(-1.);
+  	fPResid = sqrt(-1.);
+  	fA = sqrt(-1.);
+  	fB = sqrt(-1.);
+  	fC = sqrt(-1.);
+  	fEb1 = sqrt(-1.);
+  	fPb1 = sqrt(-1.);
+  	fPb1y = sqrt(-1.);
+  	fPb1xcm = sqrt(-1.);
 
-  fLP=0; //Light particle energy //
-  fHP=0; //Heavy particle energy //
-  fQv1=0;                         //
-  fQv2=0;                         //
-  fThetacm1=0;                         //
-  fThetacm2=0;                         //
-  fThetaD=0;                         //
-  fEB=0; //Beam energy           //
-  // fPart.Clear();
+	fLP=0; //Light particle energy //
+	fHP=0; //Heavy particle energy //
+	fQv1=0;                         //
+	fQv2=0;                         //
+	fThetacm1=0;                         //
+	fThetacm2=0;                         //
+	fThetaD=0;                         //
+	fEB=0; //Beam energy           //
+	// fPart.Clear();
 return 1;
 }
 
