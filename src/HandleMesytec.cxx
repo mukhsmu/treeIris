@@ -338,7 +338,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (debug1  && modid==1) printf("Data: ch:%d id:%d val:%f\n", channel, modid, (float) vpeak);
 	  				// RK :  Energy Calibration 
 	  				
-	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ // Why 3840? MH
+	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ 
 	    				//AS Fill histogram
 						//IC[channel] = (float)vpeak;
 						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];

@@ -35,6 +35,7 @@ class TEvent : public TObject {
 		// Double_t fIC;               //
 		Double_t fThetacm1;          //
 		Double_t fThetacm2;          //
+		Double_t fThetaD;          //
 		
 		Double_t fLP; //Light particle energy //
 		Double_t fHP; //Heavy particle energy //

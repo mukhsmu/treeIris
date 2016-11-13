@@ -74,11 +74,8 @@ Double_t ma = 0.; //target mass
 Double_t mb= 0.; //1.;//Light ejectile mass
 Double_t mB= 0.; // Heavy ejectile mass
 
-//Double_t b1;
-//Double_t j;
 Double_t thetaR=sqrt(-1.);
 Double_t thetaD=sqrt(-1.);
-//Double_t E1;
 Double_t Eb1=sqrt(-1.);
 Double_t Eb2=sqrt(-1.);
 Double_t ECsI1=sqrt(-1.);
@@ -353,6 +350,7 @@ void HandlePHYSICS(IDet *det)
 	  	thetaR =( atan((geoP.YdInnerRadius+((det->TYdRing.at(0)+1)*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance)
 			   	+ atan((geoP.YdInnerRadius+((det->TYdRing.at(0))*(geoP.YdOuterRadius-geoP.YdInnerRadius)/16))/geoP.YdDistance) )/2.;
 	  	thetaD = thetaR*TMath::RadToDeg();
+		IrisEvent->fThetaD = thetaD;
 		EYY1 = det->TYdEnergy.at(0);
 	}	
 	if (det->TCsI1Energy.size()>0&&det->TYdEnergy.size()>0&&det->TYdRing.size()>0) {    //check if in the proton/deuteron gate

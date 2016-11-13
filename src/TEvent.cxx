@@ -69,6 +69,7 @@ Int_t TEvent::Clear(){
   fQv2=0;                         //
   fThetacm1=0;                         //
   fThetacm2=0;                         //
+  fThetaD=0;                         //
   fEB=0; //Beam energy           //
   // fPart.Clear();
 return 1;
