@@ -25,11 +25,6 @@ extern TEvent *IrisEvent;
 extern TFile* treeFile;
 extern TTree* tree;
 
-//#define csv_output //output a selected dataset into a csv file, for analysis with a different program, such as python
-#ifdef csv_output
-ofstream csv_file;
-#endif
-
 CalibPHYSICS calPhys;
 geometry geoP;
 Graphsdedx dedx_p, dedx_d, dedx_t, dedx_i[3];
@@ -112,11 +107,6 @@ void HandleBOR_PHYSICS(int run, int time, IDet *det, TString CalibFile)
 //	else deuterons->SetName("deuterons");
 //	printf("Grabbed gates.\n");
 	
-	#ifdef csv_output  
-	  	csv_file.open("S1147pd.csv", ios::out);
-	  	assert(csv_file.is_open());
-	#endif
-
 	geoP.ReadGeometry(calPhys.fileGeometry.data());
 	geoP.Print();
 	
@@ -452,19 +442,13 @@ void HandlePHYSICS(IDet *det)
 	//	IrisEvent->fThetacm = TMath::RadToDeg()*atan(Pby/Pbxcm);
 	//	if (IrisEvent->fThetacm < 0) 
 	//  		IrisEvent->fThetacm = IrisEvent->fThetacm+180.;
-	 		#ifdef csv_output
-				csv_file << det->QValue <<"," << det->TYdEnergy<<","<<IrisEvent->fPart.fThetacm <<","<< det->TYdTheta<< endl;
-			#endif
-//	}//isinside proton (deuteron) gate
+	 	//	}//isinside proton (deuteron) gate
 
 	tree->Fill();
 }
 
 void HandleEOR_PHYSICS(int run, int time)
 {
- #ifdef csv_output
-  csv_file.close();
-#endif
-  printf(" in Physics EOR\n");
+  	printf(" in Physics EOR\n");
 }
  

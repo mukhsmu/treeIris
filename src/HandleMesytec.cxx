@@ -167,17 +167,8 @@ float SSBGain=0;
 // Time dependent corrections
 float SiTCorrFactor = 1.;
 float ICTCorrFactor = 1.;
-
-extern FILE* ASCIIYY1;
-extern FILE* ASCIICsI1;
-extern FILE* ASCIICsI2;
-extern FILE* ASCIISd1;
-extern FILE* ASCIISd2;
-// extern FILE* ASCIISu;
-extern FILE* ASCIIIC;
-int ascii =0; // bool for writing ascii AS
-
 uint32_t adcThresh = 0;
+
 int ydNo;
 
 //AS Total energies
@@ -522,12 +513,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			aVector.SetY(aVector.Y()+geoM.yShift);
   			det.TSdTheta.at(i) = aVector.Theta()*TMath::RadToDeg();
 		}
-
-		if (ascii) 
-			fprintf(ASCIISd1," %d  %d %d %d %d %d %d %d %d \n",
-			event.GetSerialNumber(), Sd1rChannel[0]+64, (int)Sd1rEnergy[0],  Sd1rChannel[1]+64, (int)Sd1rEnergy[1],  
-			Sd1sChannel[0]+96, (int)Sd1sEnergy[0],  Sd1sChannel[1]+96, (int)Sd1sEnergy[1]);
-
+		
 		for (Int_t i=0;i<NSd2rChannels;i++){
 			if(gUseRaw) det.TSd2rADC.push_back(Sd2rADC[i]); 
     		Double_t max = 0.;
@@ -574,11 +560,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd2sChannel.push_back(Sd2sChannel[i]);
 		}
 	
-		if (ascii) 
-			fprintf(ASCIISd2," %d  %d %d %d %d %d %d %d %d \n",
-			event.GetSerialNumber(), Sd2rChannel[0]+64, (int)Sd2rEnergy[0],  Sd2rChannel[1]+64, (int)Sd2rEnergy[1],  
-			Sd2sChannel[0]+96, (int)Sd2sEnergy[0],  Sd2sChannel[1]+96, (int)Sd2sEnergy[1]);
-
 	  	//root tree values
 		
 		det.SSB = SSBEnergy;
@@ -613,9 +594,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TYdTheta.push_back(YdTheta[i]);
 		}
 	 
-	  	if (ascii) 
-	    	fprintf(ASCIIYY1," %d  %d %d %d %d \n",event.GetSerialNumber(), YdChannel[0]+192, (int)YdEnergy[0],  YdChannel[1]+192, (int)YdEnergy[1]);
-	
 		for (Int_t i=0;i<NCsIChannels;i++){
 			if(gUseRaw) det.TCsI1ADC.push_back(CsI1Energy[i]);
     		Double_t max = 0.;
@@ -689,9 +667,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
  		 if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
    		 	{det.TCsI2Energy.at(0)=0;}
 
-    	if (ascii)  fprintf(ASCIICsI1," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI1Channel[0]+32, (int)CsI1Energy[0],  CsI1Channel[1]+32, (int)CsI1Energy[1]);
-    	if (ascii)  fprintf(ASCIICsI2," %d  %d %d %d %d \n",event.GetSerialNumber(), CsI2Channel[0]+32, (int)CsI2Energy[0],  CsI2Channel[1]+32, (int)CsI2Energy[1]);
-    	
 		ICEnergy=0; ICEnergy2 =0; ICChannel = -1; ICChannel2 =-1;
     	for (int i =0; i< NICChannels;i++) {
     		// printf("IC ch: %d, value %f\n", i, IC[i]);
@@ -706,8 +681,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
     	} //for
    
-    	if (ascii)  fprintf(ASCIIIC," %d  %d %d %d %d \n",event.GetSerialNumber(), ICChannel+32, (int)ICEnergy,  ICChannel2+32, (int)ICEnergy2);
-
     	//Use calibration values here
    
 		if(ICEnergy>0.) 
@@ -731,38 +704,9 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 	calMesy.Load(CalibFile);
 	calMesy.Print();
 
-	ascii = calMesy.boolASCII;
-	
 	char label[32]; //, sig[32];
 	geoM.ReadGeometry(calMesy.fileGeometry.data());
 // ************************************************************************************
-
-	//ASCII output file
-    if (ascii) {
-  		sprintf(label,"ASCIIYY1run%d.txt",gRunNumber);    
-  		ASCIIYY1 = fopen(label,"w");
- 		fprintf(ASCIIYY1,"Evt:  id1: vpeak1: id2: vpeak2 \n");
-		
-		sprintf(label,"ASCIICsI1run%d.txt",gRunNumber); 
- 		ASCIICsI1 = fopen(label,"w");
- 		fprintf(ASCIICsI1,"Evt:  id1: vpeak1: id2: vpeak2 \n");
-
-  		sprintf(label,"ASCIICsI2run%d.txt",gRunNumber); 
- 		ASCIICsI2 = fopen(label,"w");
- 		fprintf(ASCIICsI2,"Evt:  id1: vpeak1: id2: vpeak2 \n");
-
- 		sprintf(label,"ASCIIICrun%d.txt",gRunNumber); 
- 		ASCIIIC = fopen(label,"w");
- 		fprintf(ASCIIIC,"Evt:  id1: vpeak1: id2: vpeak2 \n");
-
-  		sprintf(label,"ASCIISd2run%d.txt",gRunNumber); 
- 		ASCIISd2 = fopen(label,"w");
- 		fprintf(ASCIISd2,"Evt:  idr1: vpeakr1: idr2: vpeakr2:  ids1: vpeaks1: ids2: vpeaks2 \n");
-
- 		sprintf(label,"ASCIISd1run%d.txt",gRunNumber);
-		ASCIISd1 = fopen(label,"w");
- 		fprintf(ASCIISd1,"Evt:  idr1: vpeakr1: idr2: vpeakr2:  ids1: vpeaks1: ids2: vpeaks2 \n");
-	} //ascii AS
 
 	treeFile->cd();
 	// create a TTree
