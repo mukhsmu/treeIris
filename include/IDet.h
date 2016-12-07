@@ -36,9 +36,9 @@ class IDet : public TObject {
 
 		Double_t SSB;
 		
-		Int_t TICChannel;
-		Double_t TICEnergy;
-		Double_t TIC[16];
+		std::vector<Int_t> TICChannel;
+		std::vector<Double_t> TICEnergy;
+		std::vector<Double_t> TICADC;
 
 		Int_t TSd1rMul;
 		std::vector<Int_t> TSd1rChannel;

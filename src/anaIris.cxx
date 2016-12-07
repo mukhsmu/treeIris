@@ -44,12 +44,6 @@ TFile* treeFile = NULL;
 TTree *tree = NULL;
 TEvent *IrisEvent = NULL;
 VirtualOdb* gOdb = NULL;
-FILE* ASCIIYY1 = NULL;
-FILE* ASCIICsI1 = NULL;
-FILE* ASCIICsI2 = NULL;
-FILE* ASCIIIC = NULL;
-FILE* ASCIISd1 = NULL;
-FILE* ASCIISd2 = NULL;
 
 IDet detec; // calibrated variables from detectors, to be passed to HandlePhysics
 IDet *pdet = &detec;
@@ -317,14 +311,8 @@ int main(int argc, char *argv[])
 				ProcessMidasFile(/*app,*/arg);
 			}
 			else{
-				if(have_output==false){
-					printf("No output file specified!\n");
-					printf("Use -o=/path/to/your/output-file!\n");
-				}
-			//	if(have_calib==false){ 
-			//		printf("No calibration file specified!\n");
-			//		printf("Use -c=/path/to/your/calib-file!\n");
-			//	}
+				printf("No output file specified!\n");
+				printf("Use -o=/path/to/your/output-file!\n");
 	 		}
      	}
 	}

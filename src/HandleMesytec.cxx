@@ -1,18 +1,5 @@
-//
 // ROOT analyzer
-//
 // detector handling
-//
-// $Id$
-//
-/// \mainpage
-///
-/// \section intro_sec Introduction
-///
-///
-/// \section features_sec Features
-///  
-///   state = gOdb->odbReadInt("/runinfo/State");
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -46,25 +33,24 @@ geometry geoM;
 
 Bool_t usePeds = 0; // 1 -> using pedestals instead of offsets for Silicon detectors AS
 TVector3 aVector;
+const int NChannels = 512;
 const int NCsI2Group = 16;
 const int NCsI1Group = 16;
-const int Nchannels = 8*64;
-const int NICChannels=16;
-const int NCsIChannels=16;
-const int NSd1rChannels=32;
-const int NSd1sChannels=32;
-const int NSd2rChannels=32;
-const int NSd2sChannels=32;
-const int NSurChannels=32;
-const int NSusChannels=32;
-const int NYdChannels=4*32;
-const int NYuChannels=4*32;
+const int NICChannels = 16;
+const int NCsIChannels = 16;
+const int NSd1rChannels = 32;
+const int NSd1sChannels = 32;
+const int NSd2rChannels = 32;
+const int NSd2sChannels = 32;
+const int NSurChannels = 32;
+const int NSusChannels = 32;
+const int NYdChannels = 128;
+const int NYuChannels = 128;
 
 char var[50];
 //AS Ion Chamber
-float IC[32]={0}, ICEnergy=0, ICEnergy2=0; //Dummy for IC energy
+float IC[32]={0}, ICEnergy; //Dummy for IC energy
 int ICChannel;  // channel with the greatest value
-int ICChannel2;
 float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
@@ -324,7 +310,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				//if (overflow)
 	  				//vpeak = 0xFFFF;
 	 
-	  				if (debug1  && modid==1) printf("Evt#:%d items:%d - data[%d]: %d / 0x%x\n", event.GetSerialNumber(),Nchannels, i, data[i], data[i]); 
+	  				if (debug1  && modid==1) printf("Evt#:%d items:%d - data[%d]: %d / 0x%x\n", event.GetSerialNumber(),NChannels, i, data[i], data[i]); 
 	
 	  				if (debug1  && modid==1) printf("Data: ch:%d id:%d val:%f\n", channel, modid, (float) vpeak);
 	  				// RK :  Energy Calibration 
@@ -344,9 +330,11 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid==1 && vpeak > adcThresh && vpeak<3840){
 	    				if (channel<16){
 	    					CsI1[channel] = (float)vpeak;
+	    					CsI1ADC[channel] = (float)vpeak;
 	    	    		}	    
 		  				else if (channel>=16){
 	    					CsI2[channel-16] = (float)vpeak;
+	    					CsI2ADC[channel-16] = (float)vpeak;
 	    	    		}	    
 	  				}
 	
@@ -595,7 +583,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		}
 	 
 		for (Int_t i=0;i<NCsIChannels;i++){
-			if(gUseRaw) det.TCsI1ADC.push_back(CsI1Energy[i]);
+			if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -613,22 +601,16 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		det.TCsI1Mul = CsI1Mul;
 		for(int i=0; i<CsI1Mul; i++){
-	
 			if (YdMul>0){
 	      		int m = (YdChannel[0]%16)/(16/NCsI1Group);
 	      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
 	      		det.TCsI1Energy.push_back(CsI1Energy[i]); 
 	      		det.TCsI1Channel.push_back(CsI1Channel[i]);
 	    	}
-
-	 //		if (CsI1Energy[i]>0.){
-	 //   		CsIEnergy[i] = CsI1Energy[i];
-	 //   		CsIChannel[i] = CsI1Channel[i];
-	 //		}
 		}
 	
 		for (Int_t i=0;i<NCsIChannels;i++){
-			if(gUseRaw) det.TCsI2ADC.push_back(CsI2Energy[i]);
+			if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -646,38 +628,22 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 		det.TCsI2Mul = CsI2Mul;
 		for(int i=0; i<CsI2Mul; i++){
-	  		
-			if (CsI2Energy[i] < 4000. && YdMul>0){
+			if (CsI2Energy[i] < 3840. && YdMul>0){
 				int m = (YdChannel[0]%16)/(16/NCsI2Group);
 	        	CsI2Energy[i] = (CsI2Energy[i]-CsI2Ped[CsI2Channel[i]])*CsI2Gain[m][CsI2Channel[i]];
 	        	det.TCsI2Energy.push_back(CsI2Energy[i]);
 	        	det.TCsI2Channel.push_back(CsI2Channel[i]);
 	      	}
-	
-		//	if (CsI2Energy[i]>0.){
-	   	//		CsIEnergy[i] = CsI2Energy[i];//0.177*CsI1Energy[i]-23.3;
-		//		CsIChannel[i] = CsI2Channel[i];
-	 	//	}
-
-			// det.TCsIEnergy.push_back(CsIEnergy[i]); //for filling the tree
-			// det.TCsIChannel.push_back(CsIChannel[i]);
-		
 		}
 //	Has to be fixed for multi-hit!!!
- 		 if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
-   		 	{det.TCsI2Energy.at(0)=0;}
+ 		//if ((det.TCsI2Channel.size()>0&&det.TYdNo.size()>0&&int(det.TCsI2Channel.at(0)/2) != det.TYdNo.at(0))||(det.TCsI2Channel.size()>0&&det.TYdNo.size()==0))//checking if the csi is behind YY1
+   		 //	{det.TCsI2Energy.at(0)=0;}
 
-		ICEnergy=0; ICEnergy2 =0; ICChannel = -1; ICChannel2 =-1;
+		ICEnergy=0; ICChannel = -1;
     	for (int i =0; i< NICChannels;i++) {
-    		// printf("IC ch: %d, value %f\n", i, IC[i]);
     		if (ICEnergy<IC[i]){
-				ICEnergy2 = ICEnergy;
-				ICChannel2 = ICChannel;
       			ICEnergy=IC[i];
-      			ICChannel = i;}
-    		else  if (ICEnergy2<IC[i]){
-      			ICEnergy2=IC[i];
-      			ICChannel2 = i;
+      			ICChannel = i;
 			}
     	} //for
    
@@ -685,13 +651,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    
 		if(ICEnergy>0.) 
 		{
-			det.TICEnergy = ICEnergy; //for filling the tree
-			det.TICChannel = ICChannel;
+			det.TICEnergy.push_back(ICEnergy); //for filling the tree
+			det.TICChannel.push_back(ICChannel);
 		}
-		for(int i=0; i<NICChannels;i++){
-			if(IC[i]>0.)	det.TIC[i] = IC[i];
+		if(gUseRaw){
+			for(int i=0; i<NICChannels;i++){
+				det.TICADC.push_back(IC[i]);
+			}
 		}
-  
  		*pdet = det;
 		} //last bank
   	}//nitems!=0 

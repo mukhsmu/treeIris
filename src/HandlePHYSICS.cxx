@@ -277,7 +277,7 @@ void HandlePHYSICS(IDet *det)
  	if (calPhys.boolICGates==kFALSE) nGate=0;   
  	else if (calPhys.boolICGates==kTRUE) {  
 		for(int i=0; i<3; i++){  
- 			if ((det->TICEnergy>runDepPar[i].ICmin) && (det->TICEnergy<runDepPar[i].ICmax)) { 
+ 			if (det->TICEnergy.size()>0&&(det->TICEnergy.at(0)>runDepPar[i].ICmin) && (det->TICEnergy.at(0)<runDepPar[i].ICmax)) { 
 				nGate = i; 
   			}
 		}

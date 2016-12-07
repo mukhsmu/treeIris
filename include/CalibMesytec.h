@@ -45,7 +45,6 @@ class CalibMesytec : public TObject {
 		Bool_t boolYu;
 		Bool_t boolTCorrIC;
 		Bool_t boolTCorrSi;
-		Bool_t boolASCII;
 
 		virtual void ReadFilenames(char* line);
 		virtual void Load(std::string filename);

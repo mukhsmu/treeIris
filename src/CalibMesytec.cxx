@@ -117,9 +117,6 @@ void CalibMesytec::ReadFilenames(char* line)
 		fileTCorrSi += strval;
 		boolTCorrSi =kTRUE;
 	}
-	if (strcmp(line,"ASCII")==0){
-		boolASCII =kTRUE;
-	}
 }
 
 void CalibMesytec::Load(std::string filename){	
@@ -139,7 +136,6 @@ void CalibMesytec::Load(std::string filename){
 	boolYu=kFALSE;
 	boolTCorrIC=kFALSE;
 	boolTCorrSi=kFALSE;
-	boolASCII=kFALSE;
 
 	char line[256];
 	FILE* file=fopen(filename.data(),"rb");

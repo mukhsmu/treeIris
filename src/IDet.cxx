@@ -32,11 +32,9 @@ void IDet::Clear()
   	TYdCsI2ETot=0;
   	
 	SSB=0;
-   	TICEnergy=0;
-	TICChannel=-1;
-	for(int i=0;i<16;i++){
-		TIC[i]=0;
-	}
+	TICADC.clear();
+   	TICEnergy.clear();
+	TICChannel.clear();
 
 	TSd1rMul=0;
 	TSd1sMul=0;
