@@ -9,18 +9,12 @@
 // Run parameters
 
 extern int  gRunNumber;
+extern int  gEventNumber;
 extern bool gIsRunning;
 extern bool gIsPedestalsRun;
 extern bool gIsOffline;
-//extern int gUserMod;
-//extern int gUserChan;
 
-// Output files
-
-//extern TFile* gOutputFile;
 extern TFile* treeFile;
-//extern FILE* ASCIIYY1;
-// ODB access
 
 #include "VirtualOdb.h"
 
