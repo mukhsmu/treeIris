@@ -505,7 +505,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd1sChannel.push_back(Sd1sChannel[i]);
 			Sd1Phi[i] = -180.+360.*Sd1sChannel[i]/32.;
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			det.TSd1Phi.push_back(Sd1Phi[i]-11.25*rndm);
+			det.TSd1Phi.push_back(Sd1Phi[i]+11.25*rndm);
 		}
 
 //  		//Effect of shifting the beam by one mm
@@ -568,7 +568,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd2sChannel.push_back(Sd2sChannel[i]);
 			Sd2Phi[i] = 180.-360.*Sd2sChannel[i]/32.;
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			det.TSd2Phi.push_back(Sd2Phi[i]+11.25*rndm);
+			det.TSd2Phi.push_back(Sd2Phi[i]-11.25*rndm);
 		}
 	
 	  	//root tree values
