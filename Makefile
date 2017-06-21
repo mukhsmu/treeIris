@@ -23,6 +23,7 @@ ifdef ROOTSYS
 CXXFLAGS += -DHAVE_LIBNETDIRECTORY
 OBJS     += $(ROOTANA)/libNetDirectory/netDirectoryServer.o
 
+MIDASLIBS = $(ROOTANA)/libMidasInterface/libMidasInterface.a
 NETDIRLIB = $(ROOTANA)/libNetDirectory/libNetDirectory.a
 endif
 
@@ -32,11 +33,6 @@ ROOTCFLAGS    = $(shell root-config --cflags)
 CXXFLAGS      += -g -Wall -ansi -Df2cFortran -fPIC $(ROOTCFLAGS) 
 
 ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o $(LIBDIR)/libTEvent.so $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/HandleScaler.o  $(OBJECTDIR)/CalibMesytec.o $(OBJECTDIR)/geometry.o 
-
-ifdef MIDASSYS
-CXXFLAGS += -DHAVE_MIDAS -DOS_LINUX -Dextname -I$(MIDASSYS)/include
-MIDASLIBS = $(MIDASSYS)/linux/lib/libmidas.a
-endif
 
 SOFLAGS       = -g -shared
 LDFLAGS	      = -O2	
