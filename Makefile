@@ -16,16 +16,8 @@ LD = g++
 ROOTLIBS  = $(shell $(ROOTSYS)/bin/root-config --libs)  -lXMLParser -lThread -Wl,-rpath,$(ROOTSYS)/lib
 ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lXMLParser -lThread -Wl,-rpath,$(ROOTSYS)/lib
 
-# ROOT analyzer
+# Path of ROOT analyzer
 ROOTANA = $(HOME)/packages/rootana
-
-ifdef ROOTSYS
-CXXFLAGS += -DHAVE_LIBNETDIRECTORY
-OBJS     += $(ROOTANA)/libNetDirectory/netDirectoryServer.o
-
-MIDASLIBS = $(ROOTANA)/libMidasInterface/libMidasInterface.a
-NETDIRLIB = $(ROOTANA)/libNetDirectory/libNetDirectory.a
-endif
 
 CXXFLAGS += -g -O -Wall -Wuninitialized -I./  -I$(INCLUDEDIR) -I$(ROOTSYS)/include  -I$(ROOTANA) -I$(ROOTANA)/include
 
@@ -39,8 +31,8 @@ LDFLAGS	      = -O2
 
 all: $(BINARYDIR)/treeIris $(LIBDIR)/libTEvent.so
 
-$(BINARYDIR)/treeIris: $(ANAOBJECTS) $(OBJECTDIR)/treeIris.o $(MIDASLIBS) $(ROOTANA)/lib/librootana.a 
-	$(CXX) -o $@ $(CXXFLAGS) $^ $(MIDASLIBS) $(NETDIRLIB) $(ROOTGLIBS) -lm -lz -lutil -lnsl -lpthread -lrt
+$(BINARYDIR)/treeIris: $(ANAOBJECTS) $(OBJECTDIR)/treeIris.o $(ROOTANA)/lib/librootana.a 
+	$(CXX) -o $@ $(CXXFLAGS) $^ $(ROOTGLIBS) -lm -lz -lutil -lnsl -lpthread -lrt
 
 $(LIBDIR)/libTEvent.so: $(OBJECTDIR)/IDet.o $(OBJECTDIR)/ITdc.o $(OBJECTDIR)/IScaler.o $(OBJECTDIR)/TEventDict.o
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ -o $@
