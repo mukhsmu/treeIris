@@ -121,20 +121,24 @@ float Sd2sPed[NSd1sChannels]={0.};
 float Sd2Phi[NSd1sChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
 
 int SurMul=0;
+int SurADC[NSurChannels];
 float Sur[NSurChannels];
 float SurEnergy[NSurChannels]={0.}; // SurEnergy2= 0; //Dummy for Sur energy
 int SurChannel[NSurChannels]={-1}; //  SurChannel2; // channel with the greatest value
 float SurGain[NSurChannels]={1.};
 float SurOffset[NSurChannels]={0.};
 float SurPed[NSusChannels]={0.};
+float SuTheta[NSurChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
 
 int SusMul=0;
+int SusADC[NSusChannels];
 float Sus[NSusChannels];
 float SusEnergy[NSusChannels]={0.}; //  SusEnergy2=0; //Dummy for Sus energy      
 int SusChannel[NSusChannels]={-1}; // SusChannel2; // channel with the greatest value                                                                                    
 float SusGain[NSusChannels]={1.};
 float SusOffset[NSusChannels]={0.};
 float SusPed[NSusChannels]={0.};
+float SuPhi[NSusChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
 
 int YdMul=0;
 int YdADC[NYdChannels] ={0}; 
@@ -147,11 +151,14 @@ float YdOffset[NYdChannels]={0.};
 float YdPedestal[NYdChannels]={0.};
 
 int YuMul=0;
+int YuADC[NYuChannels] ={0}; 
 float Yu[NYuChannels] ={0}; 
-float YuEnergy=0, YuEnergy2=0; //Dummy for Yu energy
-int YuChannel, YuChannel2; // channel with the greatest value
+float YuEnergy[NYuChannels]={0.};//, YdEnergy2=0; //Dummy for Yd energy
+int YuChannel[NYuChannels]={-1};//, YdChannel2; // channel with the greatest value
+float YuTheta[NYdChannels] = {0.}; //
 float YuGain[NYuChannels]={1.};
 float YuOffset[NYuChannels]={0.};
+float YuPedestal[NYuChannels]={0.};
 //SSB
 float SSBEnergy = 0;
 float SSBOffset=0;
@@ -162,20 +169,19 @@ float SiTCorrFactor = 1.;
 float ICTCorrFactor = 1.;
 uint32_t adcThresh = 0;
 
-int ydNo;
+int ydNo, yuNo;
 
 //AS Total energies
 Double_t SdETot = 0;
 float YdDistance = 0.; // distance from target in mm
 float YdInnerRadius= 0., YdOuterRadius = 0. ; // inner and outer radii in mm
 float Sd1Distance = 0., Sd2Distance = 0.; //distance from target in mm
+float SuDistance = 0., YuDistance = 0.; //distance from target in mm
 float SdInnerRadius = 0., SdOuterRadius= 0.; //AS Inner and outer radii of an S3 detector (in mm).
 
 Double_t xShift = 0;//1.97;
 Double_t yShift = 0;//1.3;
 
-float SuDistance = 200; //AS distance from target in mm
-float SuTheta = 0, SuPhi=0; //AS Dummies for theta and SdPhi, to be used for filling histograms
 TRandom3 fRandom(0);
 Double_t rndm; //random number between 0 and 1 for each event
 
@@ -244,23 +250,33 @@ int clearDetectors()
 	SurMul=0;
 	for (int j=0; j<NSurChannels; j++){
    		Sur[j] = 0;
+   		SurADC[j] = 0;
 		SurEnergy[j] =0;
 		SurChannel[j] =-1;
+		SuTheta[j] =0;
 	}
 	SusMul=0;
 	for (int j=0; j<NSusChannels; j++){
    		Sus[j] = 0;
+   		SusADC[j] = 0;
 		SusEnergy[j] =0;
 		SusChannel[j] =-1;
+		SuPhi[j] =0;
 	}
-	
+	YuMul=0;
+	for (int j=0; j<NYuChannels; j++){
+	 	Yu[j] = 0;
+	 	YuADC[j] = 0;
+		YuEnergy[j]=0.;
+		YuChannel[j]=-1;
+    	YuTheta[j] = 0; 
+	}
+
+
 	ICEnergy=0;
 	SdETot=0;
 
 	ICChannel=-1;
-
-    SuTheta=0; 
-    SuPhi=0;
 
  	return 0;
 }
@@ -391,20 +407,29 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					}
 	
 					// Upstream S3 detector. Has to be properly implemented! 
-	  				if (modid==11  && vpeak> adcThresh && vpeak<3840){
-	  				  	// if (channel==0) pdet->SSB =(float)vpeak;
-	  				  	//SurEnergy = ((float)vpeak-SurOffset[channel+(modid-2)*32])*SurGain[channel+(modid-2)*32];
+	  				if (modid==10  && vpeak> adcThresh && vpeak<3840){
 	   					Sur[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
-	  				}
+	  					SurADC[channel]=vpeak;		
+						if (!usePeds){
+	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*(float)vpeak;
+						}
+						else if (usePeds){
+	   						Sur[channel] = SurGain[channel]*(((float)vpeak)-SurPed[channel]);
+						}
+
+					}
 	  				    
 	  				if (modid==11  && vpeak > adcThresh && vpeak<3840){
-	  				  	//SusEnergy = ((float)vpeak-SusOffset[channel+(modid-2)*32])*SusGain[channel+(modid-2)*32];
-	   					Sus[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
-	  				}
+	  					SusADC[channel]=vpeak;		
+	     				if (!usePeds){
+	    					Sus[channel] = SusOffset[channel]+SusGain[channel]*(float)vpeak;
+						}
+						else if (usePeds){
+	   						Sus[channel] = SusGain[channel]*(((float)vpeak)-SusPed[channel]);
+						}
+					}
 	  
 	  				if (modid>5 && modid<10 && vpeak>adcThresh  && vpeak<3840){
-	    				//YdEnergy = YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*(float)vpeak;
-	 					//Yd[channel+(modid-6)*32]=YdEnergy;
 						YdADC[channel+(modid-6)*32]=vpeak;
 	 					if(!usePeds){
 							Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*(float)vpeak;
@@ -412,7 +437,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						else{
 							Yd[channel+(modid-6)*32]=YdGain[channel+(modid-6)*32]*((float)vpeak-YdPedestal[channel+(modid-6)*32]);
 						}
-	    				//printf("YdEnergy: %f, vpeak: %d, gain: %f\n",YdEnergy, vpeak, YdGain[channel+(modid-6)*32]);
 	    				if (channel<16) ydNo = (modid-6)*2+1; //Yd number
 	    				if (channel>15) ydNo = (modid-6)*2+2;
 	  				} //modid
@@ -420,13 +444,21 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	 
 	 				// Upstream YY detector. Has to be properly implemented! 
 	  				if (modid>11 && modid<16 && vpeak >adcThresh  && vpeak<3840){  
-	  				  	YuEnergy = ((float)vpeak-YuOffset[channel+(modid-6)*32])*YuGain[channel+(modid-6)*32];
+	  				  	YuADC[channel+(modid-12)*32]=vpeak;
+	 					if(!usePeds){
+							Yu[channel+(modid-12)*32]=YuOffset[channel+(modid-12)*32]+YuGain[channel+(modid-12)*32]*(float)vpeak;
+						}
+						else{
+							Yu[channel+(modid-12)*32]=YuGain[channel+(modid-12)*32]*((float)vpeak-YuPedestal[channel+(modid-12)*32]);
+						}
+	    				if (channel<16) yuNo = (modid-12)*2+1; //Yu number
+	    				if (channel>15) yuNo = (modid-12)*2+2;
 	  				}
 	
 	  				//AS angles // Is this used anywhere??
-	  				if (modid==2){
+	  				// if (modid==2){
 	  				  	// theta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-fRandom.Rndm())+SdOuterRadius*(channel-fRandom.Rndm()))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
-	  				}
+	  				// }
 	  				
 	  				// if (modid==3){
 	  				//   	SdPhi = ((channel+fRandom.Rndm())*180./32.); //AS SdPhi angle for Sd (32 - number of sectors)
@@ -437,13 +469,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				 // cout <<  " det.TYdTheta= " <<  det.TYdTheta << endl;
 	  				//}
 	
-	  				if (modid==10){
-	  				  	SuTheta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-0.5)+SdOuterRadius*(channel+0.5))/24./SuDistance; //AS theta angle for Su (24 - number of rings)
-	  				}
-	  				
-	  				if (modid==11){
-	  				  	SuPhi = (channel*180./32.); //AS phi angle for Su (32 - number of sectors)
-	  				}
+	  				// if (modid==10){
+	  				//   	SuTheta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-0.5)+SdOuterRadius*(channel+0.5))/24./SuDistance; //AS theta angle for Su (24 - number of rings)
+	  				// }
+	  				// 
+	  				// if (modid==11){
+	  				//   	SuPhi = (channel*180./32.); //AS phi angle for Su (32 - number of sectors)
+	  				// }
 	
 	  				break;
 			} // switch
@@ -456,6 +488,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 	if (modid>5 && modid<10) {// check last bank
 
+		// 1st downstream S3, ring side
  		for (Int_t i=0;i<NSd1rChannels;i++){
 			if(gUseRaw) det.TSd1rADC.push_back(Sd1rADC[i]); 
     		Double_t max = 0.;
@@ -482,6 +515,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd1Theta.push_back(Sd1Theta[i]); //AS theta angle for Sd (24 - number of rings)
 		}
 		
+		// 1st downstream S3, sector side
 		for (Int_t i=0;i<NSd1sChannels;i++){
 			if(gUseRaw) det.TSd1sADC.push_back(Sd1sADC[i]); 
     		Double_t max = 0.;
@@ -507,17 +541,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 			det.TSd1Phi.push_back(Sd1Phi[i]+11.25*rndm);
 		}
-
-//  		//Effect of shifting the beam by one mm
-//		for(Int_t i=0; i<Sd1rMul; i++){
-//  			aVector.SetXYZ(0,0,geoM.Sd1Distance);
-//   			aVector.SetTheta(TMath::DegToRad()*det.TSdTheta.at(i));
-//   			if(i<Sd1sMul) aVector.SetPhi(TMath::DegToRad()*det.TSdPhi.at(i)); // if Sd1rMul>Sd1sMul, TSdPhi[i] should be zero for some events
-//   			aVector.SetX(aVector.X()+geoM.xShift);
-//   			aVector.SetY(aVector.Y()+geoM.yShift);
-//  			det.TSdTheta.at(i) = aVector.Theta()*TMath::RadToDeg();
-//		}
 		
+		// 2nd downstream S3, ring side
 		for (Int_t i=0;i<NSd2rChannels;i++){
 			if(gUseRaw) det.TSd2rADC.push_back(Sd2rADC[i]); 
     		Double_t max = 0.;
@@ -545,6 +570,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		}
 				
+		// 2nd downstream S3, sector side
 		for (Int_t i=0;i<NSd2sChannels;i++){
 			if(gUseRaw) det.TSd2sADC.push_back(Sd2sADC[i]); 
     		Double_t max = 0.;
@@ -571,10 +597,63 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd2Phi.push_back(Sd2Phi[i]-11.25*rndm);
 		}
 	
-	  	//root tree values
+		// Upstream S3, ring side
+		for (Int_t i=0;i<NSurChannels;i++){
+			if(gUseRaw) det.TSurADC.push_back(SurADC[i]); 
+    		Double_t max = 0.;
+    		Int_t index = -1;
+    		for (Int_t j=0;j<NSurChannels;j++){
+        		if(Sur[j] > max){
+            		max = Sur[j];
+            		index = j;
+        		}
+    		}		
+    
+    		SurEnergy[i] = Sur[index];
+			if(SurEnergy[i]>0.) SurMul++;
+    		SurChannel[i] = index;  
+    		Sur[index] = 0.;
+    	}
+
+		det.TSurMul = SurMul;
+		for (Int_t i=0;i<SurMul;i++){
+			det.TSurEnergy.push_back(SurEnergy[i]);
+			det.TSurChannel.push_back(SurChannel[i]);
+			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-SurChannel[i]-rndm)+geoM.SdOuterRadius*(SurChannel[i]+rndm))/24./(geoM.SuDistance));
+			det.TSuTheta.push_back(SuTheta[i]); //AS theta angle for Sd (24 - number of rings)
+
+		}
+				
+		// Upstream S3, sector side
+		for (Int_t i=0;i<NSusChannels;i++){
+			if(gUseRaw) det.TSusADC.push_back(SusADC[i]); 
+    		Double_t max = 0.;
+    		Int_t index = -1;
+    		for (Int_t j=0;j<NSusChannels;j++){
+        		if(Sus[j] > max){
+            		max = Sus[j];
+            		index = j;
+        		}
+    		}		
+    
+    		SusEnergy[i] = Sus[index];
+			if(SusEnergy[i]>0.) SusMul++;
+    		SusChannel[i] = index;  
+    		Sus[index] = 0.;
+    	}
+
+		det.TSusMul = SusMul;
+		for (Int_t i=0;i<SusMul;i++){
+			det.TSusEnergy.push_back(SusEnergy[i]);
+			det.TSusChannel.push_back(SusChannel[i]);
+			SuPhi[i] = 180.-360.*SusChannel[i]/32.;
+			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+			det.TSuPhi.push_back(SuPhi[i]-11.25*rndm);
+		}
+	
 		
-		det.SSB = SSBEnergy;
-		 		
+		// Downstream YY1
 		for (Int_t i=0;i<NYdChannels;i++){
 			if(gUseRaw) det.TYdADC.push_back(YdADC[i]); 
     		Double_t max = 0.;
@@ -604,7 +683,39 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			YdTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YdChannel[i]%16-rndm)+geoM.YdOuterRadius*(YdChannel[i]%16+rndm))/16./geoM.YdDistance);
 			det.TYdTheta.push_back(YdTheta[i]);
 		}
+
+		// Upstream YY1
+		for (Int_t i=0;i<NYuChannels;i++){
+			if(gUseRaw) det.TYuADC.push_back(YuADC[i]); 
+    		Double_t max = 0.;
+    		Int_t index = -1;
+    		for (Int_t j=0;j<NYuChannels;j++){
+        		if(Yu[j] > max){
+            		max = Yu[j];
+            		index = j;
+        		}
+    		}		
+    
+    		YuEnergy[i] = Yu[index];
+			if(YuEnergy[i]>0.) YuMul++;
+    		YuChannel[i] = index;  
+    		Yu[index] = 0.;
+    	}
+
+		det.TYuMul = YuMul;
+		for(int i=0;i<YuMul;i++){	
+			det.TYuEnergy.push_back(YuEnergy[i]);
+			det.TYuChannel.push_back(YuChannel[i]);
+	
+			det.TYuNo.push_back(int(YuChannel[i]/16));
+			det.TYuRing.push_back(YuChannel[i]%16);
+			//here
+			rndm = 0.99*fRandom.Rndm();
+			YuTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YuChannel[i]%16-rndm)+geoM.YdOuterRadius*(YuChannel[i]%16+rndm))/16./geoM.YuDistance);
+			det.TYuTheta.push_back(YuTheta[i]);
+		}
 	 
+		// CsI
 		for (Int_t i=0;i<NCsIChannels;i++){
 			if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[i]);
     		Double_t max = 0.;
@@ -690,8 +801,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
     	} //for
    
-    	//Use calibration values here
-   
+		// SSB
+		det.SSB = SSBEnergy;
+
+		// IC
 		if(ICEnergy>0.) 
 		{
 			det.TICEnergy.push_back(ICEnergy); //for filling the tree
@@ -1008,6 +1121,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("No calibration file for Su rings. Skipping Sur calibration.\n");
    		for (int i =0;i<24;i++  ){
 			SurPed[i] = 0.;
+			SurOffset[i] = 0.;
 			SurGain[i] = 1.;  
 		}
 	}  
@@ -1020,12 +1134,16 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 
 		for (int i =0;i<24;i++  ){
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
-       		if (!usePeds)
+       		if (!usePeds){
 				SurOffset[Chan-320] = a;
-       		else if (usePeds)
+				SurGain[Chan-320] = b; 
+				printf("SurOffset %lf Surgain %lf\n",SurOffset[Chan-320],SurGain[Chan-320]);
+			}
+       		else if (usePeds){
 				SurPed[Chan-320] = a;
 				SurGain[Chan-320] = b;
 				printf("SurPed %lf Surgain %lf\n",SurPed[Chan-320],SurGain[Chan-320]);
+			}
      	}
      	fclose (pFile);
 		printf("\n");
@@ -1039,8 +1157,9 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 	if (pFile == NULL || calMesy.boolSus==false) {
 		fprintf(logFile,"No calibration file for Su sectors. Skipping Sus calibration.\n");
 		printf("No calibration file for Su sectors. Skipping Sus calibration.\n");
-   		for (int i =0;i<24;i++  ){
+   		for (int i =0;i<32;i++  ){
 			SusPed[i] = 0.;
+			SusOffset[i] = 0.;
 			SusGain[i] = 1.;  
 		}
 	}  
@@ -1055,11 +1174,13 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
        		if (!usePeds){
 				SusOffset[Chan-352] = a;
+				SusGain[Chan-352] = b; 
+				printf("SusOffset %lf Susgain %lf\n",SusOffset[Chan-352],SusGain[Chan-352]);
 			}
        		else if (usePeds){
 				SusPed[Chan-352] = a;
 				SusGain[Chan-352] = b; 
-				printf("SusPed %lf Susgain %lf\n",a,b);
+				printf("SusPed %lf Susgain %lf\n",SusPed[Chan-352],SusGain[Chan-352]);
 			}
  		}
      	fclose (pFile);
@@ -1103,15 +1224,16 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		printf("\n");
   	}
 //************************************************************************
-//**************** Calibrate Yu, not yet impemented!  ****************************************
+//**************** Calibrate Yu ****************************************
 	Chan=-1;
    	pFile = fopen (calMesy.fileYu.data(), "r");
 
 	if (pFile == NULL || calMesy.boolYu==false) {
 		fprintf(logFile,"No calibration file for Yu. Skipping Yu calibration.\n");
 		printf("No calibration file for Yu. Skipping Yu calibration.\n");
-		for (int i =0;i<NYdChannels;i++  ){
+		for (int i =0;i<NYuChannels;i++  ){
 			YuOffset[i] = 0.;
+			YuPedestal[i] = 0.;
 			YuGain[i] = 1.;  
 		}
 	}
@@ -1121,15 +1243,20 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
   		fscanf(pFile,"%s",buffer);
   		fscanf(pFile,"%s",buffer);
   		fscanf(pFile,"%s",buffer);
-
-  		for (int i =0;i< NYuChannels;i++  ){
+    	for (int i =0;i< NYuChannels;i++  ){
     		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
 			YuGain[Chan-384] = b;
- 			YuOffset[Chan-384] = -1.*a*b;
- 			printf("gain %lf ped %lf\t",b,a);
+ 			if(!usePeds){
+			   	YuOffset[Chan-384] = a;
+ 				printf("gain %lf offset %lf\t",b,a);
+			}
+			else{
+			   	YuPedestal[Chan-384] = a;
+ 				printf("gain %lf pedestal %lf\t",b,a);
+			}
 			if((i+1)%4==0) printf("\n");
     	}
-    	fclose (pFile);
+		fclose (pFile);
 		printf("\n");
   	}
 //************************************************************************
