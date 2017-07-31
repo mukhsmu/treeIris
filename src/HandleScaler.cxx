@@ -86,10 +86,12 @@ void HandleScaler(TMidasEvent& event, void* ptr, IScaler *pscaler, int nitems, i
 }
 
 //---------------------------------------------------------------------------------
-void HandleBOR_Scaler(int run, int time, IScaler *pscaler)
+void HandleBOR_Scaler(int run, int file, int time, IScaler *pscaler)
 {
   	printf(" in Scaler BOR\n");
-	tree->Branch("scaler","Iscaler",pscaler,32000,99);
+	if(file==0) tree->Branch("scaler","Iscaler",pscaler,32000,99);
+	else tree->SetBranchAddress("scaler",&pscaler);
+	printf("Finished HandleBOR_Scaler\n");
 }
 
 

@@ -201,10 +201,12 @@ void HandleV1190(TMidasEvent& event, void* ptr, ITdc* ptdc, int nitems, int bank
 }
 
 //---------------------------------------------------------------------------------
-void HandleBOR_V1190(int run, int time, ITdc *ptdc)
+void HandleBOR_V1190(int run, int file, int time, ITdc *ptdc)
 {
 	printf("\nHandleBOR_V1190...\n\n");
-	tree->Branch("tdc","ITdc",ptdc,32000,99);
+	if(file==0) tree->Branch("tdc","ITdc",ptdc,32000,99);
+	else tree->SetBranchAddress("tdc",&ptdc);
+	printf("Finished HandleBOR_V1190\n");
 }
 
 //---------------------------------------------------------------------------------

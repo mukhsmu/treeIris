@@ -53,13 +53,6 @@ int ICChannel;  // channel with the greatest value
 float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
-//AS CsI
-// int CsIMul=0;
-// float CsI[16]={0}, CsIEnergy[16];//, CsIEnergy2; //CsI energy
-// int CsIChannel[16];// channel with the greatest value
-// double CsIGain[NCsIChannels]={0.};
-// double CsIPed[NCsIChannels]={0.};
-
 int CsI1Mul=0;
 int CsI1ADC[16]={0};
 float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
@@ -307,7 +300,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 	 				if (debug) {
 	  					printf("Header: id:%d of:%d res:%d el:%d\n" , modid, oformat, resolution, evlength);
-	
+					}	
 	  				break;
 				case 0xC0000000: // Trailer Event
 				case 0xD0000000: // Trailer Event
@@ -330,28 +323,20 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				
 					overflow = (data[i] & 0x4000) ? 1 : 0;
 	  				vpeak    = (data[i] & 0x1FFF);
-	  				//Set a software threshold 
 	
-	  				//if (overflow)
-	  				//vpeak = 0xFFFF;
-	 
 	  				if (debug1  && modid==1) printf("Evt#:%d items:%d - data[%d]: %d / 0x%x\n", event.GetSerialNumber(),NChannels, i, data[i], data[i]); 
 	
 	  				if (debug1  && modid==1) printf("Data: ch:%d id:%d val:%f\n", channel, modid, (float) vpeak);
-	  				// RK :  Energy Calibration 
 	  				
+					// Ionization Chamber
 	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ 
-	    				//AS Fill histogram
-						//IC[channel] = (float)vpeak;
 						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];
-						// if (channel==16) // change MA july3
 	        			if (channel==31){
 	          				SSBEnergy = float(vpeak);// *SSBGain + SSBOffset;
-							// printf("vpeak%f",float(vpeak));
-							// printf("ssb E is %d", SSBEnergy);
 						}
 	  				}
-	  
+	  				
+					// CsI
 	  				if (modid==1 && vpeak > adcThresh && vpeak<3840){
 	    				if (channel<16){
 	    					CsI1[channel] = (float)vpeak;
@@ -363,6 +348,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	    	    		}	    
 	  				}
 	
+					// Second downstream S3 detector, rings
 	  				if (modid==2 && vpeak > adcThresh && vpeak<3840){
 	 					S3Hit = 1;
 						Sd2rADC[channel]=vpeak;		
@@ -374,6 +360,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 							} 
 	  				}
 	  
+					// Second downstream S3 detector, segments
 	  				if (modid==3 && vpeak > adcThresh && vpeak<3840){
 	    				S3Hit = 1;
 						Sd2sADC[channel]=vpeak;		
@@ -385,6 +372,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 							}
 	   					}
 	
+					// First downstream S3 detector, rings
 	  				if (modid==4 && vpeak > adcThresh  && vpeak<3840){
 	 					S3Hit = 1; 
 						Sd1rADC[channel]=vpeak;		
@@ -395,6 +383,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	   						Sd1r[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
 						}
 					}	
+					// First downstream S3 detector, segments
 	  				if (modid==5 && vpeak > adcThresh  && vpeak<3840){
 	     				S3Hit = 1;
 						Sd1sADC[channel]=vpeak;		
@@ -406,7 +395,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						}
 					}
 	
-					// Upstream S3 detector. Has to be properly implemented! 
+					// Upstream S3 detector, rings
 	  				if (modid==10  && vpeak> adcThresh && vpeak<3840){
 	   					Sur[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
 	  					SurADC[channel]=vpeak;		
@@ -419,6 +408,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 					}
 	  				    
+					// Upstream S3 detector, segments
 	  				if (modid==11  && vpeak > adcThresh && vpeak<3840){
 	  					SusADC[channel]=vpeak;		
 	     				if (!usePeds){
@@ -429,6 +419,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						}
 					}
 	  
+	 				// Downstream YY1 detector 
 	  				if (modid>5 && modid<10 && vpeak>adcThresh  && vpeak<3840){
 						YdADC[channel+(modid-6)*32]=vpeak;
 	 					if(!usePeds){
@@ -439,10 +430,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						}
 	    				if (channel<16) ydNo = (modid-6)*2+1; //Yd number
 	    				if (channel>15) ydNo = (modid-6)*2+2;
-	  				} //modid
+	  				}
 	  
-	 
-	 				// Upstream YY detector. Has to be properly implemented! 
+	 				// Upstream YY1 detector 
 	  				if (modid>11 && modid<16 && vpeak >adcThresh  && vpeak<3840){  
 	  				  	YuADC[channel+(modid-12)*32]=vpeak;
 	 					if(!usePeds){
@@ -453,41 +443,19 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						}
 	    				if (channel<16) yuNo = (modid-12)*2+1; //Yu number
 	    				if (channel>15) yuNo = (modid-12)*2+2;
-	  				}
-	
-	  				//AS angles // Is this used anywhere??
-	  				// if (modid==2){
-	  				  	// theta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-fRandom.Rndm())+SdOuterRadius*(channel-fRandom.Rndm()))/24./Sd1Distance; //AS theta angle for Sd (24 - number of rings)
-	  				// }
-	  				
-	  				// if (modid==3){
-	  				//   	SdPhi = ((channel+fRandom.Rndm())*180./32.); //AS SdPhi angle for Sd (32 - number of sectors)
-	  				// }
-	  				//  if (modid>5 && modid<10){
-	  				  //theta = TMath::RadToDeg()*(YdInnerRadius*(16.-channel-0.5)+YdOuterRadius*(channel+0.5))/16./YdDistance;
-	  				  //det.TYdTheta= theta;
-	  				 // cout <<  " det.TYdTheta= " <<  det.TYdTheta << endl;
-	  				//}
-	
-	  				// if (modid==10){
-	  				//   	SuTheta = TMath::RadToDeg()*(SdInnerRadius*(24.-channel-0.5)+SdOuterRadius*(channel+0.5))/24./SuDistance; //AS theta angle for Su (24 - number of rings)
-	  				// }
-	  				// 
-	  				// if (modid==11){
-	  				//   	SuPhi = (channel*180./32.); //AS phi angle for Su (32 - number of sectors)
-	  				// }
+					}
 	
 	  				break;
 			} // switch
 	  	} // for loop
 	} // nitems != 0
 	
-	//After looping over banks, fill the root tree
+	// After looping over banks, fill the root tree
+	// Detector hits are sorted by energy, then copied to the root tree
 	
 	det.Clear(); //make sure root variables are empty
 
-	if (modid>5 && modid<10) {// check last bank
-
+	if(bank==5){ // check last bank
 		// 1st downstream S3, ring side
  		for (Int_t i=0;i<NSd1rChannels;i++){
 			if(gUseRaw) det.TSd1rADC.push_back(Sd1rADC[i]); 
@@ -620,7 +588,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSurEnergy.push_back(SurEnergy[i]);
 			det.TSurChannel.push_back(SurChannel[i]);
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-SurChannel[i]-rndm)+geoM.SdOuterRadius*(SurChannel[i]+rndm))/24./(geoM.SuDistance));
+			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-SurChannel[i]-rndm)+geoM.SdOuterRadius*(SurChannel[i]+rndm))/24./(geoM.SuDistance)) + 180.;
 			det.TSuTheta.push_back(SuTheta[i]); //AS theta angle for Sd (24 - number of rings)
 
 		}
@@ -711,7 +679,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TYuRing.push_back(YuChannel[i]%16);
 			//here
 			rndm = 0.99*fRandom.Rndm();
-			YuTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YuChannel[i]%16-rndm)+geoM.YdOuterRadius*(YuChannel[i]%16+rndm))/16./geoM.YuDistance);
+			YuTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YuChannel[i]%16-rndm)+geoM.YdOuterRadius*(YuChannel[i]%16+rndm))/16./geoM.YuDistance) + 180.;
 			det.TYuTheta.push_back(YuTheta[i]);
 		}
 	 
@@ -780,8 +748,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	      	}
 		}
 
-		// Resorting Yd if hits don't match with CsI
-		if(det.TCsI1Channel.size()>0&&det.TYdNo.size()>1&&calMesy.boolCsI1==true) // only check if YY1 has more than one hit  and CsI has a hit and has been calibrated
+		// Re-sorting Yd if hits don't match with CsI
+		if(det.TCsI1Channel.size()>0&&det.TYdNo.size()>1&&calMesy.boolCsI1==true) // only check if YY1 has more than one hit and CsI has a hit and has been calibrated
 		{
  			if (int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(0)!=0 && int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(1)!=0)//checking if the CsI hit is behind the first or second hit in  YY1
 			{
@@ -816,30 +784,30 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 		}
  		*pdet = det;
-		} //last bank
-  	}//nitems!=0 
+	} //last bank
 }
 
 //---------------------------------------------------------------------------------
-void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
+void HandleBOR_Mesytec(int run, int file, int time, IDet* pdet, std::string CalibFile)
 {
 	if(CalibFile=="") printf("No calibration file specified!\n\n");
 	calMesy.Load(CalibFile);
 	calMesy.Print();
 
-	// char label[32]; //, sig[32];
 	geoM.ReadGeometry(calMesy.fileGeometry.data());
 // ************************************************************************************
 
 	treeFile->cd();
 	// create a TTree
-	tree = new TTree("Iris","iris data");
-	// create one branch with all information from the YY1
+	if(file==0){
+	   	tree = new TTree("Iris","iris data");
+		tree->Branch("det","IDet",pdet,32000,99);
+	}
+	else{
+	   	tree = (TTree*)treeFile->Get("Iris");
+		tree->SetBranchAddress("det",&pdet);
+	}
 
-	tree->Branch("det","IDet",pdet,32000,99);
-
-	//IrisEvent = new TEvent();
- 	//tree->Branch("IrisEvent","TEvent",&IrisEvent,32000,99);
 
 // Temporary variables for calibration 
  	Int_t Chan=-1;
@@ -1355,6 +1323,7 @@ void HandleBOR_Mesytec(int run, int time, IDet* pdet, std::string CalibFile)
 		}
   	}
 
+	printf("Finished HandleBOR_Mesytec\n");
 //************************************************************************
 
 

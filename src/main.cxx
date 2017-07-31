@@ -28,15 +28,17 @@
 // Global Variables
 int  gRunNumber = 0;
 int  gEventNumber = 0;
+int  gFileNumber = 0;
 bool gIsPedestalsRun = false;
 int  gEventCutoff = 0;
 bool gUseTdc = false;
 bool gUseRaw = false;
+bool gUseDccp = false;
 std::string gOutputFile = "";
 std::string gCalibFile = "";
 
-char mesbkname[][5] = {"ICA_", "SD2A", "SD1A", "YDA_","SUA_",""};
-char tdcbkname[][5] = {"ICT_", "YDT_", "YUT_", "SUT_" ,"SD2T" ,"SD1T"};
+char mesbkname[][5] = {"ICA_", "SD2A", "SD1A", "YDA_", "SUA_", "YUA_"};
+char tdcbkname[][5] = {"ICT_", "SD2T", "SD1T", "YDT_", "SUT_", "YUT_"};
 char stabkname[][5] = {"VTST", "VTSA", "VTRT", "VTRA"};
 char scalbkname[][5] = {"SCAD", "SCAR", "SCAS",""}; //scalers
 
@@ -74,15 +76,24 @@ void startRun(int run,int time)
 	char filename[1024];
 	
 	sprintf(filename, "%s", gOutputFile.data());
-	treeFile = new TFile(filename,"RECREATE");
+	if(gFileNumber==0) treeFile = new TFile(filename,"RECREATE");
+	else  treeFile = new TFile(filename,"UPDATE");
 	printf("Writing data to %s.\n",gOutputFile.data());
 	
-	HandleBOR_Mesytec(run, time, pdet, gCalibFile);
-	if(gUseTdc) HandleBOR_V1190(run, time, ptdc);
-	HandleBOR_Scaler(run,time,pscaler); 
+	HandleBOR_Mesytec(run, gFileNumber, time, pdet, gCalibFile);
+	if(gUseTdc) HandleBOR_V1190(run, gFileNumber, time, ptdc);
+	HandleBOR_Scaler(run, gFileNumber, time, pscaler); 
 	HandleBOR_STAT(run, time);
-	tree->Branch("Run",&gRunNumber,"Run/i");
-	tree->Branch("Event",&gEventNumber,"Event/i");
+	if(gFileNumber==0){
+		tree->Branch("Run",&gRunNumber,"Run/I");
+		tree->Branch("Event",&gEventNumber,"Event/I");
+	}
+	else{
+		tree->SetBranchAddress("Run",&gRunNumber);
+		tree->SetBranchAddress("Event",&gEventNumber);
+	}
+	gFileNumber++;
+	printf("Started run.\n");
 }
 
 void endRun(int run,int time)
@@ -105,7 +116,7 @@ void endRun(int run,int time)
 }
 
 //--------------------------------------------------------------
-void HandleMidasEvent(TMidasEvent& event, Int_t evNo)
+void HandleMidasEvent(TMidasEvent& event)
 {
   	void *ptr;
   	int m;
@@ -164,7 +175,10 @@ int ProcessMidasFile(const char*fname)
 	char dcfname[100] = "dccp://";
    	strcat(dcfname,fname); // added dccp:// in front of fname, there is seg fault
   	TMidasFile f;
-  	bool tryOpen = f.Open(dcfname);
+  	bool tryOpen = false;
+  	
+	if(gUseDccp) tryOpen = f.Open(dcfname);
+	else tryOpen = f.Open(fname);
  
   	if (!tryOpen)
     {
@@ -195,7 +209,7 @@ int ProcessMidasFile(const char*fname)
     	else
 		{
 			event.SetBankList();
-			HandleMidasEvent(event,gEventNumber);
+			HandleMidasEvent(event);
 		}
     	
     	if((gEventNumber%100)==0)
@@ -226,6 +240,7 @@ void help()
 	printf("\t-e: Number of events to read from input data files\n");
 	printf("\t-tdc: Write TDC data to root file.\n");
 	printf("\t-raw: Write raw ADC data to root file.\n");
+	printf("\t-dccp: Use dccp file system.\n");
 	printf("\n");
 	exit(1);
 }
@@ -249,7 +264,6 @@ int main(int argc, char *argv[])
 	}
 	
 	bool have_output= false;
-	bool have_calib= false;
 
    	for (unsigned int i=1; i<args.size(); i++) // loop over the commandline options
  	{
@@ -271,20 +285,19 @@ int main(int argc, char *argv[])
 		}
 		else if (strncmp(arg,"-c=",3)==0){  // Calibration file 
 	 		gCalibFile = arg+3;
-			have_calib=true;
 		}
        	else if (strncmp(arg,"-c",2)==0){  // Calibration file 
 	 		gCalibFile = arg+2;
-			have_calib=true;
 		}
       	else if (strncmp(arg,"--config=",9)==0){  // Calibration file 
 	 		gCalibFile = arg+9;
-			have_calib=true;
 		}
        	else if (strcmp(arg,"-tdc")==0)
 	 		gUseTdc=true;
        	else if (strcmp(arg,"-raw")==0)
 	 		gUseRaw=true;
+       	else if (strcmp(arg,"-dccp")==0)
+	 		gUseDccp=true;
        	else if (strcmp(arg,"-h")==0)
 	 		help(); // does not return
        	else if (arg[0] == '-')

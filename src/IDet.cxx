@@ -60,13 +60,17 @@ void IDet::Clear()
   	TSd2Theta.clear();
   	TSd1Phi.clear();
   	TSd2Phi.clear();
-  	TYdMul=0;  
-	TYdADC.clear();
-	TYdEnergy.clear();
-  	TYdTheta.clear();// Yd theta angle                                                                       
-	TYdChannel.clear();
-	TYdNo.clear();
-	TYdRing.clear();
+  	
+	TYuMul=0;  
+	TYuADC.clear();
+	TYuEnergy.clear();
+  	TYuTheta.clear();// Yd theta angle                                                                       
+	TYuChannel.clear();
+	TYuNo.clear();
+	TYuRing.clear();
+	
+	TSurMul=0;
+	TSusMul=0;
 	TSurEnergy.clear();
 	TSurChannel.clear();
   	TSurADC.clear();
