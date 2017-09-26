@@ -588,7 +588,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSurEnergy.push_back(SurEnergy[i]);
 			det.TSurChannel.push_back(SurChannel[i]);
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-SurChannel[i]-rndm)+geoM.SdOuterRadius*(SurChannel[i]+rndm))/24./(geoM.SuDistance)) + 180.;
+			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(SurChannel[i]+rndm)+geoM.SdOuterRadius*(24-SurChannel[i]-rndm))/24./(geoM.SuDistance)) + 180.;
 			det.TSuTheta.push_back(SuTheta[i]); //AS theta angle for Sd (24 - number of rings)
 
 		}
