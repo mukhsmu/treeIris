@@ -92,7 +92,7 @@ void startRun(int run,int time)
 		tree->SetBranchAddress("Run",&gRunNumber);
 		tree->SetBranchAddress("Event",&gEventNumber);
 	}
-	gFileNumber++;
+	//gFileNumber++;
 	printf("Started run.\n");
 }
 

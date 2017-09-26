@@ -1,7 +1,6 @@
 //IScaler.cxx
 
 #include "IScaler.h"
-#include <math.h>
 IScaler::IScaler(){
   	IScaler::Clear();
 }

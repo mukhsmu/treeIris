@@ -32,9 +32,6 @@ class IDet : public TObject {
 		
 		Double_t TYdCsI1ETot;
 		Double_t TYdCsI2ETot;
-		//		Int_t TCsIMul;
-//		std::vector<Int_t> TCsIChannel;
-//		std::vector<Double_t> TCsIEnergy;
 
 		Double_t SSB;
 		

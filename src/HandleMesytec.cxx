@@ -533,7 +533,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TSd2rEnergy.push_back(Sd2rEnergy[i]);
 			det.TSd2rChannel.push_back(Sd2rChannel[i]);
 			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			Sd2Theta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd2rChannel[i]-rndm)+geoM.SdOuterRadius*(Sd2rChannel[i]+rndm))/24./(geoM.Sd1Distance+14.));
+			Sd2Theta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd2rChannel[i]-rndm)+geoM.SdOuterRadius*(Sd2rChannel[i]+rndm))/24./(geoM.Sd1Distance+14.8));
 			det.TSd2Theta.push_back(Sd2Theta[i]); //AS theta angle for Sd (24 - number of rings)
 
 		}
@@ -788,7 +788,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 }
 
 //---------------------------------------------------------------------------------
-void HandleBOR_Mesytec(int run, int file, int time, IDet* pdet, std::string CalibFile)
+void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::string CalibFile)
 {
 	if(CalibFile=="") printf("No calibration file specified!\n\n");
 	calMesy.Load(CalibFile);
@@ -799,7 +799,7 @@ void HandleBOR_Mesytec(int run, int file, int time, IDet* pdet, std::string Cali
 
 	treeFile->cd();
 	// create a TTree
-	if(file==0){
+	if(gFileNumber==0){
 	   	tree = new TTree("Iris","iris data");
 		tree->Branch("det","IDet",pdet,32000,99);
 	}

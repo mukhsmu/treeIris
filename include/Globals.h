@@ -15,6 +15,7 @@ extern bool gIsPedestalsRun;
 extern bool gIsOffline;
 
 extern TFile* treeFile;
+extern TTree* tree;
 
 #include "VirtualOdb.h"
 
