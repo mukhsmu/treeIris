@@ -3,8 +3,7 @@
 #include <math.h>
 
 IDet::IDet(){
-  //IDet::Class()->IgnoreTObjectStreamer;
-  IDet::Clear();
+	IDet::Clear();
 }
 
 void IDet::Clear()
@@ -21,10 +20,9 @@ void IDet::Clear()
 	TCsI2Mul=0;
   	TCsI1Energy.clear();
   	TCsI2Energy.clear();
-  	//TCsIEnergy.clear();
   	TCsI1ADC.clear();
-  	TCsI2ADC.clear();
-//	TCsIChannel.clear();
+  	
+	TCsI2ADC.clear();
 	TCsI1Channel.clear();
 	TCsI2Channel.clear();
 	TCsI1Phi.clear();
@@ -33,7 +31,14 @@ void IDet::Clear()
   	TYdCsI1ETot=0;
   	TYdCsI2ETot=0;
   	
-	SSB=0;
+	TSSBADC=0;
+	TSSBEnergy=0;
+	TScADC=0;
+	TScEnergy=0;
+
+	TTrADC.clear();
+   	TTrEnergy.clear();
+
 	TICADC.clear();
    	TICEnergy.clear();
 	TICChannel.clear();

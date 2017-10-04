@@ -17,6 +17,7 @@ class CalibMesytec : public TObject {
 		std::string fileGeometry;
 		std::string fileELoss;
 		std::string fileIC;
+		std::string fileTr;
 		std::string fileCsI1;
 		std::string fileCsI2;
 		std::string fileSd1r;
@@ -33,6 +34,7 @@ class CalibMesytec : public TObject {
 		Bool_t boolGeometry;
 		Bool_t boolELoss;
 		Bool_t boolIC;
+		Bool_t boolTr;
 		Bool_t boolCsI1;
 		Bool_t boolCsI2;
 		Bool_t boolSd1r;

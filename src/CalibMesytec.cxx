@@ -44,6 +44,7 @@ void CalibMesytec::ReadFilenames(char* line)
 		fileGeometry = strval;
 		fileELoss = strval;
 		fileIC = strval;
+		fileTr = strval;
 		fileCsI1 = strval;
 		fileCsI2 = strval;
 		fileSd1r = strval;
@@ -68,6 +69,10 @@ void CalibMesytec::ReadFilenames(char* line)
 	if (strcmp(line,"IC")==0){
 		fileIC += strval;
 		boolIC =kTRUE;
+	}
+	if (strcmp(line,"TRIFIC")==0){
+		fileTr += strval;
+		boolTr =kTRUE;
 	}
 	if (strcmp(line,"CSI1")==0){
 		fileCsI1 += strval;
@@ -124,6 +129,7 @@ void CalibMesytec::Load(std::string filename){
 	boolGeometry=kFALSE;
 	boolELoss=kFALSE;
 	boolIC=kFALSE;
+	boolTr=kFALSE;
 	boolCsI1=kFALSE;
 	boolCsI2=kFALSE;
 	boolSd1r=kFALSE;
@@ -178,6 +184,8 @@ void CalibMesytec::Print(){
 	else	printf("No energy loss root file specified.\n");
 	if(boolIC)	printf("Ionization chamber calibration: %s\n",fileIC.data());
 	else	printf("No ionization chamber calibration specified.\n");
+	if(boolTr)	printf("TRIFIC calibration: %s\n",fileTr.data());
+	else	printf("No TRIFIC calibration specified.\n");
 	if(boolCsI1)	printf("CsI1 calibration: %s\n",fileCsI1.data());
 	else	printf("No CsI1 calibration specified.\n");
 	if(boolCsI2)	printf("CsI2 calibration: %s\n",fileCsI2.data());

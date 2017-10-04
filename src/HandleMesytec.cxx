@@ -45,13 +45,30 @@ const int NSurChannels = 32;
 const int NSusChannels = 32;
 const int NYdChannels = 128;
 const int NYuChannels = 128;
+const int NTrChannels = 3;
 
 char var[50];
 //AS Ion Chamber
-float IC[32]={0}, ICEnergy; //Dummy for IC energy
+float IC[32]={0};
+float ICEnergy; //Dummy for IC energy
 int ICChannel;  // channel with the greatest value
 float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
+
+int TrADC[NTrChannels]={0};
+float TrEnergy[NTrChannels]={0};
+float TrGain[NTrChannels]={1.};
+float TrPed[NTrChannels]={0.};
+//SSB
+int SSBADC = 0;
+float SSBEnergy = 0;
+float SSBGain=1;
+float SSBPed=0;
+//Scintillator
+int ScADC = 0;
+float ScEnergy = 0;
+float ScGain=1;
+float ScPed=0;
 
 int CsI1Mul=0;
 int CsI1ADC[16]={0};
@@ -152,10 +169,6 @@ float YuTheta[NYdChannels] = {0.}; //
 float YuGain[NYuChannels]={1.};
 float YuOffset[NYuChannels]={0.};
 float YuPedestal[NYuChannels]={0.};
-//SSB
-float SSBEnergy = 0;
-float SSBOffset=0;
-float SSBGain=0;
 
 // Time dependent corrections
 float SiTCorrFactor = 1.;
@@ -331,8 +344,25 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					// Ionization Chamber
 	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ 
 						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];
-	        			if (channel==31){
-	          				SSBEnergy = float(vpeak);// *SSBGain + SSBOffset;
+	        			if (channel==18){
+	          				ScADC = vpeak;
+	          				ScEnergy = (float(vpeak)-ScPed) * ScGain;
+						}
+						if (channel==21){
+	          				TrADC[0] = vpeak;
+	          				TrEnergy[0] = (float(vpeak)-TrPed[0]) * TrGain[0];
+						}
+						if (channel==22){
+	          				TrADC[1] = vpeak;
+	          				TrEnergy[1] = (float(vpeak)-TrPed[1]) * TrGain[1];
+						}
+						if (channel==23){
+	          				TrADC[2] = vpeak;
+	          				TrEnergy[2] = (float(vpeak)-TrPed[2]) * TrGain[2];
+						}
+						if (channel==31){
+	          				SSBADC = vpeak;
+	          				SSBEnergy = (float(vpeak)-SSBPed) * SSBGain;
 						}
 	  				}
 	  				
@@ -768,9 +798,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
       			ICChannel = i;
 			}
     	} //for
-   
+    
 		// SSB
-		det.SSB = SSBEnergy;
+		det.TSSBADC = SSBADC;
+		det.TSSBEnergy = SSBEnergy;
+
+		// Scintillator
+		det.TScADC = ScADC;
+		det.TScEnergy = ScEnergy;
 
 		// IC
 		if(ICEnergy>0.) 
@@ -778,9 +813,17 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			det.TICEnergy.push_back(ICEnergy); //for filling the tree
 			det.TICChannel.push_back(ICChannel);
 		}
+		if(TrEnergy[0]>0){
+			for(int i=0; i<NTrChannels; i++){
+				det.TTrEnergy.push_back(TrEnergy[i]);
+			}
+		}
 		if(gUseRaw){
 			for(int i=0; i<NICChannels;i++){
 				det.TICADC.push_back(IC[i]);
+			}
+			for(int i=0; i<NTrChannels; i++){
+				det.TTrADC.push_back(TrADC[i]);
 			}
 		}
  		*pdet = det;
@@ -821,7 +864,8 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 
 	// logfile
    	logFile = fopen("treeIris.log","w");
-	
+		
+//*************** Calibrate IC ********************************
    	pFile = fopen(calMesy.fileIC.data(), "r");
 
 	if (pFile == NULL || calMesy.boolIC==false) {
@@ -840,11 +884,41 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
   		fscanf(pFile,"%s",buffer);
  		fscanf(pFile,"%s",buffer);
 
-		for (int i =0;i<16;i++  ){
+		for (int i =0;i<NICChannels;i++  ){
        		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
 			ICPed[Chan] = a;
 			ICGain[Chan] = b;
 			printf("ICPed %lf ICgain %lf\n",ICPed[Chan],ICGain[Chan]);
+     	}
+     	fclose (pFile);
+		printf("\n");
+ 	}
+   	
+
+//*************** Calibrate TRIFIC ****************************
+	pFile = fopen(calMesy.fileTr.data(), "r");
+
+	if (pFile == NULL || calMesy.boolTr==false) {
+		//perror ("No file");
+		fprintf(logFile,"No calibration file for TRIFIC. Skipping TRIFIC calibration.\n");
+		printf("No calibration file for TRIFIC. Skipping TRIFIC calibration.\n");
+		for (int i =0;i<NTrChannels;i++  ){
+			TrPed[i] = 0.;
+			TrGain[i] = 1.;
+     	}
+   	}  
+ 	else  {
+		printf("Reading TRIFIC config file '%s'\n",calMesy.fileTr.data());
+		// Skip first line
+  		fscanf(pFile,"%s",buffer);
+  		fscanf(pFile,"%s",buffer);
+ 		fscanf(pFile,"%s",buffer);
+
+		for (int i =0;i<16;i++  ){
+       		fscanf(pFile,"%d%lf%lf",&Chan,&a,&b);
+			TrPed[Chan] = a;
+			TrGain[Chan] = b;
+			printf("TrPed %lf Trgain %lf\n",TrPed[Chan],TrGain[Chan]);
      	}
      	fclose (pFile);
 		printf("\n");
