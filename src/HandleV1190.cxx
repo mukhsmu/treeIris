@@ -47,7 +47,7 @@ Double_t timeRF[512];
 uint32_t geo, evtcnt=0, tdc=0, bunchid, evtid, vchannel;
 uint32_t modchannel, measure, wordcnt, evtidt, errflag, trailer;
 
-void HandleV1190(TMidasEvent& event, void* ptr, ITdc* ptdc, int nitems, int bank)
+void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc)
 {
 	ITdc times;
 	uint32_t *data;

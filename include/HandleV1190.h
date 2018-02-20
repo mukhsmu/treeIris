@@ -17,7 +17,7 @@ class tdc_t
 		int timeRaw[512];
 };
 
-void  HandleV1190(TMidasEvent& event, void* ptr, ITdc* ptdc, int nitems, int bank);
+void  HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc);
 void  HandleBOR_V1190(int run, int file, int time, ITdc *timeArray);
 void  HandleEOR_V1190(int run, int time);
 

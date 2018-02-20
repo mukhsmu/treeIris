@@ -140,7 +140,7 @@ void HandleMidasEvent(TMidasEvent& event)
   			while (tdcbkname[m][0]) {
 				int size = event.LocateBank(NULL, tdcbkname[m], &ptr);
 				if (ptr && size) {
-			  		HandleV1190(event, ptr, ptdc, size, m); 
+			  		HandleV1190(event, ptr, size, m, ptdc); 
 				}
 				m++;
   			}
@@ -151,7 +151,7 @@ void HandleMidasEvent(TMidasEvent& event)
     	while (scalbkname[m][0]) { 
       		int size = event.LocateBank(NULL, scalbkname[m], &ptr);
       		if (ptr && size) { 
-				HandleScaler(event, ptr, pscaler, size, m); 
+				HandleScaler(event, ptr, size, m, pscaler); 
       		} 
       		m++;
     	}

@@ -34,13 +34,15 @@ extern TTree *tree;
 //scal_t scaler;
 const int Nchannels = 32;
 
-void HandleScaler(TMidasEvent& event, void* ptr, IScaler *pscaler, int nitems, int MYLABEL)
+	void HandleScaler(TMidasEvent& event, void* ptr, int nitems, int bank, IScaler *pscaler)
 {
 	IScaler scaler;
 	uint32_t *data;
 	int    i, debug = 0, debug1 = 0; 
 	int eventId = event.GetEventId();
-	scaler.Clear();	
+	if(bank==0){
+		scaler.Clear();	
+	}
 	data = (uint32_t *) ptr;
 
     
@@ -52,14 +54,14 @@ void HandleScaler(TMidasEvent& event, void* ptr, IScaler *pscaler, int nitems, i
 	if (nitems != 0) {
       	if (debug) printf(" Scaler EvtId: %d Evt#:%d nitems:%d\n", eventId, event.GetSerialNumber(), nitems); 
 		if (nitems > Nchannels) return;
-	  	if (MYLABEL==0){	  
+	  	if (bank==0){	  
       		for (i=0 ; i<nitems ; i++) {
 				if (debug1) printf("items:%d - data[%d]: %d / 0x%x\n", Nchannels, i, data[i], data[i]);
 	
       		} //for
-	  	} //MYLABEL==0
+	  	} //bank==0
 
-	  	if (MYLABEL==1){	  
+	  	if (bank==1){	  
       		for (i=0 ; i<nitems ; i++) {
 				if (debug1) printf("items:%d - data[%d]: %d / 0x%x\n", Nchannels, i, data[i], data[i]);
 				scaler.ICRate = data[30];
@@ -67,9 +69,9 @@ void HandleScaler(TMidasEvent& event, void* ptr, IScaler *pscaler, int nitems, i
 	  			scaler.AccepTrigRate = data[26];
 	  			scaler.FreeTrigRate = data[31];
       		} //for
-	  	} //MYLABEL==0
+	  	} //bank==0
 
-	  	if (MYLABEL==2){	  
+	  	if (bank==2){	  
       		for (i=0 ; i<nitems ; i++) {
 				if (debug1) printf("items:%d - data[%d]: %d / 0x%x\n", Nchannels, i, data[i], data[i]);
 	  			scaler.ICSum = data[30];
@@ -77,12 +79,14 @@ void HandleScaler(TMidasEvent& event, void* ptr, IScaler *pscaler, int nitems, i
 	  			scaler.AccepTrigSum = data[26];
 	  			scaler.FreeTrigSum = data[31];
       		} //for
-	  	} //MYLABEL==0
+	  	} //bank==0
 	} // nitems != 0
      
     scaler.EventID = eventId;
- 	
-	*pscaler = scaler;
+ 
+	//if(bank==2){	
+		*pscaler = scaler;
+	//}
 }
 
 //---------------------------------------------------------------------------------

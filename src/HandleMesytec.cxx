@@ -90,72 +90,79 @@ double CsI2Ped[NCsIChannels]={0.};
 int Sd1rMul=0;
 int Sd1rADC[NSd1rChannels];
 float Sd1r[NSd1rChannels];
-float Sd1rEnergy[NSd1rChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
-int Sd1rChannel[NSd1rChannels]={-1}; //  Sd1rChannel2; // channel with the greatest value
+float Sd1rEnergy[NSd1rChannels]={0.}; // Dummy for Sd1r energy
+int Sd1rChannel[NSd1rChannels]={-1}; // channel with the greatest value
+int Sd1rNeighbour[NSd1rChannels]={-1}; // neighbour of channel with the greatest value
 float Sd1rGain[NSd1rChannels]={1.};
 float Sd1rOffset[NSd1rChannels]={0.};
 float Sd1rPed[NSd1sChannels]={0.};
 float Sd1rGain2[NSd1rChannels]={1.}; //recalibration parameters
 float Sd1rOffset2[NSd1rChannels]={0.}; //recalibration parameters
-float Sd1Theta[NSd1rChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float Sd1Theta[NSd1rChannels]={0.}; 
 
 int Sd1sMul=0;
 int Sd1sADC[NSd1rChannels];
 float Sd1s[NSd1sChannels];
-float Sd1sEnergy[NSd1sChannels]={0.}; //  Sd1sEnergy2=0; 
-int Sd1sChannel[NSd1sChannels]={-1}; // Sd1sChannel2; // channel with the greatest value                                                                                    
+float Sd1sEnergy[NSd1sChannels]={0.}; // Dummy for Sd1s energy 
+int Sd1sChannel[NSd1sChannels]={-1}; // channel with the greatest value                                                                                    
+int Sd1sNeighbour[NSd1sChannels]={-1}; // neighbour of channel with the greatest value
 float Sd1sGain[NSd1sChannels]={1.};
 float Sd1sOffset[NSd1sChannels]={0.};
 float Sd1sPed[NSd1sChannels]={0.};
-float Sd1Phi[NSd1sChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float Sd1Phi[NSd1sChannels]={0.};
 
 int Sd2rMul=0;
 int Sd2rADC[NSd1rChannels];
 float Sd2r[NSd2rChannels];
-float Sd2rEnergy[NSd2rChannels]={0.}; // Sd2rEnergy2= 0; //Dummy for Sd2r energy
-int Sd2rChannel[NSd2rChannels]={-1}; //  Sd2rChannel2; // channel with the greatest value
+float Sd2rEnergy[NSd2rChannels]={0.}; //Dummy for Sd2r energy
+int Sd2rChannel[NSd2rChannels]={-1}; // channel with the greatest value
+int Sd2rNeighbour[NSd2rChannels]={-1}; // neighbour of channel with the greatest value
 float Sd2rGain[NSd2rChannels]={1.};
 float Sd2rOffset[NSd2rChannels]={0.};
 float Sd2rPed[NSd1sChannels]={0.};
-float Sd2Theta[NSd1rChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float Sd2Theta[NSd1rChannels]={0.};
 Bool_t S3Hit;
 
 int Sd2sMul=0;
 int Sd2sADC[NSd1rChannels];
 float Sd2s[NSd2sChannels];
-float Sd2sEnergy[NSd2sChannels]={0.}; //  Sd2sEnergy2= 0; //Dummy for Sd2s energy  
-int Sd2sChannel[NSd2sChannels]={-1}; // Sd2sChannel2; // channel with the greatest value
+float Sd2sEnergy[NSd2sChannels]={0.}; //Dummy for Sd2s energy  
+int Sd2sChannel[NSd2sChannels]={-1}; // channel with the greatest value
+int Sd2sNeighbour[NSd2sChannels]={-1}; // neighbour of channel with the greatest value
 float Sd2sGain[NSd2sChannels]={1.};
 float Sd2sOffset[NSd2sChannels]={0.};
 float Sd2sPed[NSd1sChannels]={0.};
-float Sd2Phi[NSd1sChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float Sd2Phi[NSd1sChannels]={0.};
 
 int SurMul=0;
 int SurADC[NSurChannels];
 float Sur[NSurChannels];
-float SurEnergy[NSurChannels]={0.}; // SurEnergy2= 0; //Dummy for Sur energy
-int SurChannel[NSurChannels]={-1}; //  SurChannel2; // channel with the greatest value
+float SurEnergy[NSurChannels]={0.}; //Dummy for Sur energy
+int SurChannel[NSurChannels]={-1}; // channel with the greatest value
+int SurNeighbour[NSurChannels]={-1}; // neighbour of channel with the greatest value
 float SurGain[NSurChannels]={1.};
 float SurOffset[NSurChannels]={0.};
 float SurPed[NSusChannels]={0.};
-float SuTheta[NSurChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float SuTheta[NSurChannels]={0.};
 
 int SusMul=0;
 int SusADC[NSusChannels];
 float Sus[NSusChannels];
-float SusEnergy[NSusChannels]={0.}; //  SusEnergy2=0; //Dummy for Sus energy      
-int SusChannel[NSusChannels]={-1}; // SusChannel2; // channel with the greatest value                                                                                    
+float SusEnergy[NSusChannels]={0.}; //Dummy for Sus energy      
+int SusChannel[NSusChannels]={-1}; // channel with the greatest value                                                                                    
+int SusNeighbour[NSusChannels]={-1}; // neighbour of channel with the greatest value
 float SusGain[NSusChannels]={1.};
 float SusOffset[NSusChannels]={0.};
 float SusPed[NSusChannels]={0.};
-float SuPhi[NSusChannels]={0.}; // Sd1rEnergy2= 0; //Dummy for Sd1r energy
+float SuPhi[NSusChannels]={0.}; //Dummy for Sd1r energy
 
 int YdMul=0;
 int YdADC[NYdChannels] ={0}; 
 float Yd[NYdChannels] ={0.}; 
-float YdEnergy[NYdChannels]={0.};//, YdEnergy2=0; //Dummy for Yd energy
-int YdChannel[NYdChannels]={-1};//, YdChannel2; // channel with the greatest value
-float YdTheta[NYdChannels] = {0.}; //
+float YdEnergy[NYdChannels]={0.}; //Dummy for Yd energy
+int YdChannel[NYdChannels]={-1}; // channel with the greatest value
+int YdNeighbour[NYdChannels]={-1}; // neighbour of channel with the greatest value
+float YdTheta[NYdChannels] = {0.};
 float YdGain[NYdChannels]={1.};
 float YdOffset[NYdChannels]={0.};
 float YdPedestal[NYdChannels]={0.};
@@ -163,9 +170,10 @@ float YdPedestal[NYdChannels]={0.};
 int YuMul=0;
 int YuADC[NYuChannels] ={0}; 
 float Yu[NYuChannels] ={0}; 
-float YuEnergy[NYuChannels]={0.};//, YdEnergy2=0; //Dummy for Yd energy
-int YuChannel[NYuChannels]={-1};//, YdChannel2; // channel with the greatest value
-float YuTheta[NYdChannels] = {0.}; //
+float YuEnergy[NYuChannels]={0.}; //Dummy for Yd energy
+int YuChannel[NYuChannels]={-1}; // channel with the greatest value
+int YuNeighbour[NYuChannels]={-1}; // neighbour of channel with the greatest value
+float YuTheta[NYdChannels] = {0.};
 float YuGain[NYuChannels]={1.};
 float YuOffset[NYuChannels]={0.};
 float YuPedestal[NYuChannels]={0.};
@@ -219,6 +227,7 @@ int clearDetectors()
    		Sd1rADC[j] = 0;
 		Sd1rEnergy[j] =0;
 		Sd1rChannel[j] =-1;
+		Sd1rNeighbour[j] =-1;
 		Sd1Theta[j] =0;
 	}
 	Sd1sMul=0;
@@ -227,6 +236,7 @@ int clearDetectors()
    		Sd1sADC[j] = 0;
 		Sd1sEnergy[j] =0;
 		Sd1sChannel[j] =-1;
+		Sd1sNeighbour[j] =-1;
 		Sd1Phi[j] =0;
 	}
 	Sd2rMul=0;
@@ -235,6 +245,7 @@ int clearDetectors()
    		Sd2rADC[j] = 0;
 		Sd2rEnergy[j] =0;
 		Sd2rChannel[j] =-1;
+		Sd2rNeighbour[j] =-1;
 		Sd2Theta[j] =0;
 	}
 	Sd2sMul=0;
@@ -243,6 +254,7 @@ int clearDetectors()
    		Sd2sADC[j] = 0;
 		Sd2sEnergy[j] =0;
 		Sd2sChannel[j] =-1;
+		Sd2sNeighbour[j] =-1;
 		Sd2Phi[j] =0;
 	}
 	YdMul=0;
@@ -251,6 +263,7 @@ int clearDetectors()
 	 	YdADC[j] = 0;
 		YdEnergy[j]=0.;
 		YdChannel[j]=-1;
+		YuNeighbour[j] =-1;
     	YdTheta[j] = 0; 
 	}
 	SurMul=0;
@@ -259,6 +272,7 @@ int clearDetectors()
    		SurADC[j] = 0;
 		SurEnergy[j] =0;
 		SurChannel[j] =-1;
+		SurNeighbour[j] =-1;
 		SuTheta[j] =0;
 	}
 	SusMul=0;
@@ -267,6 +281,7 @@ int clearDetectors()
    		SusADC[j] = 0;
 		SusEnergy[j] =0;
 		SusChannel[j] =-1;
+		SusNeighbour[j] =-1;
 		SuPhi[j] =0;
 	}
 	YuMul=0;
@@ -275,11 +290,17 @@ int clearDetectors()
 	 	YuADC[j] = 0;
 		YuEnergy[j]=0.;
 		YuChannel[j]=-1;
+		YuNeighbour[j] =-1;
     	YuTheta[j] = 0; 
 	}
-
+	for (int j=0; j<NTrChannels; j++){
+	 	TrADC[j] = 0;
+		TrEnergy[j]=0.;
+	}
 
 	ICEnergy=0;
+	SSBEnergy=0;
+	ScEnergy=0;
 	SdETot=0;
 
 	ICChannel=-1;
@@ -486,9 +507,50 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	det.Clear(); //make sure root variables are empty
 
 	if(bank==5){ // check last bank
+
+		if(gUseRaw){	// write raw ADC values to tree
+ 			for(Int_t i=0;i<NSd1rChannels;i++){
+			   det.TSd1rADC.push_back(Sd1rADC[i]); 
+			}
+			for(Int_t i=0;i<NSd1sChannels;i++){
+			   det.TSd1sADC.push_back(Sd1sADC[i]); 
+			}
+			for(Int_t i=0;i<NSd2rChannels;i++){
+			   det.TSd2rADC.push_back(Sd2rADC[i]); 
+			}
+			for(Int_t i=0;i<NSd2sChannels;i++){
+			   det.TSd2sADC.push_back(Sd2sADC[i]); 
+			}
+			for(Int_t i=0;i<NSurChannels;i++){
+			   det.TSurADC.push_back(SurADC[i]); 
+			}
+			for(Int_t i=0;i<NSusChannels;i++){
+			   det.TSusADC.push_back(SusADC[i]); 
+			}
+			for(Int_t i=0;i<NYdChannels;i++){
+			   det.TYdADC.push_back(YdADC[i]); 
+			}
+			for(Int_t i=0;i<NYuChannels;i++){
+			   det.TYuADC.push_back(YuADC[i]); 
+			}
+			for(Int_t i=0;i<NCsIChannels;i++){
+			   det.TCsI1ADC.push_back(CsI1ADC[i]);
+			}
+			for(Int_t i=0;i<NCsIChannels;i++){
+				det.TCsI2ADC.push_back(CsI2ADC[i]);
+			}
+			for(Int_t  i=0; i<NICChannels;i++){
+				det.TICADC.push_back(IC[i]);
+			}
+			for(Int_t i=0; i<NTrChannels; i++){
+				det.TTrADC.push_back(TrADC[i]);
+			}
+			det.TSSBADC = SSBADC;
+			det.TScADC = ScADC;
+		}
+
 		// 1st downstream S3, ring side
  		for (Int_t i=0;i<NSd1rChannels;i++){
-			if(gUseRaw) det.TSd1rADC.push_back(Sd1rADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd1rChannels;j++){
@@ -497,11 +559,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
             		index = j;
         		}
     		}		
-    
-    		Sd1rEnergy[i] = Sd1r[index];
-			if(Sd1rEnergy[i]>0.) Sd1rMul++;
-    		Sd1rChannel[i] = index;  
-    		Sd1r[index] = 0.;
+   			if(max>0.){ 
+				Sd1rMul++;
+    			Sd1rEnergy[i] = Sd1r[index];
+    			Sd1rChannel[i] = index;  
+    			Sd1r[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSd1rMul = Sd1rMul;
@@ -515,7 +579,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		
 		// 1st downstream S3, sector side
 		for (Int_t i=0;i<NSd1sChannels;i++){
-			if(gUseRaw) det.TSd1sADC.push_back(Sd1sADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd1sChannels;j++){
@@ -525,10 +588,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		Sd1sEnergy[i] = Sd1s[index];
-			if(Sd1sEnergy[i]>0.) Sd1sMul++;
-    		Sd1sChannel[i] = index;  
-    		Sd1s[index] = 0.;
+   			if(max>0.){ 
+				Sd1sMul++;
+    			Sd1sEnergy[i] = Sd1s[index];
+    			Sd1sChannel[i] = index;  
+    			Sd1s[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSd1sMul = Sd1sMul;
@@ -542,7 +608,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		
 		// 2nd downstream S3, ring side
 		for (Int_t i=0;i<NSd2rChannels;i++){
-			if(gUseRaw) det.TSd2rADC.push_back(Sd2rADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd2rChannels;j++){
@@ -552,10 +617,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		Sd2rEnergy[i] = Sd2r[index];
-			if(Sd2rEnergy[i]>0.) Sd2rMul++;
-    		Sd2rChannel[i] = index;  
-    		Sd2r[index] = 0.;
+   			if(max>0.){ 
+				Sd2rMul++;
+    			Sd2rEnergy[i] = Sd2r[index];
+    			Sd2rChannel[i] = index;  
+    			Sd2r[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSd2rMul = Sd2rMul;
@@ -570,7 +638,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				
 		// 2nd downstream S3, sector side
 		for (Int_t i=0;i<NSd2sChannels;i++){
-			if(gUseRaw) det.TSd2sADC.push_back(Sd2sADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSd2sChannels;j++){
@@ -580,10 +647,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		Sd2sEnergy[i] = Sd2s[index];
-			if(Sd2sEnergy[i]>0.) Sd2sMul++;
-    		Sd2sChannel[i] = index;  
-    		Sd2s[index] = 0.;
+   			if(max>0.){ 
+				Sd2sMul++;
+    			Sd2sEnergy[i] = Sd2s[index];
+    			Sd2sChannel[i] = index;  
+    			Sd2s[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSd2sMul = Sd2sMul;
@@ -597,7 +667,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 		// Upstream S3, ring side
 		for (Int_t i=0;i<NSurChannels;i++){
-			if(gUseRaw) det.TSurADC.push_back(SurADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSurChannels;j++){
@@ -607,10 +676,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		SurEnergy[i] = Sur[index];
-			if(SurEnergy[i]>0.) SurMul++;
-    		SurChannel[i] = index;  
-    		Sur[index] = 0.;
+   			if(max>0.){ 
+				SurMul++;
+    			SurEnergy[i] = Sur[index];
+    			SurChannel[i] = index;  
+    			Sur[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSurMul = SurMul;
@@ -625,7 +697,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				
 		// Upstream S3, sector side
 		for (Int_t i=0;i<NSusChannels;i++){
-			if(gUseRaw) det.TSusADC.push_back(SusADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NSusChannels;j++){
@@ -635,10 +706,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		SusEnergy[i] = Sus[index];
-			if(SusEnergy[i]>0.) SusMul++;
-    		SusChannel[i] = index;  
-    		Sus[index] = 0.;
+   			if(max>0.){ 
+				SusMul++;
+    			SusEnergy[i] = Sus[index];
+    			SusChannel[i] = index;  
+    			Sus[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TSusMul = SusMul;
@@ -653,7 +727,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		
 		// Downstream YY1
 		for (Int_t i=0;i<NYdChannels;i++){
-			if(gUseRaw) det.TYdADC.push_back(YdADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NYdChannels;j++){
@@ -663,10 +736,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		YdEnergy[i] = Yd[index];
-			if(YdEnergy[i]>0.) YdMul++;
-    		YdChannel[i] = index;  
-    		Yd[index] = 0.;
+   			if(max>0.){ 
+				YdMul++;
+    			YdEnergy[i] = Yd[index];
+    			YdChannel[i] = index;  
+    			Yd[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TYdMul = YdMul;
@@ -684,7 +760,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		// Upstream YY1
 		for (Int_t i=0;i<NYuChannels;i++){
-			if(gUseRaw) det.TYuADC.push_back(YuADC[i]); 
     		Double_t max = 0.;
     		Int_t index = -1;
     		for (Int_t j=0;j<NYuChannels;j++){
@@ -694,10 +769,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		YuEnergy[i] = Yu[index];
-			if(YuEnergy[i]>0.) YuMul++;
-    		YuChannel[i] = index;  
-    		Yu[index] = 0.;
+   			if(max>0.){ 
+				YuMul++;
+    			YuEnergy[i] = Yu[index];
+    			YuChannel[i] = index;  
+    			Yu[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TYuMul = YuMul;
@@ -715,7 +793,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	 
 		// CsI
 		for (Int_t i=0;i<NCsIChannels;i++){
-			if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -725,10 +802,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		CsI1Energy[i] = CsI1[index];
-			if(CsI1Energy[i]>0.) CsI1Mul++;
-    		CsI1Channel[i] = index;  
-    		CsI1[index] = 0.;
+   			if(max>0.){ 
+				CsI1Mul++;
+    			CsI1Energy[i] = CsI1[index];
+    			CsI1Channel[i] = index;  
+    			CsI1[index] = 0.;
+			}
+			else break;
     	}
 
 		det.TCsI1Mul = CsI1Mul;
@@ -747,7 +827,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		}
 	
 		for (Int_t i=0;i<NCsIChannels;i++){
-			if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[i]);
     		Double_t max = 0.;
     		Int_t index = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
@@ -757,10 +836,13 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
         		}
     		}		
     
-    		CsI2Energy[i] = CsI2[index];
-			if(CsI2Energy[i]>0.) CsI2Mul++;
-    		CsI2Channel[i] = index;  
-    		CsI2[index] = 0.;
+   			if(max>0.){ 
+				CsI2Mul++;
+    			CsI2Energy[i] = CsI2[index];
+    			CsI2Channel[i] = index;  
+    			CsI2[index] = 0.;
+			}
+			else break;
     	}
 	
 		det.TCsI2Mul = CsI2Mul;
@@ -800,11 +882,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     	} //for
     
 		// SSB
-		det.TSSBADC = SSBADC;
 		det.TSSBEnergy = SSBEnergy;
 
 		// Scintillator
-		det.TScADC = ScADC;
 		det.TScEnergy = ScEnergy;
 
 		// IC
@@ -818,14 +898,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TTrEnergy.push_back(TrEnergy[i]);
 			}
 		}
-		if(gUseRaw){
-			for(int i=0; i<NICChannels;i++){
-				det.TICADC.push_back(IC[i]);
-			}
-			for(int i=0; i<NTrChannels; i++){
-				det.TTrADC.push_back(TrADC[i]);
-			}
-		}
+		
  		*pdet = det;
 	} //last bank
 }
