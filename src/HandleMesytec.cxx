@@ -47,11 +47,8 @@ const int NYdChannels = 128;
 const int NYuChannels = 128;
 const int NTrChannels = 3;
 
-char var[50];
 //AS Ion Chamber
 float IC[32]={0};
-float ICEnergy; //Dummy for IC energy
-int ICChannel;  // channel with the greatest value
 float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
@@ -70,110 +67,63 @@ float ScEnergy = 0;
 float ScGain=1;
 float ScPed=0;
 
-int CsI1Mul=0;
 int CsI1ADC[16]={0};
-float CsI1[16]={0}, CsI1Energy[16];//, CsI1Energy2; //CsI energy
-float CsI1Phi[16];//, CsI1Energy2; //CsI energy
-int CsI1Channel[16];  // channel with the greatest value
+float CsI1[16]={0};//, CsI1Energy2; //CsI energy
 double CsI1Gain[NCsI1Group][NCsIChannels]={{1.}};
 double CsI1Ped[NCsIChannels]={0.};
 
-int CsI2Mul=0;
 int CsI2ADC[16]={0};
-float CsI2[16]={0}, CsI2Energy[16];//, CsI2Energy2; //CsI energy
-float CsI2Phi[16];//, CsI2Energy2; //CsI energy
-int CsI2Channel[16];  // channel with the greatest value
+float CsI2[16]={0};//, CsI2Energy2; //CsI energy
 double CsI2Gain[NCsI2Group][NCsIChannels]={{1.}};
 double CsI2Ped[NCsIChannels]={0.};
 
 //AS S3
-int Sd1rMul=0;
 int Sd1rADC[NSd1rChannels];
 float Sd1r[NSd1rChannels];
-float Sd1rEnergy[NSd1rChannels]={0.}; // Dummy for Sd1r energy
-int Sd1rChannel[NSd1rChannels]={-1}; // channel with the greatest value
-int Sd1rNeighbour[NSd1rChannels]={-1}; // neighbour of channel with the greatest value
 float Sd1rGain[NSd1rChannels]={1.};
 float Sd1rOffset[NSd1rChannels]={0.};
 float Sd1rPed[NSd1sChannels]={0.};
 float Sd1rGain2[NSd1rChannels]={1.}; //recalibration parameters
 float Sd1rOffset2[NSd1rChannels]={0.}; //recalibration parameters
-float Sd1Theta[NSd1rChannels]={0.}; 
 
-int Sd1sMul=0;
 int Sd1sADC[NSd1rChannels];
 float Sd1s[NSd1sChannels];
-float Sd1sEnergy[NSd1sChannels]={0.}; // Dummy for Sd1s energy 
-int Sd1sChannel[NSd1sChannels]={-1}; // channel with the greatest value                                                                                    
-int Sd1sNeighbour[NSd1sChannels]={-1}; // neighbour of channel with the greatest value
 float Sd1sGain[NSd1sChannels]={1.};
 float Sd1sOffset[NSd1sChannels]={0.};
 float Sd1sPed[NSd1sChannels]={0.};
-float Sd1Phi[NSd1sChannels]={0.};
 
-int Sd2rMul=0;
 int Sd2rADC[NSd1rChannels];
 float Sd2r[NSd2rChannels];
-float Sd2rEnergy[NSd2rChannels]={0.}; //Dummy for Sd2r energy
-int Sd2rChannel[NSd2rChannels]={-1}; // channel with the greatest value
-int Sd2rNeighbour[NSd2rChannels]={-1}; // neighbour of channel with the greatest value
 float Sd2rGain[NSd2rChannels]={1.};
 float Sd2rOffset[NSd2rChannels]={0.};
 float Sd2rPed[NSd1sChannels]={0.};
-float Sd2Theta[NSd1rChannels]={0.};
-Bool_t S3Hit;
 
-int Sd2sMul=0;
 int Sd2sADC[NSd1rChannels];
 float Sd2s[NSd2sChannels];
-float Sd2sEnergy[NSd2sChannels]={0.}; //Dummy for Sd2s energy  
-int Sd2sChannel[NSd2sChannels]={-1}; // channel with the greatest value
-int Sd2sNeighbour[NSd2sChannels]={-1}; // neighbour of channel with the greatest value
 float Sd2sGain[NSd2sChannels]={1.};
 float Sd2sOffset[NSd2sChannels]={0.};
 float Sd2sPed[NSd1sChannels]={0.};
-float Sd2Phi[NSd1sChannels]={0.};
 
-int SurMul=0;
 int SurADC[NSurChannels];
 float Sur[NSurChannels];
-float SurEnergy[NSurChannels]={0.}; //Dummy for Sur energy
-int SurChannel[NSurChannels]={-1}; // channel with the greatest value
-int SurNeighbour[NSurChannels]={-1}; // neighbour of channel with the greatest value
 float SurGain[NSurChannels]={1.};
 float SurOffset[NSurChannels]={0.};
 float SurPed[NSusChannels]={0.};
-float SuTheta[NSurChannels]={0.};
 
-int SusMul=0;
 int SusADC[NSusChannels];
 float Sus[NSusChannels];
-float SusEnergy[NSusChannels]={0.}; //Dummy for Sus energy      
-int SusChannel[NSusChannels]={-1}; // channel with the greatest value                                                                                    
-int SusNeighbour[NSusChannels]={-1}; // neighbour of channel with the greatest value
 float SusGain[NSusChannels]={1.};
 float SusOffset[NSusChannels]={0.};
 float SusPed[NSusChannels]={0.};
-float SuPhi[NSusChannels]={0.}; //Dummy for Sd1r energy
 
-int YdMul=0;
 int YdADC[NYdChannels] ={0}; 
 float Yd[NYdChannels] ={0.}; 
-float YdEnergy[NYdChannels]={0.}; //Dummy for Yd energy
-int YdChannel[NYdChannels]={-1}; // channel with the greatest value
-int YdNeighbour[NYdChannels]={-1}; // neighbour of channel with the greatest value
-float YdTheta[NYdChannels] = {0.};
 float YdGain[NYdChannels]={1.};
 float YdOffset[NYdChannels]={0.};
 float YdPedestal[NYdChannels]={0.};
 
-int YuMul=0;
 int YuADC[NYuChannels] ={0}; 
 float Yu[NYuChannels] ={0}; 
-float YuEnergy[NYuChannels]={0.}; //Dummy for Yd energy
-int YuChannel[NYuChannels]={-1}; // channel with the greatest value
-int YuNeighbour[NYuChannels]={-1}; // neighbour of channel with the greatest value
-float YuTheta[NYdChannels] = {0.};
 float YuGain[NYuChannels]={1.};
 float YuOffset[NYuChannels]={0.};
 float YuPedestal[NYuChannels]={0.};
@@ -186,7 +136,6 @@ uint32_t adcThresh = 0;
 int ydNo, yuNo;
 
 //AS Total energies
-Double_t SdETot = 0;
 float YdDistance = 0.; // distance from target in mm
 float YdInnerRadius= 0., YdOuterRadius = 0. ; // inner and outer radii in mm
 float Sd1Distance = 0., Sd2Distance = 0.; //distance from target in mm
@@ -199,111 +148,62 @@ Double_t yShift = 0;//1.3;
 TRandom3 fRandom(0);
 Double_t rndm; //random number between 0 and 1 for each event
 
+Double_t maxE = 0.; // used for energy sorting
+Int_t maxCh = -1; // used for energy sorting
+Double_t phi = 0., theta = 0.; // dummy variables for angles
+
 uint32_t modid, oformat, vpeak, resolution, evlength, timestamp;
 uint32_t channel, overflow;
  
 int clearDetectors()
 {
 	for (int j=0; j<NICChannels; j++)	IC[j] = 0;
-	// CsIMul=0;
-	CsI1Mul=0;
-	CsI2Mul=0;
 	for (int j=0; j<NCsIChannels; j++){
 	//	CsI[j] = 0;
 		CsI1[j] = 0;
 		CsI2[j] = 0;
 		CsI1ADC[j] = 0;
 		CsI2ADC[j] = 0;
-	//	CsIEnergy[j]=0;
-		CsI1Energy[j]=0;
-		CsI2Energy[j]=0;
-	//	CsIChannel[j]=-1;
-		CsI1Channel[j]=-1;
-		CsI2Channel[j]=-1;
 	}
-	Sd1rMul=0;
 	for (int j=0; j<NSd1rChannels; j++){
    		Sd1r[j] = 0;
    		Sd1rADC[j] = 0;
-		Sd1rEnergy[j] =0;
-		Sd1rChannel[j] =-1;
-		Sd1rNeighbour[j] =-1;
-		Sd1Theta[j] =0;
 	}
-	Sd1sMul=0;
 	for (int j=0; j<NSd1sChannels; j++){
    		Sd1s[j] = 0;
    		Sd1sADC[j] = 0;
-		Sd1sEnergy[j] =0;
-		Sd1sChannel[j] =-1;
-		Sd1sNeighbour[j] =-1;
-		Sd1Phi[j] =0;
 	}
-	Sd2rMul=0;
 	for (int j=0; j<NSd2rChannels; j++){
    		Sd2r[j] = 0;
    		Sd2rADC[j] = 0;
-		Sd2rEnergy[j] =0;
-		Sd2rChannel[j] =-1;
-		Sd2rNeighbour[j] =-1;
-		Sd2Theta[j] =0;
 	}
-	Sd2sMul=0;
 	for (int j=0; j<NSd2sChannels; j++){
    		Sd2s[j] = 0;
    		Sd2sADC[j] = 0;
-		Sd2sEnergy[j] =0;
-		Sd2sChannel[j] =-1;
-		Sd2sNeighbour[j] =-1;
-		Sd2Phi[j] =0;
 	}
-	YdMul=0;
 	for (int j=0; j<NYdChannels; j++){
 	 	Yd[j] = 0;
 	 	YdADC[j] = 0;
-		YdEnergy[j]=0.;
-		YdChannel[j]=-1;
-		YuNeighbour[j] =-1;
-    	YdTheta[j] = 0; 
 	}
-	SurMul=0;
 	for (int j=0; j<NSurChannels; j++){
    		Sur[j] = 0;
    		SurADC[j] = 0;
-		SurEnergy[j] =0;
-		SurChannel[j] =-1;
-		SurNeighbour[j] =-1;
-		SuTheta[j] =0;
 	}
-	SusMul=0;
 	for (int j=0; j<NSusChannels; j++){
    		Sus[j] = 0;
    		SusADC[j] = 0;
-		SusEnergy[j] =0;
-		SusChannel[j] =-1;
-		SusNeighbour[j] =-1;
-		SuPhi[j] =0;
 	}
-	YuMul=0;
 	for (int j=0; j<NYuChannels; j++){
 	 	Yu[j] = 0;
 	 	YuADC[j] = 0;
-		YuEnergy[j]=0.;
-		YuChannel[j]=-1;
-		YuNeighbour[j] =-1;
-    	YuTheta[j] = 0; 
 	}
 	for (int j=0; j<NTrChannels; j++){
 	 	TrADC[j] = 0;
 		TrEnergy[j]=0.;
 	}
 
-	ICEnergy=0;
 	SSBEnergy=0;
 	ScEnergy=0;
-	SdETot=0;
-
-	ICChannel=-1;
 
  	return 0;
 }
@@ -401,7 +301,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 					// Second downstream S3 detector, rings
 	  				if (modid==2 && vpeak > adcThresh && vpeak<3840){
-	 					S3Hit = 1;
 						Sd2rADC[channel]=vpeak;		
 	 					if (!usePeds){
 	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*(float)vpeak;
@@ -413,7 +312,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  
 					// Second downstream S3 detector, segments
 	  				if (modid==3 && vpeak > adcThresh && vpeak<3840){
-	    				S3Hit = 1;
 						Sd2sADC[channel]=vpeak;		
 	    				if (!usePeds){	
 	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*(float)vpeak;
@@ -425,7 +323,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 					// First downstream S3 detector, rings
 	  				if (modid==4 && vpeak > adcThresh  && vpeak<3840){
-	 					S3Hit = 1; 
 						Sd1rADC[channel]=vpeak;		
 						if (!usePeds){
 	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*(float)vpeak;
@@ -436,7 +333,6 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					}	
 					// First downstream S3 detector, segments
 	  				if (modid==5 && vpeak > adcThresh  && vpeak<3840){
-	     				S3Hit = 1;
 						Sd1sADC[channel]=vpeak;		
 	     				if (!usePeds){
 	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*(float)vpeak;
@@ -551,319 +447,258 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 		// 1st downstream S3, ring side
  		for (Int_t i=0;i<NSd1rChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSd1rChannels;j++){
-        		if(Sd1r[j] > max){
-            		max = Sd1r[j];
-            		index = j;
+        		if(Sd1r[j] > maxE){
+            		maxE = Sd1r[j];
+            		maxCh = j;
         		}
     		}		
-   			if(max>0.){ 
-				Sd1rMul++;
-    			Sd1rEnergy[i] = Sd1r[index];
-    			Sd1rChannel[i] = index;  
-    			Sd1r[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSd1rMul++;
+ 				det.TSd1rEnergy.push_back(Sd1r[maxCh]);
+				det.TSd1rChannel.push_back(maxCh);
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./geoM.Sd1Distance);
+				det.TSd1Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
+    			Sd1r[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSd1rMul = Sd1rMul;
- 		for (Int_t i=0;i<Sd1rMul;i++){
- 			det.TSd1rEnergy.push_back(Sd1rEnergy[i]);
-			det.TSd1rChannel.push_back(Sd1rChannel[i]);
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			Sd1Theta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd1rChannel[i]-rndm)+geoM.SdOuterRadius*(Sd1rChannel[i]+rndm))/24./geoM.Sd1Distance);
-			det.TSd1Theta.push_back(Sd1Theta[i]); //AS theta angle for Sd (24 - number of rings)
-		}
 		
 		// 1st downstream S3, sector side
 		for (Int_t i=0;i<NSd1sChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSd1sChannels;j++){
-        		if(Sd1s[j] > max){
-            		max = Sd1s[j];
-            		index = j;
+        		if(Sd1s[j] > maxE){
+            		maxE = Sd1s[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				Sd1sMul++;
-    			Sd1sEnergy[i] = Sd1s[index];
-    			Sd1sChannel[i] = index;  
-    			Sd1s[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSd1sMul++;
+    			det.TSd1sEnergy.push_back(Sd1s[maxCh]);
+				det.TSd1sChannel.push_back(maxCh);
+				phi = -180.+360.*maxCh/32.;
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				det.TSd1Phi.push_back(phi+11.25*rndm);
+	
+				Sd1s[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSd1sMul = Sd1sMul;
-		for (Int_t i=0;i<Sd1sMul;i++){
-			det.TSd1sEnergy.push_back(Sd1sEnergy[i]);
-			det.TSd1sChannel.push_back(Sd1sChannel[i]);
-			Sd1Phi[i] = -180.+360.*Sd1sChannel[i]/32.;
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			det.TSd1Phi.push_back(Sd1Phi[i]+11.25*rndm);
-		}
 		
 		// 2nd downstream S3, ring side
 		for (Int_t i=0;i<NSd2rChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSd2rChannels;j++){
-        		if(Sd2r[j] > max){
-            		max = Sd2r[j];
-            		index = j;
+        		if(Sd2r[j] > maxE){
+            		maxE = Sd2r[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				Sd2rMul++;
-    			Sd2rEnergy[i] = Sd2r[index];
-    			Sd2rChannel[i] = index;  
-    			Sd2r[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSd2rMul++;
+    			det.TSd2rEnergy.push_back(Sd2r[maxCh]);
+				det.TSd2rChannel.push_back(maxCh);
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./(geoM.Sd1Distance+14.8));
+				det.TSd2Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
+
+				Sd2r[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSd2rMul = Sd2rMul;
-		for (Int_t i=0;i<Sd2rMul;i++){
-			det.TSd2rEnergy.push_back(Sd2rEnergy[i]);
-			det.TSd2rChannel.push_back(Sd2rChannel[i]);
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			Sd2Theta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-Sd2rChannel[i]-rndm)+geoM.SdOuterRadius*(Sd2rChannel[i]+rndm))/24./(geoM.Sd1Distance+14.8));
-			det.TSd2Theta.push_back(Sd2Theta[i]); //AS theta angle for Sd (24 - number of rings)
-
-		}
 				
 		// 2nd downstream S3, sector side
 		for (Int_t i=0;i<NSd2sChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSd2sChannels;j++){
-        		if(Sd2s[j] > max){
-            		max = Sd2s[j];
-            		index = j;
+        		if(Sd2s[j] > maxE){
+            		maxE = Sd2s[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				Sd2sMul++;
-    			Sd2sEnergy[i] = Sd2s[index];
-    			Sd2sChannel[i] = index;  
-    			Sd2s[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSd2sMul++;
+    			det.TSd2sEnergy.push_back(Sd2s[maxCh]);
+				det.TSd2sChannel.push_back(maxCh);
+				phi = 180.-360.*maxCh/32.;
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				det.TSd2Phi.push_back(phi-11.25*rndm);
+
+				Sd2s[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSd2sMul = Sd2sMul;
-		for (Int_t i=0;i<Sd2sMul;i++){
-			det.TSd2sEnergy.push_back(Sd2sEnergy[i]);
-			det.TSd2sChannel.push_back(Sd2sChannel[i]);
-			Sd2Phi[i] = 180.-360.*Sd2sChannel[i]/32.;
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			det.TSd2Phi.push_back(Sd2Phi[i]-11.25*rndm);
-		}
 	
 		// Upstream S3, ring side
 		for (Int_t i=0;i<NSurChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSurChannels;j++){
-        		if(Sur[j] > max){
-            		max = Sur[j];
-            		index = j;
+        		if(Sur[j] > maxE){
+            		maxE = Sur[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				SurMul++;
-    			SurEnergy[i] = Sur[index];
-    			SurChannel[i] = index;  
-    			Sur[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSurMul++;
+    			det.TSurEnergy.push_back(Sur[maxCh]);
+				det.TSurChannel.push_back(maxCh);
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(maxCh+rndm)+geoM.SdOuterRadius*(24-maxCh-rndm))/24./(geoM.SuDistance)) + 180.;
+				det.TSuTheta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
+
+				Sur[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSurMul = SurMul;
-		for (Int_t i=0;i<SurMul;i++){
-			det.TSurEnergy.push_back(SurEnergy[i]);
-			det.TSurChannel.push_back(SurChannel[i]);
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			SuTheta[i] = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(SurChannel[i]+rndm)+geoM.SdOuterRadius*(24-SurChannel[i]-rndm))/24./(geoM.SuDistance)) + 180.;
-			det.TSuTheta.push_back(SuTheta[i]); //AS theta angle for Sd (24 - number of rings)
-
-		}
 				
 		// Upstream S3, sector side
 		for (Int_t i=0;i<NSusChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NSusChannels;j++){
-        		if(Sus[j] > max){
-            		max = Sus[j];
-            		index = j;
+        		if(Sus[j] > maxE){
+            		maxE = Sus[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				SusMul++;
-    			SusEnergy[i] = Sus[index];
-    			SusChannel[i] = index;  
-    			Sus[index] = 0.;
+   			if(maxE>0.){ 
+				det.TSusMul++;
+    			det.TSusEnergy.push_back(Sus[maxCh]);
+				det.TSusChannel.push_back(maxCh);
+				phi = 180.-360.*maxCh/32.;
+				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				det.TSuPhi.push_back(phi-11.25*rndm);
+	
+				Sus[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TSusMul = SusMul;
-		for (Int_t i=0;i<SusMul;i++){
-			det.TSusEnergy.push_back(SusEnergy[i]);
-			det.TSusChannel.push_back(SusChannel[i]);
-			SuPhi[i] = 180.-360.*SusChannel[i]/32.;
-			rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
-			det.TSuPhi.push_back(SuPhi[i]-11.25*rndm);
-		}
-	
 		
 		// Downstream YY1
 		for (Int_t i=0;i<NYdChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NYdChannels;j++){
-        		if(Yd[j] > max){
-            		max = Yd[j];
-            		index = j;
+        		if(Yd[j] > maxE){
+            		maxE = Yd[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				YdMul++;
-    			YdEnergy[i] = Yd[index];
-    			YdChannel[i] = index;  
-    			Yd[index] = 0.;
+   			if(maxE>0.){ 
+				det.TYdMul++;
+    			det.TYdEnergy.push_back(Yd[maxCh]);
+				det.TYdChannel.push_back(maxCh);
+				det.TYdNo.push_back(int(maxCh/16));
+				det.TYdRing.push_back(maxCh%16);
+				rndm = 0.99*fRandom.Rndm();
+				theta = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-maxCh%16-rndm)+geoM.YdOuterRadius*(maxCh%16+rndm))/16./geoM.YdDistance);
+				det.TYdTheta.push_back(theta);
+
+				Yd[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TYdMul = YdMul;
-		for(int i=0;i<YdMul;i++){	
-			det.TYdEnergy.push_back(YdEnergy[i]);
-			det.TYdChannel.push_back(YdChannel[i]);
-	
-			det.TYdNo.push_back(int(YdChannel[i]/16));
-			det.TYdRing.push_back(YdChannel[i]%16);
-			//here
-			rndm = 0.99*fRandom.Rndm();
-			YdTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YdChannel[i]%16-rndm)+geoM.YdOuterRadius*(YdChannel[i]%16+rndm))/16./geoM.YdDistance);
-			det.TYdTheta.push_back(YdTheta[i]);
-		}
 
 		// Upstream YY1
 		for (Int_t i=0;i<NYuChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = -1;
+    		maxE = 0.;
+    		maxCh = -1;
     		for (Int_t j=0;j<NYuChannels;j++){
-        		if(Yu[j] > max){
-            		max = Yu[j];
-            		index = j;
+        		if(Yu[j] > maxE){
+            		maxE = Yu[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				YuMul++;
-    			YuEnergy[i] = Yu[index];
-    			YuChannel[i] = index;  
-    			Yu[index] = 0.;
+   			if(maxE>0.){ 
+				det.TYuMul++;
+    			det.TYuEnergy.push_back(Yu[maxCh]);
+				det.TYuChannel.push_back(maxCh);
+				det.TYuNo.push_back(int(maxCh/16));
+				det.TYuRing.push_back(maxCh%16);
+				//here
+				rndm = 0.99*fRandom.Rndm();
+				theta = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-maxCh%16-rndm)+geoM.YdOuterRadius*(maxCh%16+rndm))/16./geoM.YuDistance) + 180.;
+				det.TYuTheta.push_back(theta);
+
+				Yu[maxCh] = 0.;
 			}
 			else break;
     	}
-
-		det.TYuMul = YuMul;
-		for(int i=0;i<YuMul;i++){	
-			det.TYuEnergy.push_back(YuEnergy[i]);
-			det.TYuChannel.push_back(YuChannel[i]);
-	
-			det.TYuNo.push_back(int(YuChannel[i]/16));
-			det.TYuRing.push_back(YuChannel[i]%16);
-			//here
-			rndm = 0.99*fRandom.Rndm();
-			YuTheta[i] = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-YuChannel[i]%16-rndm)+geoM.YdOuterRadius*(YuChannel[i]%16+rndm))/16./geoM.YuDistance) + 180.;
-			det.TYuTheta.push_back(YuTheta[i]);
-		}
 	 
 		// CsI
 		for (Int_t i=0;i<NCsIChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = 0;
+    		maxE = 0.;
+    		maxCh = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
-        		if(CsI1[j] > max){
-            		max = CsI1[j];
-            		index = j;
+        		if(CsI1[j] > maxE){
+            		maxE = CsI1[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				CsI1Mul++;
-    			CsI1Energy[i] = CsI1[index];
-    			CsI1Channel[i] = index;  
-    			CsI1[index] = 0.;
+   			if(maxE>0.){ 
+				det.TCsI1Mul++;
+    			if (det.TYdMul>0){
+	      			int m = (det.TYdChannel.at(0)%16)/(16/NCsI1Group);
+	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]); 
+	      			det.TCsI1Channel.push_back(maxCh);
+					phi = 90.+1.75-360.*maxCh/16.;
+					rndm = 22.4*fRandom.Rndm();
+					phi = phi-11.2+rndm;
+					phi = (phi<-180.)? phi+360. : phi;
+					det.TCsI1Phi.push_back(phi);
+	    		}
+				CsI1[maxCh] = 0.;
 			}
 			else break;
     	}
 
-		det.TCsI1Mul = CsI1Mul;
-		for(int i=0; i<CsI1Mul; i++){
-			if (YdMul>0){
-	      		int m = (YdChannel[0]%16)/(16/NCsI1Group);
-	      		CsI1Energy[i] = (CsI1Energy[i]-CsI1Ped[CsI1Channel[i]])*CsI1Gain[m][CsI1Channel[i]];   
-	      		det.TCsI1Energy.push_back(CsI1Energy[i]); 
-	      		det.TCsI1Channel.push_back(CsI1Channel[i]);
-				CsI1Phi[i] = 90.+1.75-360.*CsI1Channel[i]/16.;
-				rndm = 22.4*fRandom.Rndm();
-				CsI1Phi[i] = CsI1Phi[i]-11.2+rndm;
-				CsI1Phi[i] = (CsI1Phi[i]<-180.)? CsI1Phi[i]+360. : CsI1Phi[i];
-				det.TCsI1Phi.push_back(CsI1Phi[i]);
-	    	}
-		}
-	
 		for (Int_t i=0;i<NCsIChannels;i++){
-    		Double_t max = 0.;
-    		Int_t index = 0;
+    		maxE = 0.;
+    		maxCh = 0;
     		for (Int_t j=0;j<NCsIChannels;j++){
-        		if(CsI2[j] > max){
-            		max = CsI2[j];
-            		index = j;
+        		if(CsI2[j] > maxE){
+            		maxE = CsI2[j];
+            		maxCh = j;
         		}
     		}		
     
-   			if(max>0.){ 
-				CsI2Mul++;
-    			CsI2Energy[i] = CsI2[index];
-    			CsI2Channel[i] = index;  
-    			CsI2[index] = 0.;
+   			if(maxE>0.){ 
+				det.TCsI2Mul++;
+    			if (CsI2[maxCh] < 3840. && det.TYdMul>0){
+					int m = (det.TYdChannel.at(0)%16)/(16/NCsI2Group);
+	        		det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[maxCh])*CsI2Gain[m][maxCh]);
+	        		det.TCsI2Channel.push_back(maxCh);
+					phi = 90.+1.75-360.*maxCh/16.;
+					rndm = 22.4*fRandom.Rndm();
+					phi = phi-11.2+rndm;
+					phi = (phi<-180.)? phi+360. : phi;
+					det.TCsI2Phi.push_back(phi);
+	      		}
+				CsI2[maxCh] = 0.;
 			}
 			else break;
     	}
-	
-		det.TCsI2Mul = CsI2Mul;
-		for(int i=0; i<CsI2Mul; i++){
-			if (CsI2Energy[i] < 3840. && YdMul>0){
-				int m = (YdChannel[0]%16)/(16/NCsI2Group);
-	        	CsI2Energy[i] = (CsI2Energy[i]-CsI2Ped[CsI2Channel[i]])*CsI2Gain[m][CsI2Channel[i]];
-	        	det.TCsI2Energy.push_back(CsI2Energy[i]);
-	        	det.TCsI2Channel.push_back(CsI2Channel[i]);
-				CsI2Phi[i] = 90.+1.75-360.*CsI2Channel[i]/16.;
-				rndm = 22.4*fRandom.Rndm();
-				CsI2Phi[i] = CsI2Phi[i]-11.2+rndm;
-				CsI2Phi[i] = (CsI2Phi[i]<-180.)? CsI2Phi[i]+360. : CsI2Phi[i];
-				det.TCsI2Phi.push_back(CsI2Phi[i]);
-	      	}
-		}
 
 		// Re-sorting Yd if hits don't match with CsI
 		if(det.TCsI1Channel.size()>0&&det.TYdNo.size()>1&&calMesy.boolCsI1==true) // only check if YY1 has more than one hit and CsI has a hit and has been calibrated
 		{
- 			if (int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(0)!=0 && int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(1)!=0)//checking if the CsI hit is behind the first or second hit in  YY1
+ 			if (int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(0)!=0 && int(det.TCsI1Channel.at(0)/2)-det.TYdNo.at(1)==0)//checking if the CsI hit is behind the first or second hit in  YY1
 			{
 				std::swap(det.TYdEnergy.at(0),det.TYdEnergy.at(1));
 				std::swap(det.TYdChannel.at(0),det.TYdChannel.at(1));
@@ -873,26 +708,27 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 		}
 
-		ICEnergy=0; ICChannel = -1;
+		// IC
+		maxE=0; 
+		maxCh = -1;
     	for (int i =0; i< NICChannels;i++) {
-    		if (ICEnergy<IC[i]){
-      			ICEnergy=IC[i];
-      			ICChannel = i;
+    		if (maxE<IC[i]){
+      			maxE=IC[i];
+      			maxCh = i;
 			}
     	} //for
-    
+    	if(maxE>0.) 
+		{
+			det.TICEnergy.push_back(maxE); //for filling the tree
+			det.TICChannel.push_back(maxCh);
+		}
+		
 		// SSB
 		det.TSSBEnergy = SSBEnergy;
 
 		// Scintillator
 		det.TScEnergy = ScEnergy;
-
-		// IC
-		if(ICEnergy>0.) 
-		{
-			det.TICEnergy.push_back(ICEnergy); //for filling the tree
-			det.TICChannel.push_back(ICChannel);
-		}
+		
 		if(TrEnergy[0]>0){
 			for(int i=0; i<NTrChannels; i++){
 				det.TTrEnergy.push_back(TrEnergy[i]);
