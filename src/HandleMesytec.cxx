@@ -459,6 +459,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd1rMul++;
  				det.TSd1rEnergy.push_back(Sd1r[maxCh]);
 				det.TSd1rChannel.push_back(maxCh);
+				det.TSd1rNeighbour.push_back(-1);
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./geoM.Sd1Distance);
 				det.TSd1Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
@@ -466,7 +467,26 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-		
+				
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSd1rMul; i++){
+			if(det.TSd1rMul>i+1){
+				for(Int_t j=i+1; j<det.TSd1rMul; j++){
+					if(TMath::Abs(det.TSd1rChannel.at(i)-det.TSd1rChannel.at(j))==1){
+						det.TSd1rEnergy.at(i)+=det.TSd1rEnergy.at(j);
+						det.TSd1rNeighbour.at(i)=det.TSd1rChannel.at(j);
+						det.TSd1rMul--;
+						det.TSd1rEnergy.erase(det.TSd1rEnergy.begin()+j);
+						det.TSd1rChannel.erase(det.TSd1rChannel.begin()+j);
+						det.TSd1rNeighbour.erase(det.TSd1rNeighbour.begin()+j);
+						det.TSd1Theta.erase(det.TSd1Theta.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSd1rMul>=i) break;
+		}
+	
 		// 1st downstream S3, sector side
 		for (Int_t i=0;i<NSd1sChannels;i++){
     		maxE = 0.;
@@ -482,6 +502,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd1sMul++;
     			det.TSd1sEnergy.push_back(Sd1s[maxCh]);
 				det.TSd1sChannel.push_back(maxCh);
+				det.TSd1sNeighbour.push_back(-1);
 				phi = -180.+360.*maxCh/32.;
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSd1Phi.push_back(phi+11.25*rndm);
@@ -490,7 +511,26 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-		
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSd1sMul; i++){
+			if(det.TSd1sMul>i+1){
+				for(Int_t j=i+1; j<det.TSd1sMul; j++){
+					if(TMath::Abs(det.TSd1sChannel.at(i)-det.TSd1sChannel.at(j))==1||TMath::Abs(det.TSd1sChannel.at(i)-det.TSd1sChannel.at(j))==31){
+						det.TSd1sEnergy.at(i)+=det.TSd1sEnergy.at(j);
+						det.TSd1sNeighbour.at(i)=det.TSd1sChannel.at(j);
+						det.TSd1sMul--;
+						det.TSd1sEnergy.erase(det.TSd1sEnergy.begin()+j);
+						det.TSd1sChannel.erase(det.TSd1sChannel.begin()+j);
+						det.TSd1sNeighbour.erase(det.TSd1sNeighbour.begin()+j);
+						det.TSd1Phi.erase(det.TSd1Phi.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSd1sMul>=i) break;
+		}
+
+
 		// 2nd downstream S3, ring side
 		for (Int_t i=0;i<NSd2rChannels;i++){
     		maxE = 0.;
@@ -506,6 +546,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd2rMul++;
     			det.TSd2rEnergy.push_back(Sd2r[maxCh]);
 				det.TSd2rChannel.push_back(maxCh);
+				det.TSd2rNeighbour.push_back(-1);
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./(geoM.Sd1Distance+14.8));
 				det.TSd2Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
@@ -514,6 +555,25 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
+			
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSd2rMul; i++){
+			if(det.TSd2rMul>i+1){
+				for(Int_t j=i+1; j<det.TSd2rMul; j++){
+					if(TMath::Abs(det.TSd2rChannel.at(i)-det.TSd2rChannel.at(j))==1){
+						det.TSd2rEnergy.at(i)+=det.TSd2rEnergy.at(j);
+						det.TSd2rNeighbour.at(i)=det.TSd2rChannel.at(j);
+						det.TSd2rMul--;
+						det.TSd2rEnergy.erase(det.TSd2rEnergy.begin()+j);
+						det.TSd2rChannel.erase(det.TSd2rChannel.begin()+j);
+						det.TSd2rNeighbour.erase(det.TSd2rNeighbour.begin()+j);
+						det.TSd2Theta.erase(det.TSd2Theta.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSd2rMul>=i) break;
+		}
 				
 		// 2nd downstream S3, sector side
 		for (Int_t i=0;i<NSd2sChannels;i++){
@@ -530,6 +590,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd2sMul++;
     			det.TSd2sEnergy.push_back(Sd2s[maxCh]);
 				det.TSd2sChannel.push_back(maxCh);
+				det.TSd2sNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSd2Phi.push_back(phi-11.25*rndm);
@@ -538,7 +599,26 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-	
+		
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSd2sMul; i++){
+			if(det.TSd2sMul>i+1){
+				for(Int_t j=i+1; j<det.TSd2sMul; j++){
+					if(TMath::Abs(det.TSd2sChannel.at(i)-det.TSd2sChannel.at(j))==1||TMath::Abs(det.TSd2sChannel.at(i)-det.TSd2sChannel.at(j))==31){
+						det.TSd2sEnergy.at(i)+=det.TSd2sEnergy.at(j);
+						det.TSd2sNeighbour.at(i)=det.TSd2sChannel.at(j);
+						det.TSd2sMul--;
+						det.TSd2sEnergy.erase(det.TSd2sEnergy.begin()+j);
+						det.TSd2sChannel.erase(det.TSd2sChannel.begin()+j);
+						det.TSd2sNeighbour.erase(det.TSd2sNeighbour.begin()+j);
+						det.TSd2Phi.erase(det.TSd2Phi.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSd2sMul>=i) break;
+		}
+
 		// Upstream S3, ring side
 		for (Int_t i=0;i<NSurChannels;i++){
     		maxE = 0.;
@@ -554,6 +634,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSurMul++;
     			det.TSurEnergy.push_back(Sur[maxCh]);
 				det.TSurChannel.push_back(maxCh);
+				det.TSurNeighbour.push_back(-1);
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(maxCh+rndm)+geoM.SdOuterRadius*(24-maxCh-rndm))/24./(geoM.SuDistance)) + 180.;
 				det.TSuTheta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
@@ -562,7 +643,26 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-				
+			
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSurMul; i++){
+			if(det.TSurMul>i+1){
+				for(Int_t j=i+1; j<det.TSurMul; j++){
+					if(TMath::Abs(det.TSurChannel.at(i)-det.TSurChannel.at(j))==1){
+						det.TSurEnergy.at(i)+=det.TSurEnergy.at(j);
+						det.TSurNeighbour.at(i)=det.TSurChannel.at(j);
+						det.TSurMul--;
+						det.TSurEnergy.erase(det.TSurEnergy.begin()+j);
+						det.TSurChannel.erase(det.TSurChannel.begin()+j);
+						det.TSurNeighbour.erase(det.TSurNeighbour.begin()+j);
+						det.TSuTheta.erase(det.TSuTheta.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSurMul>=i) break;
+		}
+		
 		// Upstream S3, sector side
 		for (Int_t i=0;i<NSusChannels;i++){
     		maxE = 0.;
@@ -578,6 +678,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSusMul++;
     			det.TSusEnergy.push_back(Sus[maxCh]);
 				det.TSusChannel.push_back(maxCh);
+				det.TSusNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
 				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSuPhi.push_back(phi-11.25*rndm);
@@ -587,6 +688,25 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			else break;
     	}
 		
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TSusMul; i++){
+			if(det.TSusMul>i+1){
+				for(Int_t j=i+1; j<det.TSusMul; j++){
+					if(TMath::Abs(det.TSusChannel.at(i)-det.TSusChannel.at(j))==1||TMath::Abs(det.TSusChannel.at(i)-det.TSusChannel.at(j))==31){
+						det.TSusEnergy.at(i)+=det.TSusEnergy.at(j);
+						det.TSusNeighbour.at(i)=det.TSusChannel.at(j);
+						det.TSusMul--;
+						det.TSusEnergy.erase(det.TSusEnergy.begin()+j);
+						det.TSusChannel.erase(det.TSusChannel.begin()+j);
+						det.TSusNeighbour.erase(det.TSusNeighbour.begin()+j);
+						det.TSuPhi.erase(det.TSuPhi.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TSusMul>=i) break;
+		}
+
 		// Downstream YY1
 		for (Int_t i=0;i<NYdChannels;i++){
     		maxE = 0.;
@@ -602,6 +722,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYdMul++;
     			det.TYdEnergy.push_back(Yd[maxCh]);
 				det.TYdChannel.push_back(maxCh);
+				det.TYdNeighbour.push_back(-1);
 				det.TYdNo.push_back(int(maxCh/16));
 				det.TYdRing.push_back(maxCh%16);
 				rndm = 0.99*fRandom.Rndm();
@@ -612,6 +733,27 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
+
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TYdMul; i++){
+			if(det.TYdMul>i+1){
+				for(Int_t j=i+1; j<det.TYdMul; j++){
+					if(TMath::Abs(det.TYdChannel.at(i)-det.TYdChannel.at(j))==1&&int(det.TYdChannel.at(i)/16.)==int(det.TYdChannel.at(j)/16.)){
+						det.TYdEnergy.at(i)+=det.TYdEnergy.at(j);
+						det.TYdNeighbour.at(i)=det.TYdChannel.at(j);
+						det.TYdMul--;
+						det.TYdEnergy.erase(det.TYdEnergy.begin()+j);
+						det.TYdChannel.erase(det.TYdChannel.begin()+j);
+						det.TYdNeighbour.erase(det.TYdNeighbour.begin()+j);
+						det.TYdNo.erase(det.TYdNo.begin()+j);
+						det.TYdRing.erase(det.TYdRing.begin()+j);
+						det.TYdTheta.erase(det.TYdTheta.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TYdMul>=i) break;
+		}
 
 		// Upstream YY1
 		for (Int_t i=0;i<NYuChannels;i++){
@@ -628,6 +770,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYuMul++;
     			det.TYuEnergy.push_back(Yu[maxCh]);
 				det.TYuChannel.push_back(maxCh);
+				det.TYuNeighbour.push_back(-1);
 				det.TYuNo.push_back(int(maxCh/16));
 				det.TYuRing.push_back(maxCh%16);
 				//here
@@ -639,7 +782,29 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-	 
+	
+		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
+		for (Int_t i=0; i<det.TYuMul; i++){
+			if(det.TYuMul>i+1){
+				for(Int_t j=i+1; j<det.TYuMul; j++){
+					if(TMath::Abs(det.TYuChannel.at(i)-det.TYuChannel.at(j))==1&&int(det.TYuChannel.at(i)/16.)==int(det.TYuChannel.at(j)/16.)){
+						det.TYuEnergy.at(i)+=det.TYuEnergy.at(j);
+						det.TYuNeighbour.at(i)=det.TYuChannel.at(j);
+						det.TYuMul--;
+						det.TYuEnergy.erase(det.TYuEnergy.begin()+j);
+						det.TYuChannel.erase(det.TYuChannel.begin()+j);
+						det.TYuNeighbour.erase(det.TYuNeighbour.begin()+j);
+						det.TYuNo.erase(det.TYuNo.begin()+j);
+						det.TYuRing.erase(det.TYuRing.begin()+j);
+						det.TYuTheta.erase(det.TYuTheta.begin()+j);
+						break;
+					}
+				}
+			}
+			if(det.TYuMul>=i) break;
+		}
+
+ 
 		// CsI
 		for (Int_t i=0;i<NCsIChannels;i++){
     		maxE = 0.;
