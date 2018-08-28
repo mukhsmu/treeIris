@@ -55,6 +55,8 @@ void CalibMesytec::ReadFilenames(char* line)
 		fileSus = strval;
 		fileYd = strval;
 		fileYu = strval;
+		fileZdx = strval;
+		fileZdy = strval;
 		fileTCorrIC = strval;
 		fileTCorrSi = strval;
 	}
@@ -114,6 +116,14 @@ void CalibMesytec::ReadFilenames(char* line)
 		fileYu += strval;
 		boolYu =kTRUE;
 	}
+	if (strcmp(line,"ZDX")==0){
+		fileZdx += strval;
+		boolZdx =kTRUE;
+	}	
+	if (strcmp(line,"ZDY")==0){
+		fileZdy += strval;
+		boolZdy =kTRUE;
+	}	
 	if (strcmp(line,"TCORR_IC")==0){
 		fileTCorrIC += strval;
 		boolTCorrIC =kTRUE;
@@ -140,6 +150,8 @@ void CalibMesytec::Load(std::string filename){
 	boolSus=kFALSE;
 	boolYd=kFALSE;
 	boolYu=kFALSE;
+	boolZdx=kFALSE;
+	boolZdy=kFALSE;
 	boolTCorrIC=kFALSE;
 	boolTCorrSi=kFALSE;
 
@@ -206,6 +218,10 @@ void CalibMesytec::Print(){
 	else	printf("No Yd calibration specified.\n");
 	if(boolYu)	printf("Yu calibration: %s\n",fileYu.data());
 	else	printf("No Yu calibration specified.\n");
+	if(boolZdx)	printf("Zdx calibration: %s\n",fileZdx.data());
+	else	printf("No Zdx calibration specified.\n");
+	if(boolZdy)	printf("Zdy calibration: %s\n",fileZdy.data());
+	else	printf("No Zdy calibration specified.\n");
 	if(boolTCorrIC)	printf("Time dependent IC correction: %s\n",fileTCorrIC.data());
 	else	printf("No time dependent IC correction specified.\n");
 	if(boolTCorrSi)	printf("Time dependent Si correction: %s\n",fileTCorrSi.data());

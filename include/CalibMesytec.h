@@ -28,6 +28,8 @@ class CalibMesytec : public TObject {
 		std::string fileSus;
 		std::string fileYd;
 		std::string fileYu;
+		std::string fileZdx;
+		std::string fileZdy;
 		std::string fileTCorrIC;
 		std::string fileTCorrSi;
 
@@ -45,6 +47,8 @@ class CalibMesytec : public TObject {
 		Bool_t boolSus;
 		Bool_t boolYd;
 		Bool_t boolYu;
+		Bool_t boolZdx;
+		Bool_t boolZdy;
 		Bool_t boolTCorrIC;
 		Bool_t boolTCorrSi;
 
