@@ -1501,12 +1501,12 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
        		if(!usePeds){
 				ZdyOffset[Chan-64] = a;
 				ZdyGain[Chan-64] =  b;  
-				printf("ZdyOffset %lf Zdygain %lf\n",ZdyOffset[Chan-64],ZdyGain[Chan-64]);
+				printf("%d ZdyOffset %lf Zdygain %lf\n",Chan-64,ZdyOffset[Chan-64],ZdyGain[Chan-64]);
 			}
        		else if (usePeds){
 				ZdyPed[Chan-64] = a;
 				ZdyGain[Chan-64] =  b;  
-				printf("ZdyPed %lf Zdygain %lf\n",ZdyPed[Chan-64],ZdyGain[Chan-64]);
+				printf("%d ZdyPed %lf Zdygain %lf\n",Chan-64,ZdyPed[Chan-64],ZdyGain[Chan-64]);
      		}
 		}
      	fclose (pFile);
@@ -1539,12 +1539,12 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
        		if (!usePeds){
 				ZdxOffset[Chan-96] = a;
 				ZdxGain[Chan-96] = b;   
-				printf("ZdxOffset %lf Zdxgain %lf\n",ZdxOffset[Chan-96],ZdxGain[Chan-96]);
+				printf("%d ZdxOffset %lf Zdxgain %lf\n",Chan-64,ZdxOffset[Chan-96],ZdxGain[Chan-96]);
 			}
        		else if (usePeds){
 				ZdxPed[Chan-96] = a;
 				ZdxGain[Chan-96] = b;   
-				printf("ZdxPed %lf Zdxgain %lf\n",ZdxPed[Chan-96],ZdxGain[Chan-96]);
+				printf("%d ZdxPed %lf Zdxgain %lf\n",Chan-96,ZdxPed[Chan-96],ZdxGain[Chan-96]);
 			}
      	}
      	fclose (pFile);
