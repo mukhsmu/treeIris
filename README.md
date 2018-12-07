@@ -1,5 +1,5 @@
 # treeIris #
-Analysis software for the IRIS experiment @ TRIUMF
+Unpacking software for the IRIS experiment @ TRIUMF
 
 
 ## Download and Installation ##
@@ -50,4 +50,31 @@ Without any configuration file, the program will generate a file containing unca
 
 ## The Output File Structure ##
 
-The resulting output will be a root file containing the TTree Iris. This tree contains variables for the hit multiplicity, the energy, the hit segment, the measured angle, and, if requested, the time, for each detector.
+The resulting output will be a root file containing the TTree Iris. For each detector the energy (TXxEnergy) and, if requested the raw ADC values (TXxADC) are stored. If the detector has more than one readout channel, the channel number is stored as well (TXxChannel).
+
+For the segmented detectors (YY1, S3, CsI) also the multiplicity (TXxMul), i.e. how many segments were hit, is stored. All other variables are in this case vectors with size TXxMul, and are sorted in descending order by the energy of the hit. E.g., requesting TYdEnergy[0] and TYdChannel[0] will give you the energy and detector segment of the YY1 hit with the highest energy for an event. 
+
+Also for segmented detectors, a few variables depending on the segmentation are stored. For the YY1 detectors, the hit YY1 detector and the number of the hit ring is stored. Also, the reconstructed angle is stored for each of the detectors, depending on the segmentation this can be TXxTheta or TXxPhi.
+
+## Detector Names in root-Tree ##
+	
+Ionization Chamber:			TIC
+Upstream YY1:				TYu
+Downstream YY1: 			TYd
+CsI, 1st readout:			TCsI1
+CsI, 2nd readout:			TCsI2
+Upstream S3, ring side:		TSur
+Upstream S3, sector side:	TSus
+Downstream S3, ring side:	TSd1r
+Downstream S3, sector side:	TSd1s
+Downstream S3, ring side:	TSd2r
+Downstream S3, sector side:	TSd2s
+Surface Barrier:			TSSB
+Scintillator:				TSc
+TRIFIC:						TTr (Was only used in 80Ga test beam)
+Zero-degree DSSD, x-strips:	TZdx (Was only used in S1766)
+Zero-degree DSSD, y-strips:	TZdy (Was only used in S1766)
+
+## Charge-Sharing Correction ##
+
+Charge-sharing means that a particle deposits in energy not in a single strip of a segmented detector but in several neighbouring ones. In order to correct for this, treeIris will check if reported hits in a single event occured in neighbouring strips of the detector, and sum the energies up. This happens after the hits have been sorted by energy. The lower energy hit gets removed from the vector, the channel number of the hit that was removed is stored in the branch TXxNeighbour.
