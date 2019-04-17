@@ -376,8 +376,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	
 					// Upstream S3 detector, rings
 	  				if (modid==10  && vpeak> adcThresh && vpeak<3840){
-	   					Sur[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
-	  					SurADC[channel]=vpeak;		
+	   					SurADC[channel]=vpeak;		
 						if (!usePeds){
 	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*(float)vpeak;
 						}
