@@ -124,9 +124,11 @@ void HandleMidasEvent(TMidasEvent& event)
   
   	// clear values here!
 	clearDetectors();
+  pdet->Clear();
+  ptdc->Clear();
   	if ((eventId == 1)) {
-    	pdet->Clear();
-    	ptdc->Clear();
+    	//pdet->Clear();
+    	//ptdc->Clear();
     	m=0;
     	while (mesbkname[m][0]) { 
     	  	int size = event.LocateBank(NULL, mesbkname[m], &ptr);
@@ -138,8 +140,10 @@ void HandleMidasEvent(TMidasEvent& event)
 		if(gUseTdc){
 			m=0;
   			while (tdcbkname[m][0]) {
+        //printf("HandleMidasEvent(): Handling bank: %s\n",tdcbkname[m]);
 				int size = event.LocateBank(NULL, tdcbkname[m], &ptr);
 				if (ptr && size) {
+            //printf("Ok, the bank has size: %d\n",size);
 			  		HandleV1190(event, ptr, size, m, ptdc); 
 				}
 				m++;
@@ -210,8 +214,9 @@ int ProcessMidasFile(const char*fname)
 		{
 			event.SetBankList();
 			HandleMidasEvent(event);
+      //if(gEventNumber>10) break;
 		}
-    	
+    	//if(gEventNumber>100) break;
     	if((gEventNumber%100)==0)
 		{
 			printf("Processing event %d of run %d\r",gEventNumber,gRunNumber);

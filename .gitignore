@@ -10,3 +10,5 @@ core
 *.root
 *.png
 *.log
+bin
+lib

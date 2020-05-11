@@ -284,9 +284,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (debug1  && modid==1) printf("Evt#:%d items:%d - data[%d]: %d / 0x%x\n", event.GetSerialNumber(),NChannels, i, data[i], data[i]); 
 	
 	  				if (debug1  && modid==1) printf("Data: ch:%d id:%d val:%f\n", channel, modid, (float) vpeak);
-	  				
+
 					// Ionization Chamber
-	  				if ((modid==0) && (vpeak > adcThresh) && (vpeak<3840)){ 
+	  				if ((modid==0)){ //&& (vpeak > adcThresh) && (vpeak<3840)){ 
 						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];
 	        			if (channel==18){
 	          				ScADC = vpeak;
@@ -311,113 +311,112 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				}
 	  				
 					// CsI
-	  				if (modid==1 && vpeak > adcThresh && vpeak<3840){
+	  				if (modid==1){// && vpeak > adcThresh && vpeak<3840){
 	    				if (channel<16){
-	    					CsI1[channel] = (float)vpeak;
+	    					CsI1[channel] = (float)vpeak + fRandom.Uniform(-0.5,0.5);
 	    					CsI1ADC[channel] = (float)vpeak;
 	    	    		}	    
 		  				else if (channel>=16){
-	    					CsI2[channel-16] = (float)vpeak;
+	    					CsI2[channel-16] = (float)vpeak + fRandom.Uniform(-0.5,0.5);
 	    					CsI2ADC[channel-16] = (float)vpeak;
 	    	    		}	    
 	  				}
 	
 					// Second downstream S3 detector, rings
-	  				if (modid==2 && vpeak > adcThresh && vpeak<3840){
+	  				if (modid==2){// && vpeak > adcThresh && vpeak<3840){
 						Sd2rADC[channel]=vpeak;	
 						if(channel<16) ZdyADC[channel] = vpeak;
 	 					if (!usePeds){
-	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*(float)vpeak;
-							if(channel<16) Zdy[channel] = ZdyOffset[channel]+ZdyGain[channel]*(float)vpeak;
+	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+							if(channel<16) Zdy[channel] = ZdyOffset[channel]+ZdyGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 	 					else if (usePeds){
-	   						Sd2r[channel] = Sd2rGain[channel]*(((float)vpeak)-Sd2rPed[channel]);
-							if(channel<16) Zdy[channel] = ZdyGain[channel]*(((float)vpeak)-ZdyPed[channel]);
+	   						Sd2r[channel] = Sd2rGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd2rPed[channel]);
+							if(channel<16) Zdy[channel] = ZdyGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdyPed[channel]);
 							} 
 	  				}
 	  
 					// Second downstream S3 detector, segments
-	  				if (modid==3 && vpeak > adcThresh && vpeak<3840){
+	  				if (modid==3){// && vpeak > adcThresh && vpeak<3840){
 						Sd2sADC[channel]=vpeak;		
 						if(channel<8) ZdxADC[7-channel] = vpeak;
 						if(channel>7 && channel<16) ZdxADC[channel] = vpeak;
 	    				if (!usePeds){	
-	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*(float)vpeak;
-							if(channel<8) Zdx[7-channel] = ZdxOffset[7-channel]+ZdxGain[7-channel]*(float)vpeak;
-							if(channel>7 && channel<16) Zdx[channel] = ZdxOffset[channel]+ZdxGain[channel]*(float)vpeak;
+	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+							if(channel<8) Zdx[7-channel] = ZdxOffset[7-channel]+ZdxGain[7-channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+							if(channel>7 && channel<16) Zdx[channel] = ZdxOffset[channel]+ZdxGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 	 					else if (usePeds){
-	   						Sd2s[channel] = Sd2sGain[channel]*(((float)vpeak)-Sd2sPed[channel]);
-							if(channel<8) Zdx[7-channel] = ZdxGain[7-channel]*(((float)vpeak)-ZdxPed[7-channel]);
-							if(channel>7 && channel<16) Zdx[channel] = ZdxGain[channel]*(((float)vpeak)-ZdxPed[channel]);
+	   						Sd2s[channel] = Sd2sGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd2sPed[channel]);
+							if(channel<8) Zdx[7-channel] = ZdxGain[7-channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdxPed[7-channel]);
+							if(channel>7 && channel<16) Zdx[channel] = ZdxGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdxPed[channel]);
 							}
 	   					}
 	
 					// First downstream S3 detector, rings
-	  				if (modid==4 && vpeak > adcThresh  && vpeak<3840){
+	  				if (modid==4){// && vpeak > adcThresh  && vpeak<3840){
 						Sd1rADC[channel]=vpeak;		
 						if (!usePeds){
-	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*(float)vpeak;
+	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sd1r[channel] = Sd1rGain[channel]*(((float)vpeak)-Sd1rPed[channel]);
+	   						Sd1r[channel] = Sd1rGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd1rPed[channel]);
 						}
 					}	
 					// First downstream S3 detector, segments
-	  				if (modid==5 && vpeak > adcThresh  && vpeak<3840){
+	  				if (modid==5){// && vpeak > adcThresh  && vpeak<3840){
 						Sd1sADC[channel]=vpeak;		
 	     				if (!usePeds){
-	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*(float)vpeak;
+	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sd1s[channel] = Sd1sGain[channel]*(((float)vpeak)-Sd1sPed[channel]);
+	   						Sd1s[channel] = Sd1sGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd1sPed[channel]);
 						}
 					}
 	
 					// Upstream S3 detector, rings
-	  				if (modid==10  && vpeak> adcThresh && vpeak<3840){
+	  				if (modid==10){//  && vpeak> adcThresh && vpeak<3840){
 	   					SurADC[channel]=vpeak;		
 						if (!usePeds){
-	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*(float)vpeak;
+	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sur[channel] = SurGain[channel]*(((float)vpeak)-SurPed[channel]);
+	   						Sur[channel] = SurGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-SurPed[channel]);
 						}
-
 					}
 	  				    
 					// Upstream S3 detector, segments
-	  				if (modid==11  && vpeak > adcThresh && vpeak<3840){
+	  				if (modid==11){//  && vpeak > adcThresh && vpeak<3840){
 	  					SusADC[channel]=vpeak;		
 	     				if (!usePeds){
-	    					Sus[channel] = SusOffset[channel]+SusGain[channel]*(float)vpeak;
+	    					Sus[channel] = SusOffset[channel]+SusGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sus[channel] = SusGain[channel]*(((float)vpeak)-SusPed[channel]);
+	   						Sus[channel] = SusGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-SusPed[channel]);
 						}
 					}
 	  
 	 				// Downstream YY1 detector 
-	  				if (modid>5 && modid<10 && vpeak>adcThresh  && vpeak<3840){
+	  				if (modid>5 && modid<10){// && vpeak>adcThresh  && vpeak<3840){
 						YdADC[channel+(modid-6)*32]=vpeak;
 	 					if(!usePeds){
-							Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*(float)vpeak;
+							Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else{
-							Yd[channel+(modid-6)*32]=YdGain[channel+(modid-6)*32]*((float)vpeak-YdPedestal[channel+(modid-6)*32]);
+							Yd[channel+(modid-6)*32]=YdGain[channel+(modid-6)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5) -YdPedestal[channel+(modid-6)*32]);
 						}
 	    				if (channel<16) ydNo = (modid-6)*2+1; //Yd number
 	    				if (channel>15) ydNo = (modid-6)*2+2;
 	  				}
 	  
 	 				// Upstream YY1 detector 
-	  				if (modid>11 && modid<16 && vpeak >adcThresh  && vpeak<3840){  
+	  				if (modid>11 && modid<16){// && vpeak >adcThresh  && vpeak<3840){  
 	  				  	YuADC[channel+(modid-12)*32]=vpeak;
 	 					if(!usePeds){
-							Yu[channel+(modid-12)*32]=YuOffset[channel+(modid-12)*32]+YuGain[channel+(modid-12)*32]*(float)vpeak;
+							Yu[channel+(modid-12)*32]=YuOffset[channel+(modid-12)*32]+YuGain[channel+(modid-12)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
 						}
 						else{
-							Yu[channel+(modid-12)*32]=YuGain[channel+(modid-12)*32]*((float)vpeak-YuPedestal[channel+(modid-12)*32]);
+							Yu[channel+(modid-12)*32]=YuGain[channel+(modid-12)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5)-YuPedestal[channel+(modid-12)*32]);
 						}
 	    				if (channel<16) yuNo = (modid-12)*2+1; //Yu number
 	    				if (channel>15) yuNo = (modid-12)*2+2;
@@ -497,7 +496,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
  				det.TSd1rEnergy.push_back(Sd1r[maxCh]);
 				det.TSd1rChannel.push_back(maxCh);
 				det.TSd1rNeighbour.push_back(-1);
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./geoM.Sd1Distance);
 				det.TSd1Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
     			Sd1r[maxCh] = 0.;
@@ -505,6 +504,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			else break;
     	}
 				
+  /*
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSd1rMul; i++){
 			if(det.TSd1rMul>i+1){
@@ -523,7 +523,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSd1rMul>=i) break;
 		}
-	
+	*/
 		// 1st downstream S3, sector side
 		for (Int_t i=0;i<NSd1sChannels;i++){
     		maxE = 0.;
@@ -541,13 +541,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd1sChannel.push_back(maxCh);
 				det.TSd1sNeighbour.push_back(-1);
 				phi = -180.+360.*maxCh/32.;
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSd1Phi.push_back(phi+11.25*rndm);
 	
 				Sd1s[maxCh] = 0.;
 			}
 			else break;
     	}
+  /*
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSd1sMul; i++){
 			if(det.TSd1sMul>i+1){
@@ -566,7 +567,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSd1sMul>=i) break;
 		}
-
+  */
 
 		// 2nd downstream S3, ring side
 		for (Int_t i=0;i<NSd2rChannels;i++){
@@ -584,7 +585,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     			det.TSd2rEnergy.push_back(Sd2r[maxCh]);
 				det.TSd2rChannel.push_back(maxCh);
 				det.TSd2rNeighbour.push_back(-1);
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./(geoM.Sd1Distance+14.8));
 				det.TSd2Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
 
@@ -592,7 +593,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-			
+
+  /*			
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSd2rMul; i++){
 			if(det.TSd2rMul>i+1){
@@ -611,7 +613,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSd2rMul>=i) break;
 		}
-				
+  */		
+
 		// 2nd downstream S3, sector side
 		for (Int_t i=0;i<NSd2sChannels;i++){
     		maxE = 0.;
@@ -629,14 +632,15 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd2sChannel.push_back(maxCh);
 				det.TSd2sNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSd2Phi.push_back(phi-11.25*rndm);
 
 				Sd2s[maxCh] = 0.;
 			}
 			else break;
     	}
-		
+
+  /*		
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSd2sMul; i++){
 			if(det.TSd2sMul>i+1){
@@ -655,7 +659,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSd2sMul>=i) break;
 		}
-
+  */
 		// Upstream S3, ring side
 		for (Int_t i=0;i<NSurChannels;i++){
     		maxE = 0.;
@@ -672,7 +676,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     			det.TSurEnergy.push_back(Sur[maxCh]);
 				det.TSurChannel.push_back(maxCh);
 				det.TSurNeighbour.push_back(-1);
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(maxCh+rndm)+geoM.SdOuterRadius*(24-maxCh-rndm))/24./(geoM.SuDistance)) + 180.;
 				det.TSuTheta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
 
@@ -680,7 +684,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			else break;
     	}
-			
+	
+  /*		
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSurMul; i++){
 			if(det.TSurMul>i+1){
@@ -699,7 +704,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSurMul>=i) break;
 		}
-		
+  */
+
 		// Upstream S3, sector side
 		for (Int_t i=0;i<NSusChannels;i++){
     		maxE = 0.;
@@ -717,14 +723,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSusChannel.push_back(maxCh);
 				det.TSusNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
-				rndm = 0.99*fRandom.Rndm(); //random number between 0 and 0.99 for each event
+				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSuPhi.push_back(phi-11.25*rndm);
 	
 				Sus[maxCh] = 0.;
 			}
 			else break;
     	}
-		
+		 /*
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TSusMul; i++){
 			if(det.TSusMul>i+1){
@@ -743,6 +749,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TSusMul>=i) break;
 		}
+  */
 
 		// Downstream YY1
 		for (Int_t i=0;i<NYdChannels;i++){
@@ -762,7 +769,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYdNeighbour.push_back(-1);
 				det.TYdNo.push_back(int(maxCh/16));
 				det.TYdRing.push_back(maxCh%16);
-				rndm = 0.99*fRandom.Rndm();
+				rndm = fRandom.Rndm();
 				theta = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-maxCh%16-rndm)+geoM.YdOuterRadius*(maxCh%16+rndm))/16./geoM.YdDistance);
 				det.TYdTheta.push_back(theta);
 
@@ -771,6 +778,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			else break;
     	}
 
+  /*
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TYdMul; i++){
 			if(det.TYdMul>i+1){
@@ -791,6 +799,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TYdMul>=i) break;
 		}
+  */
 
 		// Upstream YY1
 		for (Int_t i=0;i<NYuChannels;i++){
@@ -811,7 +820,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYuNo.push_back(int(maxCh/16));
 				det.TYuRing.push_back(maxCh%16);
 				//here
-				rndm = 0.99*fRandom.Rndm();
+				rndm = fRandom.Rndm();
 				theta = TMath::RadToDeg()*atan((geoM.YdInnerRadius*(16.-maxCh%16-rndm)+geoM.YdOuterRadius*(maxCh%16+rndm))/16./geoM.YuDistance) + 180.;
 				det.TYuTheta.push_back(theta);
 
@@ -820,6 +829,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			else break;
     	}
 	
+  /*
 		// correct for charge sharing. Check if two neighbouring channels have a signal, then add them up.
 		for (Int_t i=0; i<det.TYuMul; i++){
 			if(det.TYuMul>i+1){
@@ -840,6 +850,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			}
 			if(det.TYuMul>=i) break;
 		}
+  */
 
 		// Zero-degree DSSD, vertical strips
 		for (Int_t i=0;i<NZdxChannels;i++){
@@ -919,6 +930,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	      			int m = (det.TYdChannel.at(0)%16)/(16/NCsI1Group);
 	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]); 
 	      			det.TCsI1Channel.push_back(maxCh);
+          //if(maxCh==5 && m==3){ //Sector 5, ring 3.
+          //  printf("%lf  %lf  %lf  %lf\n",CsI1[maxCh],CsI1Ped[maxCh],CsI1Gain[m][maxCh],det.TCsI1Energy.back());
+          //}
 					phi = 90.+1.75-360.*maxCh/16.;
 					rndm = 22.4*fRandom.Rndm();
 					phi = phi-11.2+rndm;
@@ -957,6 +971,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			else break;
     	}
 
+  /*
 		// Re-sorting Yd if hits don't match with CsI
 		if(det.TCsI1Channel.size()>0&&det.TYdNo.size()>1&&calMesy.boolCsI1==true) // only check if YY1 has more than one hit and CsI has a hit and has been calibrated
 		{
@@ -969,6 +984,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				std::swap(det.TYdTheta.at(0),det.TYdTheta.at(1));
 			}
 		}
+  */
 
 		// IC
 		maxE=0; 
