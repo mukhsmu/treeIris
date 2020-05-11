@@ -59,14 +59,13 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
     }
     initialised = true;
   }
-	ITdc times;
 	uint32_t *data;
 	int    i, debug = 0, debug1 = 0; 
   uint32_t globCh;
 	// int eventId = event.GetEventId();
 	
 	data = (uint32_t *) ptr;
-		
+
 	// published var for HandlePHYSICS
 	gV1190nitems = nitems;
 	// Loop over all the banks
@@ -143,9 +142,11 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 			} // switch
 		} // for loop
 	} // nitems!=0
-
-	times.Clear(); //Seems unnecessary..?
+	
 	if(bank==5){ 	// check for last bank
+	  ITdc times;
+    times.Clear(); //Seems unnecessary..?
+    if(tRef > 0){
 		for(i=0; i<64; i++){
 			if(timeRef[i]>0.){
         if(debug) printf("IC signal: channel = %d, timeRef[i] = %lf\n",i,timeRef[i]);
@@ -267,7 +268,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRF[i] = -1;
 			}
 		}
+    }//if tRef>0
 		*ptdc=times;
+    tRef = 0;
 	}	// check for last bank
 }
 
