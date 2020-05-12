@@ -164,6 +164,8 @@ Double_t rndm; //random number between 0 and 1 for each event
 
 Double_t maxE = 0.; // used for energy sorting
 Int_t maxCh = -1; // used for energy sorting
+Double_t maxADC = 0.; // used for raw ADC sorting
+Int_t maxADCch = -1; // used for raw ADC sorting
 Double_t phi = 0., theta = 0.; // dummy variables for angles
 Double_t xpos, ypos, radius = 0.; // dummy variables for positions
 
@@ -434,52 +436,211 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 
 	if(bank==5){ // check last bank
 
-		if(gUseRaw){	// write raw ADC values to tree
- 			for(Int_t i=0;i<NSd1rChannels;i++){
-			   det.TSd1rADC.push_back(Sd1rADC[i]); 
-			}
-			for(Int_t i=0;i<NSd1sChannels;i++){
-			   det.TSd1sADC.push_back(Sd1sADC[i]); 
-			}
-			for(Int_t i=0;i<NSd2rChannels;i++){
-			   det.TSd2rADC.push_back(Sd2rADC[i]); 
-			}
-			for(Int_t i=0;i<NSd2sChannels;i++){
-			   det.TSd2sADC.push_back(Sd2sADC[i]); 
-			}
-			for(Int_t i=0;i<NSurChannels;i++){
-			   det.TSurADC.push_back(SurADC[i]); 
-			}
-			for(Int_t i=0;i<NSusChannels;i++){
-			   det.TSusADC.push_back(SusADC[i]); 
-			}
-			for(Int_t i=0;i<NYdChannels;i++){
-			   det.TYdADC.push_back(YdADC[i]); 
-			}
-			for(Int_t i=0;i<NYuChannels;i++){
-			   det.TYuADC.push_back(YuADC[i]); 
-			}
-			for(Int_t i=0;i<NZdxChannels;i++){
-			   det.TZdxADC.push_back(ZdxADC[i]); 
-			}
-			for(Int_t i=0;i<NZdyChannels;i++){
-			   det.TZdyADC.push_back(ZdyADC[i]); 
-			}
-			for(Int_t i=0;i<NCsIChannels;i++){
-			   det.TCsI1ADC.push_back(CsI1ADC[i]);
-			}
-			for(Int_t i=0;i<NCsIChannels;i++){
-				det.TCsI2ADC.push_back(CsI2ADC[i]);
-			}
-			for(Int_t  i=0; i<NICChannels;i++){
-				det.TICADC.push_back(IC[i]);
-			}
-			for(Int_t i=0; i<NTrChannels; i++){
-				det.TTrADC.push_back(TrADC[i]);
-			}
-			det.TSSBADC = SSBADC;
-			det.TScADC = ScADC;
-		}
+	         if(gUseRaw){ // write raw ADC values to tree and sort by largest to smallest
+		   // Sd1r
+		   for(Int_t i=0;i<NSd1rChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSd1rChannels;j++){
+		       if(Sd1rADC[j] > maxADC){
+			 maxADC = Sd1rADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSd1rADC.push_back(Sd1rADC[maxADCch]);
+		       Sd1rADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Sd1s
+		   for(Int_t i=0;i<NSd1sChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSd1sChannels;j++){
+		       if(Sd1sADC[j] > maxADC){
+			 maxADC = Sd1sADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSd1sADC.push_back(Sd1sADC[maxADCch]);
+		       Sd1sADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Sd2r
+		   for(Int_t i=0;i<NSd2rChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSd2rChannels;j++){
+		       if(Sd2rADC[j] > maxADC){
+			 maxADC = Sd2rADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSd2rADC.push_back(Sd2rADC[maxADCch]);
+		       Sd2rADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Sd2s
+		   for(Int_t i=0;i<NSd2sChannels;i++){	      
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSd2sChannels;j++){
+		       if(Sd2sADC[j] > maxADC){
+			 maxADC = Sd2sADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSd2sADC.push_back(Sd2sADC[maxADCch]);
+		       Sd2sADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Sur
+		   for(Int_t i=0;i<NSurChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSurChannels;j++){
+		       if(SurADC[j] > maxADC){
+			 maxADC = SurADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSurADC.push_back(SurADC[maxADCch]);
+		       SurADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Sus
+		   for(Int_t i=0;i<NSusChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NSusChannels;j++){
+		       if(SusADC[j] > maxADC){
+			 maxADC = SusADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TSusADC.push_back(SusADC[maxADCch]);
+		       SusADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Yd
+		   for(Int_t i=0;i<NYdChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NYdChannels;j++){
+		       if(YdADC[j] > maxADC){
+			 maxADC = YdADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TYdADC.push_back(YdADC[maxADCch]);
+		       YdADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // Yu
+		   for(Int_t i=0;i<NYuChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NYuChannels;j++){
+		       if(YuADC[j] > maxADC){
+			 maxADC = YuADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TYuADC.push_back(YuADC[maxADCch]);
+		       YuADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // DSSD x
+		   for(Int_t i=0;i<NZdxChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NZdxChannels;j++){
+		       if(ZdxADC[j] > maxADC){
+			 maxADC = ZdxADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TZdxADC.push_back(ZdxADC[maxADCch]);
+		       ZdxADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // DSSD Y
+		   for(Int_t i=0;i<NZdyChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NZdyChannels;j++){
+		       if(ZdyADC[j] > maxADC){
+			 maxADC = ZdyADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TZdyADC.push_back(ZdyADC[maxADCch]);
+		       ZdyADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // CsI1
+		   for(Int_t i=0;i<NCsIChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NCsIChannels;j++){
+		       if(CsI1ADC[j] > maxADC){
+			 maxADC = CsI1ADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TCsI1ADC.push_back(CsI1ADC[maxADCch]);
+		       CsI1ADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // CsI2
+		   for(Int_t i=0;i<NCsIChannels;i++){
+		     maxADC = 0.;
+		     maxADCch = -1;
+		     for(Int_t j=0;j<NCsIChannels;j++){
+		       if(CsI2ADC[j] > maxADC){
+			 maxADC = CsI2ADC[j];
+			 maxADCch = j;
+		       }
+		     }
+		     if(maxADC>0.){
+		       det.TCsI2ADC.push_back(CsI2ADC[maxADCch]);
+		       CsI2ADC[maxADCch]=0.;
+		     }
+		     else break;
+		   }
+		   // IC
+		   for(Int_t  i=0; i<NICChannels;i++){
+		     det.TICADC.push_back(IC[i]);
+		   }
+		   // TRIFIC
+		   for(Int_t i=0; i<NTrChannels; i++){
+		     det.TTrADC.push_back(TrADC[i]);
+		   }
+		   det.TSSBADC = SSBADC;
+		   det.TScADC = ScADC;
+		 }// if(gUseRaw)
+
 
 		// 1st downstream S3, ring side
  		for (Int_t i=0;i<NSd1rChannels;i++){
@@ -987,6 +1148,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
   */
 
 		// IC
+		/*
 		maxE=0; 
 		maxCh = -1;
     	for (int i =0; i< NICChannels;i++) {
@@ -995,10 +1157,16 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
       			maxCh = i;
 			}
     	} //for
-    	if(maxE>0.) 
+    	if(maxE>0.)
+	*/
+		for(int i=0; i< NICChannels; i++)
 		{
-			det.TICEnergy.push_back(maxE); //for filling the tree
-			det.TICChannel.push_back(maxCh);
+			if(IC[i]>0.){
+			//det.TICEnergy.push_back(maxE); //for filling the tree
+			//det.TICChannel.push_back(maxCh);
+			det.TICEnergy.push_back(IC[i]); //for filling the tree
+			det.TICChannel.push_back(i);
+			}
 		}
 		
 		// SSB
