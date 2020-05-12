@@ -313,11 +313,11 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					// CsI
 	  				if (modid==1){// && vpeak > adcThresh && vpeak<3840){
 	    				if (channel<16){
-	    					CsI1[channel] = (float)vpeak + fRandom.Uniform(-0.5,0.5);
+	    					CsI1[channel] = (float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5);
 	    					CsI1ADC[channel] = (float)vpeak;
 	    	    		}	    
 		  				else if (channel>=16){
-	    					CsI2[channel-16] = (float)vpeak + fRandom.Uniform(-0.5,0.5);
+	    					CsI2[channel-16] = (float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5);
 	    					CsI2ADC[channel-16] = (float)vpeak;
 	    	    		}	    
 	  				}
@@ -327,12 +327,12 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						Sd2rADC[channel]=vpeak;	
 						if(channel<16) ZdyADC[channel] = vpeak;
 	 					if (!usePeds){
-	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
-							if(channel<16) Zdy[channel] = ZdyOffset[channel]+ZdyGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sd2r[channel] = Sd2rOffset[channel]+Sd2rGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
+							if(channel<16) Zdy[channel] = ZdyOffset[channel]+ZdyGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 	 					else if (usePeds){
-	   						Sd2r[channel] = Sd2rGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd2rPed[channel]);
-							if(channel<16) Zdy[channel] = ZdyGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdyPed[channel]);
+	   						Sd2r[channel] = Sd2rGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-Sd2rPed[channel]);
+							if(channel<16) Zdy[channel] = ZdyGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-ZdyPed[channel]);
 							} 
 	  				}
 	  
@@ -342,14 +342,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 						if(channel<8) ZdxADC[7-channel] = vpeak;
 						if(channel>7 && channel<16) ZdxADC[channel] = vpeak;
 	    				if (!usePeds){	
-	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
-							if(channel<8) Zdx[7-channel] = ZdxOffset[7-channel]+ZdxGain[7-channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
-							if(channel>7 && channel<16) Zdx[channel] = ZdxOffset[channel]+ZdxGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sd2s[channel] = Sd2sOffset[channel]+Sd2sGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
+							if(channel<8) Zdx[7-channel] = ZdxOffset[7-channel]+ZdxGain[7-channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
+							if(channel>7 && channel<16) Zdx[channel] = ZdxOffset[channel]+ZdxGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 	 					else if (usePeds){
-	   						Sd2s[channel] = Sd2sGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd2sPed[channel]);
-							if(channel<8) Zdx[7-channel] = ZdxGain[7-channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdxPed[7-channel]);
-							if(channel>7 && channel<16) Zdx[channel] = ZdxGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-ZdxPed[channel]);
+	   						Sd2s[channel] = Sd2sGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-Sd2sPed[channel]);
+							if(channel<8) Zdx[7-channel] = ZdxGain[7-channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-ZdxPed[7-channel]);
+							if(channel>7 && channel<16) Zdx[channel] = ZdxGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-ZdxPed[channel]);
 							}
 	   					}
 	
@@ -357,20 +357,20 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid==4){// && vpeak > adcThresh  && vpeak<3840){
 						Sd1rADC[channel]=vpeak;		
 						if (!usePeds){
-	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sd1r[channel] = Sd1rOffset[channel]+Sd1rGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sd1r[channel] = Sd1rGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd1rPed[channel]);
+	   						Sd1r[channel] = Sd1rGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-Sd1rPed[channel]);
 						}
 					}	
 					// First downstream S3 detector, segments
 	  				if (modid==5){// && vpeak > adcThresh  && vpeak<3840){
 						Sd1sADC[channel]=vpeak;		
 	     				if (!usePeds){
-	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sd1s[channel] = Sd1sOffset[channel]+Sd1sGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sd1s[channel] = Sd1sGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-Sd1sPed[channel]);
+	   						Sd1s[channel] = Sd1sGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-Sd1sPed[channel]);
 						}
 					}
 	
@@ -378,10 +378,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid==10){//  && vpeak> adcThresh && vpeak<3840){
 	   					SurADC[channel]=vpeak;		
 						if (!usePeds){
-	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sur[channel] = SurOffset[channel]+SurGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sur[channel] = SurGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-SurPed[channel]);
+	   						Sur[channel] = SurGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-SurPed[channel]);
 						}
 					}
 	  				    
@@ -389,10 +389,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid==11){//  && vpeak > adcThresh && vpeak<3840){
 	  					SusADC[channel]=vpeak;		
 	     				if (!usePeds){
-	    					Sus[channel] = SusOffset[channel]+SusGain[channel]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+	    					Sus[channel] = SusOffset[channel]+SusGain[channel]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else if (usePeds){
-	   						Sus[channel] = SusGain[channel]*(((float)vpeak + fRandom.Uniform(-0.5,0.5))-SusPed[channel]);
+	   						Sus[channel] = SusGain[channel]*(((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5))-SusPed[channel]);
 						}
 					}
 	  
@@ -400,10 +400,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid>5 && modid<10){// && vpeak>adcThresh  && vpeak<3840){
 						YdADC[channel+(modid-6)*32]=vpeak;
 	 					if(!usePeds){
-							Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+							Yd[channel+(modid-6)*32]=YdOffset[channel+(modid-6)*32]+YdGain[channel+(modid-6)*32]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else{
-							Yd[channel+(modid-6)*32]=YdGain[channel+(modid-6)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5) -YdPedestal[channel+(modid-6)*32]);
+							Yd[channel+(modid-6)*32]=YdGain[channel+(modid-6)*32]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5) -YdPedestal[channel+(modid-6)*32]);
 						}
 	    				if (channel<16) ydNo = (modid-6)*2+1; //Yd number
 	    				if (channel>15) ydNo = (modid-6)*2+2;
@@ -413,10 +413,10 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (modid>11 && modid<16){// && vpeak >adcThresh  && vpeak<3840){  
 	  				  	YuADC[channel+(modid-12)*32]=vpeak;
 	 					if(!usePeds){
-							Yu[channel+(modid-12)*32]=YuOffset[channel+(modid-12)*32]+YuGain[channel+(modid-12)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5));
+							Yu[channel+(modid-12)*32]=YuOffset[channel+(modid-12)*32]+YuGain[channel+(modid-12)*32]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5));
 						}
 						else{
-							Yu[channel+(modid-12)*32]=YuGain[channel+(modid-12)*32]*((float)vpeak + fRandom.Uniform(-0.5,0.5)-YuPedestal[channel+(modid-12)*32]);
+							Yu[channel+(modid-12)*32]=YuGain[channel+(modid-12)*32]*((float)vpeak + gRandomise*fRandom.Uniform(-0.5,0.5)-YuPedestal[channel+(modid-12)*32]);
 						}
 	    				if (channel<16) yuNo = (modid-12)*2+1; //Yu number
 	    				if (channel>15) yuNo = (modid-12)*2+2;

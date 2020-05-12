@@ -207,6 +207,7 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 				times.TSd1rTimeRF.push_back(timeRF[i]);
 				times.TSd1rTChannel.push_back(191-i);
 				times.TSd1rTMul++;
+        //printf("Sd1r channel %d, traw = %lf, tRef = %u, dT = %lf, timeRef[i] = %lf\n",191-i,timeRaw[i],tRef,timeRaw[i]-tRef,timeRef[i]);
         timeRaw[i] = -1;
         timeRef[i] = -1;
         timeRF[i] = -1;
@@ -221,6 +222,7 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         int YdChannel = ((i-192)/16)*16+15-(i-192)%16;
 				times.TYdTChannel.push_back(YdChannel);
 				times.TYdTMul++;
+        //printf("Yd channel %d, traw = %lf, tRef = %u, dT = %lf, timeRef[i] = %lf\n",YdChannel,timeRaw[i],tRef,timeRaw[i]-tRef,timeRef[i]);
         timeRaw[i] = -1;
         timeRef[i] = -1;
         timeRF[i] = -1;

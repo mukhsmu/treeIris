@@ -17,6 +17,8 @@ extern bool gIsOffline;
 extern TFile* treeFile;
 extern TTree* tree;
 
+extern bool gRandomise;
+
 #include "VirtualOdb.h"
 
 extern VirtualOdb* gOdb;

@@ -34,6 +34,7 @@ int  gEventCutoff = 0;
 bool gUseTdc = false;
 bool gUseRaw = false;
 bool gUseDccp = false;
+bool gRandomise = false; //Randomise ADC values within the channel when calibrating.
 std::string gOutputFile = "";
 std::string gCalibFile = "";
 
@@ -246,6 +247,7 @@ void help()
 	printf("\t-tdc: Write TDC data to root file.\n");
 	printf("\t-raw: Write raw ADC data to root file.\n");
 	printf("\t-dccp: Use dccp file system.\n");
+	printf("\t-rndm: Randomise ADC values within the channel when calibrating.\n");
 	printf("\n");
 	exit(1);
 }
@@ -305,6 +307,7 @@ int main(int argc, char *argv[])
 	 		gUseDccp=true;
        	else if (strcmp(arg,"-h")==0)
 	 		help(); // does not return
+        else if(strcmp(arg,"-rndm")==0) gRandomise = true;
        	else if (arg[0] == '-')
 	 		help(); // does not return
 	}
