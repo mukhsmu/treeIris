@@ -435,8 +435,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	det.Clear(); //make sure root variables are empty
 
 	if(bank==5){ // check last bank
-
+/*
 	         if(gUseRaw){ // write raw ADC values to tree and sort by largest to smallest
+
 		   // Sd1r
 		   for(Int_t i=0;i<NSd1rChannels;i++){
 		     maxADC = 0.;
@@ -640,6 +641,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		   det.TSSBADC = SSBADC;
 		   det.TScADC = ScADC;
 		 }// if(gUseRaw)
+*/
 
 
 		// 1st downstream S3, ring side
@@ -655,12 +657,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TSd1rMul++;
  				det.TSd1rEnergy.push_back(Sd1r[maxCh]);
+        if(gUseRaw) det.TSd1rADC.push_back(Sd1rADC[maxCh]);
 				det.TSd1rChannel.push_back(maxCh);
 				det.TSd1rNeighbour.push_back(-1);
 				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./geoM.Sd1Distance);
 				det.TSd1Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
-    			Sd1r[maxCh] = 0.;
+    		Sd1r[maxCh] = 0.;
+        Sd1rADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -698,14 +702,15 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     
    			if(maxE>0.){ 
 				det.TSd1sMul++;
-    			det.TSd1sEnergy.push_back(Sd1s[maxCh]);
+    	  det.TSd1sEnergy.push_back(Sd1s[maxCh]);
+        if(gUseRaw) det.TSd1sADC.push_back(Sd1sADC[maxCh]);
 				det.TSd1sChannel.push_back(maxCh);
 				det.TSd1sNeighbour.push_back(-1);
 				phi = -180.+360.*maxCh/32.;
 				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				det.TSd1Phi.push_back(phi+11.25*rndm);
-	
-				Sd1s[maxCh] = 0.;
+	  		Sd1s[maxCh] = 0.;
+        Sd1sADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -744,13 +749,14 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TSd2rMul++;
     			det.TSd2rEnergy.push_back(Sd2r[maxCh]);
+        if(gUseRaw) det.TSd2rADC.push_back(Sd2rADC[maxCh]);
 				det.TSd2rChannel.push_back(maxCh);
 				det.TSd2rNeighbour.push_back(-1);
 				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
 				theta = TMath::RadToDeg()*atan((geoM.SdInnerRadius*(24.-maxCh-rndm)+geoM.SdOuterRadius*(maxCh+rndm))/24./(geoM.Sd1Distance+14.8));
 				det.TSd2Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
-
 				Sd2r[maxCh] = 0.;
+        Sd2rADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -790,6 +796,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TSd2sMul++;
     			det.TSd2sEnergy.push_back(Sd2s[maxCh]);
+        if(gUseRaw) det.TSd2sADC.push_back(Sd2sADC[maxCh]);
 				det.TSd2sChannel.push_back(maxCh);
 				det.TSd2sNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
@@ -797,6 +804,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSd2Phi.push_back(phi-11.25*rndm);
 
 				Sd2s[maxCh] = 0.;
+        Sd2sADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -835,6 +843,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TSurMul++;
     			det.TSurEnergy.push_back(Sur[maxCh]);
+        if(gUseRaw) det.TSurADC.push_back(SurADC[maxCh]);
 				det.TSurChannel.push_back(maxCh);
 				det.TSurNeighbour.push_back(-1);
 				rndm = fRandom.Rndm(); //random number between 0 and 0.99 for each event
@@ -842,6 +851,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSuTheta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
 
 				Sur[maxCh] = 0.;
+        SurADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -881,6 +891,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TSusMul++;
     			det.TSusEnergy.push_back(Sus[maxCh]);
+        if(gUseRaw) det.TSusADC.push_back(SusADC[maxCh]);
 				det.TSusChannel.push_back(maxCh);
 				det.TSusNeighbour.push_back(-1);
 				phi = 180.-360.*maxCh/32.;
@@ -888,6 +899,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TSuPhi.push_back(phi-11.25*rndm);
 	
 				Sus[maxCh] = 0.;
+        SusADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -926,6 +938,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TYdMul++;
     			det.TYdEnergy.push_back(Yd[maxCh]);
+        if(gUseRaw) det.TYdADC.push_back(YdADC[maxCh]);
 				det.TYdChannel.push_back(maxCh);
 				det.TYdNeighbour.push_back(-1);
 				det.TYdNo.push_back(int(maxCh/16));
@@ -935,6 +948,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYdTheta.push_back(theta);
 
 				Yd[maxCh] = 0.;
+        YdADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -976,6 +990,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TYuMul++;
     			det.TYuEnergy.push_back(Yu[maxCh]);
+        if(gUseRaw) det.TYuADC.push_back(YuADC[maxCh]);
 				det.TYuChannel.push_back(maxCh);
 				det.TYuNeighbour.push_back(-1);
 				det.TYuNo.push_back(int(maxCh/16));
@@ -986,6 +1001,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TYuTheta.push_back(theta);
 
 				Yu[maxCh] = 0.;
+        YuADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -1027,6 +1043,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TZdxMul++;
     			det.TZdxEnergy.push_back(Zdx[maxCh]);
+        if(gUseRaw) det.TZdxADC.push_back(ZdxADC[maxCh]);
 				det.TZdxChannel.push_back(maxCh);
 				xpos = (maxCh-8)*3.+1.5;
 				det.TZdxPos.push_back(xpos);
@@ -1035,6 +1052,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				//det.TSd2Theta.push_back(theta); //AS theta angle for Sd (24 - number of rings)
 
 				Zdx[maxCh] = 0.;
+        ZdxADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -1053,6 +1071,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
    			if(maxE>0.){ 
 				det.TZdyMul++;
     			det.TZdyEnergy.push_back(Zdy[maxCh]);
+        if(gUseRaw) det.TZdyADC.push_back(ZdyADC[maxCh]);
 				det.TZdyChannel.push_back(maxCh);
 				ypos = (maxCh-8)*3.+1.5;
 				det.TZdyPos.push_back(ypos);
@@ -1061,6 +1080,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				// det.TSd2Phi.push_back(phi-11.25*rndm);
 
 				Zdy[maxCh] = 0.;
+        ZdyADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -1090,6 +1110,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     			if (det.TYdMul>0){
 	      			int m = (det.TYdChannel.at(0)%16)/(16/NCsI1Group);
 	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]); 
+              if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[maxCh]);
 	      			det.TCsI1Channel.push_back(maxCh);
           //if(maxCh==5 && m==3){ //Sector 5, ring 3.
           //  printf("%lf  %lf  %lf  %lf\n",CsI1[maxCh],CsI1Ped[maxCh],CsI1Gain[m][maxCh],det.TCsI1Energy.back());
@@ -1101,6 +1122,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					det.TCsI1Phi.push_back(phi);
 	    		}
 				CsI1[maxCh] = 0.;
+        CsI1ADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -1120,6 +1142,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     			if (CsI2[maxCh] < 3840. && det.TYdMul>0){
 					int m = (det.TYdChannel.at(0)%16)/(16/NCsI2Group);
 	        		det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[maxCh])*CsI2Gain[m][maxCh]);
+              if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[maxCh]);
 	        		det.TCsI2Channel.push_back(maxCh);
 					phi = 90.+1.75-360.*maxCh/16.;
 					rndm = 22.4*fRandom.Rndm();
@@ -1128,6 +1151,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					det.TCsI2Phi.push_back(phi);
 	      		}
 				CsI2[maxCh] = 0.;
+        CsI2ADC[maxCh] = 0;
 			}
 			else break;
     	}
@@ -1165,7 +1189,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 			//det.TICEnergy.push_back(maxE); //for filling the tree
 			//det.TICChannel.push_back(maxCh);
 			det.TICEnergy.push_back(IC[i]); //for filling the tree
+      if(gUseRaw) det.TICADC.push_back(IC[i]);
 			det.TICChannel.push_back(i);
+      IC[i] = 0;
 			}
 		}
 		
@@ -1178,6 +1204,9 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 		if(TrEnergy[0]>0){
 			for(int i=0; i<NTrChannels; i++){
 				det.TTrEnergy.push_back(TrEnergy[i]);
+        if(gUseRaw) det.TTrADC.push_back(TrADC[i]);
+        TrEnergy[i] = 0;
+        TrADC[i] = 0;
 			}
 		}
 		
