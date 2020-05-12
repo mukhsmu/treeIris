@@ -987,6 +987,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
   */
 
 		// IC
+		/*
 		maxE=0; 
 		maxCh = -1;
     	for (int i =0; i< NICChannels;i++) {
@@ -995,10 +996,16 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
       			maxCh = i;
 			}
     	} //for
-    	if(maxE>0.) 
+    	if(maxE>0.)
+	*/
+		for(int i=0; i< NICChannels; i++)
 		{
-			det.TICEnergy.push_back(maxE); //for filling the tree
-			det.TICChannel.push_back(maxCh);
+			if(IC[i]>0.){
+			//det.TICEnergy.push_back(maxE); //for filling the tree
+			//det.TICChannel.push_back(maxCh);
+			det.TICEnergy.push_back(IC[i]); //for filling the tree
+			det.TICChannel.push_back(i);
+			}
 		}
 		
 		// SSB
