@@ -1109,7 +1109,8 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TCsI1Mul++;
     			if (det.TYdMul>0){
 	      			int m = (det.TYdChannel.at(0)%16)/(16/NCsI1Group);
-	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]); 
+	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]);
+              //printf("%d  %d  %lf  %lf\n",maxCh+32,m,CsI1Ped[maxCh],CsI1Gain[m][maxCh]);
               if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[maxCh]);
 	      			det.TCsI1Channel.push_back(maxCh);
           //if(maxCh==5 && m==3){ //Sector 5, ring 3.
@@ -1121,6 +1122,16 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 					phi = (phi<-180.)? phi+360. : phi;
 					det.TCsI1Phi.push_back(phi);
 	    		}
+          else{  //We cannot calibrate the signal, but ADC value is still stored
+	      	  det.TCsI1Energy.push_back(0);
+            if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[maxCh]);
+	      		det.TCsI1Channel.push_back(maxCh);
+  					phi = 90.+1.75-360.*maxCh/16.;
+	  				rndm = 22.4*fRandom.Rndm();
+		  			phi = phi-11.2+rndm;
+			  		phi = (phi<-180.)? phi+360. : phi;
+				  	det.TCsI1Phi.push_back(phi);            
+          }
 				CsI1[maxCh] = 0.;
         CsI1ADC[maxCh] = 0;
 			}
@@ -1139,17 +1150,28 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     
    			if(maxE>0.){ 
 				det.TCsI2Mul++;
-    			if (CsI2[maxCh] < 3840. && det.TYdMul>0){
-					int m = (det.TYdChannel.at(0)%16)/(16/NCsI2Group);
-	        		det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[maxCh])*CsI2Gain[m][maxCh]);
-              if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[maxCh]);
-	        		det.TCsI2Channel.push_back(maxCh);
-					phi = 90.+1.75-360.*maxCh/16.;
-					rndm = 22.4*fRandom.Rndm();
-					phi = phi-11.2+rndm;
-					phi = (phi<-180.)? phi+360. : phi;
-					det.TCsI2Phi.push_back(phi);
-	      		}
+    			//if (CsI2[maxCh] < 3840. && det.TYdMul>0){
+          if (det.TYdMul>0){
+					  int m = (det.TYdChannel.at(0)%16)/(16/NCsI2Group);
+	        	det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[maxCh])*CsI2Gain[m][maxCh]);
+            if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[maxCh]);
+	        	det.TCsI2Channel.push_back(maxCh);
+					  phi = 90.+1.75-360.*maxCh/16.;
+					  rndm = 22.4*fRandom.Rndm();
+					  phi = phi-11.2+rndm;
+					  phi = (phi<-180.)? phi+360. : phi;
+					  det.TCsI2Phi.push_back(phi);
+	        }
+          else{
+            det.TCsI2Energy.push_back(0.);
+            if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[maxCh]);
+	        	det.TCsI2Channel.push_back(maxCh);
+					  phi = 90.+1.75-360.*maxCh/16.;
+					  rndm = 22.4*fRandom.Rndm();
+					  phi = phi-11.2+rndm;
+					  phi = (phi<-180.)? phi+360. : phi;
+					  det.TCsI2Phi.push_back(phi);
+          }
 				CsI2[maxCh] = 0.;
         CsI2ADC[maxCh] = 0;
 			}
