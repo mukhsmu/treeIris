@@ -72,12 +72,12 @@ float ScPed=0;
 int CsI1ADC[16]={0};
 float CsI1[16]={0};//, CsI1Energy2; //CsI energy
 double CsI1Gain[NCsI1Group][NCsIChannels]={{1.}};
-double CsI1Ped[NCsIChannels]={0.};
+double CsI1Ped[NCsI1Group][NCsIChannels]={{0.}};
 
 int CsI2ADC[16]={0};
 float CsI2[16]={0};//, CsI2Energy2; //CsI energy
 double CsI2Gain[NCsI2Group][NCsIChannels]={{1.}};
-double CsI2Ped[NCsIChannels]={0.};
+double CsI2Ped[NCsI2Group][NCsIChannels]={{0.}};
 
 //AS S3
 int Sd1rADC[NSd1rChannels];
@@ -1109,7 +1109,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 				det.TCsI1Mul++;
     			if (det.TYdMul>0){
 	      			int m = (det.TYdChannel.at(0)%16)/(16/NCsI1Group);
-	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[maxCh])*CsI1Gain[m][maxCh]);
+	      			det.TCsI1Energy.push_back((CsI1[maxCh]-CsI1Ped[m][maxCh])*CsI1Gain[m][maxCh]);
               //printf("%d  %d  %lf  %lf\n",maxCh+32,m,CsI1Ped[maxCh],CsI1Gain[m][maxCh]);
               if(gUseRaw) det.TCsI1ADC.push_back(CsI1ADC[maxCh]);
 	      			det.TCsI1Channel.push_back(maxCh);
@@ -1153,7 +1153,7 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
     			//if (CsI2[maxCh] < 3840. && det.TYdMul>0){
           if (det.TYdMul>0){
 					  int m = (det.TYdChannel.at(0)%16)/(16/NCsI2Group);
-	        	det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[maxCh])*CsI2Gain[m][maxCh]);
+	        	det.TCsI2Energy.push_back((CsI2[maxCh]-CsI2Ped[m][maxCh])*CsI2Gain[m][maxCh]);
             if(gUseRaw) det.TCsI2ADC.push_back(CsI2ADC[maxCh]);
 	        	det.TCsI2Channel.push_back(maxCh);
 					  phi = 90.+1.75-360.*maxCh/16.;
@@ -1340,9 +1340,9 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 		fprintf(logFile,"No calibration file for CsI1. Skipping CsI1 calibration.\n");
 		printf("No calibration file for CsI1. Skipping CsI1 calibration.\n");
    		for (int i =0; i<16; i++){
-			CsI1Ped[i] = 0.;
 			for (int j=0; j<NCsI1Group; j++){
 				CsI1Gain[j][i] = 1.;
+			  CsI1Ped[j][i] = 0.;
  			}//for
 		}
 	}  
@@ -1358,7 +1358,7 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 		for (int i =0; i<16; i++){
 			for (int j=0; j<NCsI1Group; j++){
 				fscanf(pFile,"%d%d%lf%lf",&Chan,&g,&a,&b);
-				CsI1Ped[Chan-32] = a;
+				CsI1Ped[g][Chan-32] = a;
 				CsI1Gain[g][Chan-32] = b;
               	printf("CsI1 calibration par: adc =%d\tc=%d\tpeds=%f\tgain=%f\n",Chan,g,a,b);
  			}//for
@@ -1375,9 +1375,9 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 		fprintf(logFile,"No calibration file for CsI2. Skipping CsI2 calibration.\n");
 		printf("No calibration file for CsI2. Skipping CsI2 calibration.\n");
 		for (int i =0; i<16; i++){
-			CsI2Ped[i] = 0.;
 			for (int j=0; j<NCsI2Group; j++){
 				CsI2Gain[j][i] = 1.;
+			  CsI2Ped[j][i] = 0.;
  			}//for
 		}
 	}  
@@ -1392,7 +1392,7 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 		for(int i=0; i<16; i++){
 			for (int j=0; j<NCsI2Group; j++){
    				fscanf(pFile,"%d%d%lf%lf",&Chan,&g,&a,&b);
-				CsI2Ped[Chan-48] = a;  
+				CsI2Ped[g][Chan-48] = a;  
 				CsI2Gain[g][Chan-48] = b;  
 				//printf("CsIPed %lf CsIgain %lf\n",a,b);
           		printf("CsI2 calibration par: adc =%d\tc=%d\tpeds=%f\tgain=%f\n",Chan,g,a,b);
