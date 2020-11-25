@@ -35,7 +35,7 @@ TVector3 aVector;
 const int NChannels = 512;
 const int NCsI2Group = 16;
 const int NCsI1Group = 16;
-const int NICChannels = 16;
+const int NICChannels = 32;
 const int NCsIChannels = 16;
 const int NSd1rChannels = 32;
 const int NSd1sChannels = 32;
@@ -50,7 +50,8 @@ const int NZdxChannels = 16;
 const int NZdyChannels = 16;
 
 //AS Ion Chamber
-float IC[32]={0};
+float ICEnergy[32]={0};
+float ICADC[32] = {0};
 float ICGain[NICChannels]={1.};
 float ICPed[NICChannels]={0.};
 
@@ -174,7 +175,10 @@ uint32_t channel, overflow;
  
 int clearDetectors()
 {
-	for (int j=0; j<NICChannels; j++)	IC[j] = 0;
+	for (int j=0; j<NICChannels; j++){
+		ICEnergy[j] = 0;
+		ICADC[j] = 0;
+	}
 	for (int j=0; j<NCsIChannels; j++){
 	//	CsI[j] = 0;
 		CsI1[j] = 0;
@@ -288,27 +292,28 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	  				if (debug1  && modid==1) printf("Data: ch:%d id:%d val:%f\n", channel, modid, (float) vpeak);
 
 					// Ionization Chamber
-	  				if ((modid==0)){ //&& (vpeak > adcThresh) && (vpeak<3840)){ 
-						IC[channel] = ((float)vpeak-ICPed[channel])*ICGain[channel];
+	  				if ((modid==0)){ //&& (vpeak > adcThresh) && (vpeak<3840)){
+						ICADC[channel] = vpeak;
+						ICEnergy[channel] = ((float)vpeak+gRandomise*fRandom.Uniform(-0.5,0.5)-ICPed[channel])*ICGain[channel];
 	        			if (channel==18){
 	          				ScADC = vpeak;
-	          				ScEnergy = (float(vpeak)-ScPed) * ScGain;
+	          				ScEnergy = (float(vpeak)+gRandomise*fRandom.Uniform(-0.5,0.5)-ScPed) * ScGain;
 						}
 						if (channel==21){
 	          				TrADC[0] = vpeak;
-	          				TrEnergy[0] = (float(vpeak)-TrPed[0]) * TrGain[0];
+	          				TrEnergy[0] = (float(vpeak)+gRandomise*fRandom.Uniform(-0.5,0.5)-TrPed[0]) * TrGain[0];
 						}
 						if (channel==22){
 	          				TrADC[1] = vpeak;
-	          				TrEnergy[1] = (float(vpeak)-TrPed[1]) * TrGain[1];
+	          				TrEnergy[1] = (float(vpeak)+gRandomise*fRandom.Uniform(-0.5,0.5)-TrPed[1]) * TrGain[1];
 						}
 						if (channel==23){
 	          				TrADC[2] = vpeak;
-	          				TrEnergy[2] = (float(vpeak)-TrPed[2]) * TrGain[2];
+	          				TrEnergy[2] = (float(vpeak)+gRandomise*fRandom.Uniform(-0.5,0.5)-TrPed[2]) * TrGain[2];
 						}
 						if (channel==31){
 	          				SSBADC = vpeak;
-	          				SSBEnergy = (float(vpeak)-SSBPed) * SSBGain;
+	          				SSBEnergy = (float(vpeak)+gRandomise*fRandom.Uniform(-0.5,0.5)-SSBPed) *SSBGain;
 						}
 	  				}
 	  				
@@ -1207,20 +1212,23 @@ void HandleMesytec(TMidasEvent& event, void* ptr, int nitems, int bank, IDet *pd
 	*/
 		for(int i=0; i< NICChannels; i++)
 		{
-			if(IC[i]>0.){
+			if(ICADC[i]>0){
 			//det.TICEnergy.push_back(maxE); //for filling the tree
 			//det.TICChannel.push_back(maxCh);
-			det.TICEnergy.push_back(IC[i]); //for filling the tree
-      if(gUseRaw) det.TICADC.push_back(IC[i]);
+			det.TICEnergy.push_back(ICEnergy[i]); //for filling the tree
+			if(gUseRaw) det.TICADC.push_back(ICADC[i]);
 			det.TICChannel.push_back(i);
-      IC[i] = 0;
+			ICEnergy[i] = 0;
+			ICADC[i] = 0;
 			}
 		}
 		
 		// SSB
+		det.TSSBADC = SSBADC;
 		det.TSSBEnergy = SSBEnergy;
 
 		// Scintillator
+		det.TScADC = ScADC;
 		det.TScEnergy = ScEnergy;
 		
 		if(TrEnergy[0]>0){
@@ -1278,7 +1286,7 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 		//perror ("No file");
 		fprintf(logFile,"No calibration file for IC. Skipping IC calibration.\n");
 		printf("No calibration file for IC. Skipping IC calibration.\n");
-		for (int i =0;i<16;i++  ){
+		for (int i =0;i<NICChannels;i++  ){
 			ICPed[i] = 0.;
 			ICGain[i] = 1.;
      	}
@@ -1295,7 +1303,32 @@ void HandleBOR_Mesytec(int run, int gFileNumber, int time, IDet* pdet, std::stri
 			ICPed[Chan] = a;
 			ICGain[Chan] = b;
 			printf("ICPed %lf ICgain %lf\n",ICPed[Chan],ICGain[Chan]);
+			if (Chan==18){
+	     		ScPed = a;
+	          	ScGain = b;
+			}
+			if (Chan==21){
+	          	TrPed[0] = a;
+	          	TrGain[0] = b;
+			}
+			if (Chan==22){
+	          	TrPed[1] = a;
+	          	TrGain[1] = b;
+			}
+			if (Chan==23){
+	          	TrPed[2] = a;
+	          	TrGain[2] = b;
+			}
+			if (Chan==31){
+	        	SSBPed = a;
+	        	SSBGain = b;
+			}
      	}
+		printf("ScPed %lf ScGain %lf\n",ScPed,ScGain);
+		printf("TrPed[0] %lf TrGain[0] %lf\n",TrPed[0],TrGain[0]);
+		printf("TrPed[1] %lf TrGain[1] %lf\n",TrPed[1],TrGain[1]);
+		printf("TrPed[2] %lf TrGain[2] %lf\n",TrPed[2],TrGain[2]);
+		printf("SSBPed %lf SSBGain %lf\n",SSBPed,SSBGain);
      	fclose (pFile);
 		printf("\n");
  	}
