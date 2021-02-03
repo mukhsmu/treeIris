@@ -10,5 +10,10 @@ core
 *.root
 *.png
 *.log
+*.txt
+*.C
+*.C~
+*.pdf
+*.sh
 bin
 lib
