@@ -20,6 +20,8 @@
 #include <iostream>
 #include <assert.h>
 #include <signal.h>
+#include <array>
+#include <queue>
 //#include "midasServer.h"
 #include "TMidasEvent.h"
 #include <TFile.h>
@@ -41,7 +43,9 @@ const uint32_t Nvchannels   = 64+128+128+64+64+64;
 //const uint32_t choffset[] = {0, 64, 192, 320, 384, 448}; // The new order May 7/2015 !
 const uint32_t choffset[] = {0, 64, 128, 192, 320, 384};
 
-Double_t timeRaw[512];
+//Double_t timeRaw[512];
+using namespace std;
+array<queue<uint32_t>,512> timeRaw;
 Double_t timeRef[512];
 Double_t timeRF[512];
 
@@ -53,7 +57,7 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
   static bool initialised = false;
   if(!initialised){ //Horrible, ugly, aargh!
     for(int i=0; i<512; i++){
-      timeRaw[i] = -1;
+      //timeRaw[i] = -1;
       timeRef[i] = -1;
       timeRF[i] = -1;
     }
@@ -113,7 +117,8 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
                 if(debug) printf("\n    RF = %d\n",measure);
   					}
    					//timeRaw[modchannel+choffset[bank]] = (Int_t)measure;
-   					timeRaw[globCh] = (Int_t)measure;
+   					//timeRaw[globCh] = (Int_t)measure;
+            timeRaw.at(globCh).push(measure);
    					//timeRef[modchannel+choffset[bank]] = ( ((Double_t)measure - (Double_t)tRef)*timeSlope);
             timeRef[globCh] = (((Double_t)measure - (Double_t)tRef)*timeSlope);
    					//timeRF[modchannel+choffset[bank]] = ( ((Double_t)measure - (Double_t)tRF)*timeSlope);
@@ -148,6 +153,14 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
     times.Clear(); //Seems unnecessary..?
     if(tRef > 0){
 		for(i=0; i<64; i++){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TICTime.push_back(ti.front());
+        times.TICTChannel.push_back(i);
+        times.TICTMul++;
+        ti.pop();
+      }
+      /*
 			if(timeRef[i]>0.){
         if(debug) printf("IC signal: channel = %d, timeRef[i] = %lf\n",i,timeRef[i]);
 				//times.TICTDC.push_back(timeRaw[i]);
@@ -159,12 +172,21 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 	  for(i=64; i<96; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSd2sTime.push_back(ti.front());
+        times.TSd2sTChannel.push_back(95-i);
+        times.TSd2sTMul++;
+        ti.pop();
+      }
+      /*      
+			if(timeRaw[i]>0.){
         if(debug) printf("Sd2s signal: channel = %d, timeRef[i] = %lf\n",i-64,timeRef[i]);
 			//	times.TSd2sTDC.push_back(timeRaw[i]);
-				times.TSd2sTime.push_back(timeRef[i]);
+				times.TSd2sTime.push_back(timeRaw[i]);
 				times.TSd2sTimeRF.push_back(timeRF[i]);
 				times.TSd2sTChannel.push_back(95-i);
 				times.TSd2sTMul++;
@@ -172,12 +194,21 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
     }
 		for(i=104; i<128; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSd2rTime.push_back(ti.front());
+        times.TSd2rTChannel.push_back(127-i);
+        times.TSd2rTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Sd2r signal: channel = %d, timeRef[i] = %lf\n",i-86,timeRef[i]);
 			//	times.TSd2rTDC.push_back(timeRaw[i]);
-				times.TSd2rTime.push_back(timeRef[i]);
+				times.TSd2rTime.push_back(timeRaw[i]);
 				times.TSd2rTimeRF.push_back(timeRF[i]);
 				times.TSd2rTChannel.push_back(127-i);
 				times.TSd2rTMul++;
@@ -185,12 +216,21 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=128; i<160; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSd1sTime.push_back(ti.front());
+        times.TSd1sTChannel.push_back(159-i);
+        times.TSd1sTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Sd1s signal: channel = %d, timeRef[i] = %lf\n",i-192,timeRef[i]);
 			//	times.TSd1sTDC.push_back(timeRaw[i]);
-				times.TSd1sTime.push_back(timeRef[i]);
+				times.TSd1sTime.push_back(timeRaw[i]);
 				times.TSd1sTimeRF.push_back(timeRF[i]);
 				times.TSd1sTChannel.push_back(159-i);
 				times.TSd1sTMul++;
@@ -198,12 +238,21 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=168; i<192; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSd1rTime.push_back(ti.front());
+        times.TSd1rTChannel.push_back(191-i);
+        times.TSd1rTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Sd1r signal: channel = %d, timeRef[i] = %lf\n",i-224,timeRef[i]);
 			//	times.TSd1rTDC.push_back(timeRaw[i]);
-				times.TSd1rTime.push_back(timeRef[i]);
+				times.TSd1rTime.push_back(timeRaw[i]);
 				times.TSd1rTimeRF.push_back(timeRF[i]);
 				times.TSd1rTChannel.push_back(191-i);
 				times.TSd1rTMul++;
@@ -212,12 +261,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=192; i<320; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TYdTime.push_back(ti.front());
+        int YdChannel = ((i-192)/16)*16+15-(i-192)%16;
+        times.TYdTChannel.push_back(YdChannel);
+        times.TYdTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Yd signal: channel = %d, timeRef[i] = %lf\n",i-320,timeRef[i]);
-			//	times.TYdTDC.push_back(timeRaw[i]);
-				times.TYdTime.push_back(timeRef[i]);
+			  //times.TYdTDC.push_back(timeRaw[i]);
+				times.TYdTime.push_back(timeRaw[i]);
 				times.TYdTimeRF.push_back(timeRF[i]);
         int YdChannel = ((i-192)/16)*16+15-(i-192)%16;
 				times.TYdTChannel.push_back(YdChannel);
@@ -227,12 +286,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=320; i<351; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSusTime.push_back(ti.front());
+        int SusChannel = i < 336 ? 335-i : 351-i+16;
+        times.TSusTChannel.push_back(SusChannel);
+        times.TSusTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Sus signal: channel = %d, timeRef[i] = %lf\n",i-384,timeRef[i]);
 			//	times.TSusTDC.push_back(timeRaw[i]);
-				times.TSusTime.push_back(timeRef[i]);
+				times.TSusTime.push_back(timeRaw[i]);
 				times.TSusTimeRF.push_back(timeRF[i]);
         int SusChannel = i < 336 ? 335-i : 351-i+16;
 				times.TSusTChannel.push_back(SusChannel);
@@ -241,12 +310,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=352; i<384; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TSurTime.push_back(ti.front());
+        int SurChannel = i < 368 ? 367-i : 383-i + 16;
+        times.TSurTChannel.push_back(SurChannel);
+        times.TSurTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Sur signal: channel = %d, timeRef[i] = %lf\n",i-416,timeRef[i]);
 			//	times.TSurTDC.push_back(timeRaw[i]);
-				times.TSurTime.push_back(timeRef[i]);
+				times.TSurTime.push_back(timeRaw[i]);
 				times.TSurTimeRF.push_back(timeRF[i]);
         int SurChannel = i < 368 ? 367-i : 383-i + 16;
 				times.TSurTChannel.push_back(SurChannel);
@@ -255,12 +334,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
 		for(i=384; i<512; i++){
-			if(timeRef[i]>0.){
+      queue<uint32_t> &ti = timeRaw.at(i);
+      while(!ti.empty()){
+        times.TYuTime.push_back(ti.front());
+        int YuChannel = i < 480 ? ((i-384)/16)*16+15-(i-384)%16 : 511-i+96;
+        times.TYuTChannel.push_back(YuChannel);
+        times.TYuTMul++;
+        ti.pop();
+      }
+      /*
+			if(timeRaw[i]>0.){
         if(debug) printf("Yu signal: channel = %d, timeRef[i] = %lf\n",i-448,timeRef[i]);
 			//	times.TYuTDC.push_back(timeRaw[i]);
-				times.TYuTime.push_back(timeRef[i]);
+				times.TYuTime.push_back(timeRaw[i]);
 				times.TYuTimeRF.push_back(timeRF[i]);
         int YuChannel = i < 480 ? ((i-384)/16)*16+15-(i-384)%16 : 511-i+96;
 				times.TYuTChannel.push_back(YuChannel);
@@ -269,6 +358,7 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
         timeRef[i] = -1;
         timeRF[i] = -1;
 			}
+      */
 		}
     }//if tRef>0
 		*ptdc=times;
