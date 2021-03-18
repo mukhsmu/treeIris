@@ -24,6 +24,7 @@
 #include "HandleV1190.h"
 #include "HandleSTAT.h"
 #include "HandleScaler.h"
+#include "HandleV1740.h"
 
 // Global Variables
 int  gRunNumber = 0;
@@ -83,6 +84,7 @@ void startRun(int run,int time)
 	
 	HandleBOR_Mesytec(run, gFileNumber, time, pdet, gCalibFile);
 	if(gUseTdc) HandleBOR_V1190(run, gFileNumber, time, ptdc);
+  HandleBOR_V1740(gFileNumber);
 	HandleBOR_Scaler(run, gFileNumber, time, pscaler); 
 	HandleBOR_STAT(run, time);
 	if(gFileNumber==0){
@@ -105,6 +107,7 @@ void endRun(int run,int time)
 	if(gUseTdc) HandleEOR_V1190(run, time);
 	HandleEOR_Scaler(run, time); 
 	HandleEOR_STAT(run, time);
+  HandleEOR_V1740();
  
 	if (treeFile)
     {
@@ -150,7 +153,10 @@ void HandleMidasEvent(TMidasEvent& event)
 				m++;
   			}
 		}
-  	}
+    //XXX: Experiment with wfd.
+    int size = event.LocateBank(NULL, "D740", &ptr);
+    if (ptr && size) HandleV1740(event, ptr, size); 
+  }
  	else if ((eventId == 3)) { // Scaler modules
       	m=0;
     	while (scalbkname[m][0]) { 

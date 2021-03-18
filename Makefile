@@ -24,7 +24,7 @@ CXXFLAGS += -g -O -Wall -Wuninitialized -I./  -I$(INCLUDEDIR) -I$(ROOTSYS)/inclu
 ROOTCFLAGS    = $(shell root-config --cflags)
 CXXFLAGS      += -g -Wall -ansi -Df2cFortran -fPIC $(ROOTCFLAGS) 
 
-ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o $(LIBDIR)/libTEvent.so $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/HandleScaler.o  $(OBJECTDIR)/CalibMesytec.o $(OBJECTDIR)/geometry.o 
+ANAOBJECTS  =  $(OBJECTDIR)/HandleMesytec.o $(OBJECTDIR)/HandleV1190.o $(OBJECTDIR)/HandleSTAT.o $(LIBDIR)/libTEvent.so $(OBJECTDIR)/TEventDict.o $(OBJECTDIR)/HandleScaler.o  $(OBJECTDIR)/CalibMesytec.o $(OBJECTDIR)/geometry.o $(OBJECTDIR)/HandleV1740.o
 
 SOFLAGS       = -g -shared
 LDFLAGS	      = -O2	
@@ -45,6 +45,9 @@ $(OBJECTDIR)/HandleMesytec.o: $(SOURCEDIR)/HandleMesytec.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJECTDIR)/HandleV1190.o: $(SOURCEDIR)/HandleV1190.cxx 
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJECTDIR)/HandleV1740.o: $(SOURCEDIR)/HandleV1740.cxx 
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJECTDIR)/HandleSTAT.o: $(SOURCEDIR)/HandleSTAT.cxx 
