@@ -75,6 +75,39 @@ TRIFIC:						TTr (Was only used in 80Ga test beam)
 Zero-degree DSSD, x-strips:	TZdx (Was only used in S1766)
 Zero-degree DSSD, y-strips:	TZdy (Was only used in S1766)
 
+## Optional conversion of TDC data and time calibration ##
+
+TDC data can be included in the ROOT output file if treeIris is run with the
+'-tdc' option. For detector XXX, the branch TXXXTDC holds the raw TDC
+measurement for the channel specified in TXXXTChannel. The TDC signal from the
+trigger is stored in TICTDC[0] (i.e. the measurement from TICTChannel==1) and
+some jitter can be removed by subtracting this value from the raw TDC
+measurements from the other channels. Furthermore, a list of time calibration
+files can be provided by running treeIris with '-tdc=/path/to/tdc/config.txt'.
+This file must have the format
+```
+PATH=/path/to/folder/
+YD=calibrationYd.txt
+SUR=calibrationSur.txt
+...
+...
+```
+i.e. much the same format as the main configuration file. Instead of including
+PATH, the full file paths can also be specified on the individual lines. The
+actual calibration files are two-column text files containing the calibration
+coefficients, like
+```
+slope  delay
+0.19354  1948
+0.19325  1957
+...
+...
+```
+The slope indicates ns per TDC bucket and the delay is the delay between the
+trigger and the channel in TDC buckets. The nominal slopes, when running with
+'200ps' resolution option in the TDCs, are around 0.195ns/bucket.
+
+
 ## Charge-Sharing Correction ##
 
 Charge-sharing means that a particle deposits in energy not in a single strip of a segmented detector but in several neighbouring ones. In order to correct for this, treeIris will check if reported hits in a single event occured in neighbouring strips of the detector, and sum the energies up. This happens after the hits have been sorted by energy. The lower energy hit gets removed from the vector, the channel number of the hit that was removed is stored in the branch TXxNeighbour.

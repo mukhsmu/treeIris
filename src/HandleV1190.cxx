@@ -465,6 +465,9 @@ void HandleEOR_V1190(int run, int time)
 	printf(" in V1190 EOR\n");
 }
 
+/**
+ * Read calibration coefficients from a simple, two-column text file.
+ */
 vector<array<double,2>> ReadCalibrationFile(string fileName)
 {
   ifstream inFile;
@@ -484,6 +487,11 @@ vector<array<double,2>> ReadCalibrationFile(string fileName)
   return calibration;
 }
 
+/**
+ * Parse 'configuration' file. The configuration file should contain a list of
+ * files from which to read time calibration coefficients. Same format as the
+ * energy calibration files.
+ */
 map<string,vector<array<double,2>>> ParseConfigurationFile(string fileName)
 {
   ifstream inFile;
@@ -509,6 +517,11 @@ map<string,vector<array<double,2>>> ParseConfigurationFile(string fileName)
   return cal;
 }
 
+/**
+ * Parse single line from the configuration file. Each line must have the format
+ *   DETECTOR=/path/to/calibration/file.txt
+ * where DETECTOR could be for instance YU, SD1R, SUS etc.
+ */
 ParsedLine ParseLine(string &line)
 {
   ParsedLine result;
@@ -517,6 +530,9 @@ ParsedLine ParseLine(string &line)
   return result;
 }
 
+/**
+ * Check sizes of known detectors.
+ */
 void CheckSize(string det,vector<array<double,2>> &cal)
 {
   bool ok = true;
