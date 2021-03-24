@@ -2,6 +2,9 @@
 
 #ifndef HandleV1190_H
 #define HandleV1190_H
+#include <string>
+#include <vector>
+#include <array>
 #include "TMidasEvent.h"
 #include "TEvent.h"
 #include "ITdc.h"
@@ -18,7 +21,7 @@ class tdc_t
 };
 
 void  HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc);
-void  HandleBOR_V1190(int run, int file, int time, ITdc *timeArray);
+void  HandleBOR_V1190(int run, int file, std::string configFile, ITdc *timeArray);
 void  HandleEOR_V1190(int run, int time);
 
 #endif

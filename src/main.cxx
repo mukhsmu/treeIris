@@ -37,7 +37,8 @@ bool gUseRaw = false;
 bool gUseDccp = false;
 bool gRandomise = false; //Randomise ADC values within the channel when calibrating.
 std::string gOutputFile = "";
-std::string gCalibFile = "";
+std::string gCalibFile = ""; //File with energy calibrations.
+std::string gTimeFile = "";  //File with time calibrations.
 
 char mesbkname[][5] = {"ICA_", "SD2A", "SD1A", "YDA_", "SUA_", "YUA_"};
 char tdcbkname[][5] = {"ICT_", "SD2T", "SD1T", "YDT_", "SUT_", "YUT_"};
@@ -83,7 +84,7 @@ void startRun(int run,int time)
 	printf("Writing data to %s.\n",gOutputFile.data());
 	
 	HandleBOR_Mesytec(run, gFileNumber, time, pdet, gCalibFile);
-	if(gUseTdc) HandleBOR_V1190(run, gFileNumber, time, ptdc);
+	if(gUseTdc) HandleBOR_V1190(run, gFileNumber, gTimeFile, ptdc);
   HandleBOR_V1740(gFileNumber);
 	HandleBOR_Scaler(run, gFileNumber, time, pscaler); 
 	HandleBOR_STAT(run, time);
@@ -250,7 +251,8 @@ void help()
 	printf("\t-o/-o=/--output=: Path of output file.\n");
 	printf("\t-c/-c=/--config=: Path of main configuration file.\n");
 	printf("\t-e: Number of events to read from input data files\n");
-	printf("\t-tdc: Write TDC data to root file.\n");
+	printf("\t-tdc[=ARG]: Write TDC data to root file. The optional [ARG] is\n");
+  printf("\t\tthe path to a file containing the time calibrations.\n");
 	printf("\t-raw: Write raw ADC data to root file.\n");
 	printf("\t-dccp: Use dccp file system.\n");
 	printf("\t-rndm: Randomise ADC values within the channel when calibrating.\n");
@@ -268,7 +270,8 @@ int main(int argc, char *argv[])
 	signal(SIGILL,  SIG_DFL);
 	signal(SIGBUS,  SIG_DFL);
 	signal(SIGSEGV, SIG_DFL);
-	
+
+  
 	std::vector<std::string> args;
 	for (int i=0; i<argc; i++)
 	{
@@ -278,7 +281,7 @@ int main(int argc, char *argv[])
 	
 	bool have_output= false;
 
-   	for (unsigned int i=1; i<args.size(); i++) // loop over the commandline options
+ 	for (unsigned int i=1; i<args.size(); i++) // loop over the commandline options
  	{
        	const char* arg = args[i].c_str();
 	   
@@ -305,16 +308,22 @@ int main(int argc, char *argv[])
       	else if (strncmp(arg,"--config=",9)==0){  // Calibration file 
 	 		gCalibFile = arg+9;
 		}
-       	else if (strcmp(arg,"-tdc")==0)
-	 		gUseTdc=true;
-       	else if (strcmp(arg,"-raw")==0)
-	 		gUseRaw=true;
-       	else if (strcmp(arg,"-dccp")==0)
-	 		gUseDccp=true;
-       	else if (strcmp(arg,"-h")==0)
-	 		help(); // does not return
-        else if(strcmp(arg,"-rndm")==0) gRandomise = true;
-       	else if (arg[0] == '-')
+    else if (strncmp(arg,"-tdc",4)==0){
+      printf("argument = %s\n",arg);
+      gUseTdc=true;
+      if(strncmp(arg,"-tdc=",5)==0){
+        gTimeFile = arg+5; //optional calibration file.
+        printf("gTimeFile = %s\n",gTimeFile.c_str());
+      }
+    }
+    else if (strcmp(arg,"-raw")==0)
+      gUseRaw=true;
+    else if (strcmp(arg,"-dccp")==0)
+	 	  gUseDccp=true;
+    else if (strcmp(arg,"-h")==0)
+      help(); // does not return
+    else if(strcmp(arg,"-rndm")==0) gRandomise = true;
+    else if (arg[0] == '-')
 	 		help(); // does not return
 	}
 	
@@ -333,6 +342,7 @@ int main(int argc, char *argv[])
 	 		}
      	}
 	}
+
    	return 0;
 }
 //end
