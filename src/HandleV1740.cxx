@@ -11,21 +11,26 @@
 
 #include <cstdint>
 //Pulse processing tools from the iris-daqtools library
-//#include <cmath>
-//#include "TrapezoidShaper.h"
-//#include "LeadingEdgeDiscriminator.h"
-//#include "AmplitudeAnalyser.h"
-//#include "ConstantFractionAnalyser.h"
+#include <cmath>
+#include "TrapezoidShaper.h"
+#include "LeadingEdgeDiscriminator.h"
+#include "AmplitudeAnalyser.h"
+#include "ConstantFractionAnalyser.h"
 
 extern TTree* tree;
 
 using namespace std;
 
 vector<uint16_t> trace;
+vector<double> amplitudes;
+vector<double> times;
 
 void HandleV1740(TMidasEvent& event, void* ptr, int nitems)
 {
   trace.clear();
+  amplitudes.clear();
+  times.clear();
+
   uint32_t *data;
   data = (uint32_t *) ptr;
   //gV1740nitems = nitems;
@@ -103,13 +108,60 @@ void HandleV1740(TMidasEvent& event, void* ptr, int nitems)
     trace.push_back(samples[0][j]);
     //V1730Channel0->SetBinContent(j+1,samples[0][j]);
   }
+
+  //XXX: Analysis of pulse heights and timings (cfg. parameters should come
+  //     from a configuration file and not be hard-coded).
+  //Shaping parameters:
+  int M = 937; //Corresponds to 15us decay time.
+  int k = 12;  //Rise time
+  int m = 6;   //Top width
+  int N = samples[0].size(); //Length of recorded trace.
+  //CFD parameters:
+  double att_factor = 0.3;
+  int delay = 10;
+  //Edge detection parameters:
+  int gate = 2*k+m;        //Analysis gate (= dead time).
+  double threshold = 50; //Triggering threshold.
+  bool negative = false;   //Polarity (false <-> positive polarity).
+
+  //Shape the signal
+  TrapezoidShaper shaper(M,k,m);
+  double *shaped = shaper.Shape(samples[0].data(),N);  
+
+  //Identify edges in the shaped signal.
+  LeadingEdgeDiscriminator discriminator(threshold,negative);
+  discriminator.SetDeadTime(gate);
+  int hits = discriminator.Analyse(shaped,N);
+  std::vector<double> & triggers =  discriminator.GetTriggers();
+  
+  //We loop over the hits and fill the spectra.
+  for(int j=0; j<hits; j++){
+    int start_bin = std::floor(triggers.at(j));
+    double *ptr = shaped + start_bin;
+    //Extract pulse heights.
+    AmplitudeAnalyser e_analyser(negative);
+    double E = e_analyser.Analyse(ptr,gate);
+    amplitudes.push_back(E);
+    //Extract pulse timings.
+    ConstantFractionAnalyser t_analyser(att_factor,delay,negative);
+    double t = t_analyser.Analyse(ptr,gate);
+    times.push_back(start_bin+t);
+  } 
 }
 //---------------------------------------------------------------------------------
 void HandleBOR_V1740(int file)
 {
   printf("V1740 BOR\n");	  
-  if(file==0) tree->Branch("wfd",&trace);
-	else tree->SetBranchAddress("wfd",&trace);
+  if(file==0){
+    tree->Branch("TWfdTrace",&trace);
+    tree->Branch("TWfdADC",&amplitudes);
+    tree->Branch("TWfdTDC",&times);
+  }
+	else{
+    tree->SetBranchAddress("TWfdTrace",&trace);
+    tree->SetBranchAddress("TWfdADC",&amplitudes);
+    tree->SetBranchAddress("TWfdTDC",&times);
+  }
 	printf("Finished HandleBOR_V1740\n");
 }
 //---------------------------------------------------------------------------------

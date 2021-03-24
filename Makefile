@@ -19,6 +19,11 @@ ROOTGLIBS = $(shell $(ROOTSYS)/bin/root-config --glibs) -lXMLParser -lThread -Wl
 # Path of ROOT analyzer
 ROOTANA = $(HOME)/packages/rootana
 
+#DPP tools for CAEN DT5740, added 2021-03-24
+IRISDIR = /home/iris/packages/iris-daqtools
+IRISLIB = $(IRISDIR)/build/libdaqtools_static.a
+CXXFLAGS += -I$(IRISDIR)/include
+
 CXXFLAGS += -g -O -Wall -Wuninitialized -I./  -I$(INCLUDEDIR) -I$(ROOTSYS)/include  -I$(ROOTANA) -I$(ROOTANA)/include
 
 ROOTCFLAGS    = $(shell root-config --cflags)
@@ -31,8 +36,8 @@ LDFLAGS	      = -O2
 
 all: $(BINARYDIR)/treeIris $(LIBDIR)/libTEvent.so
 
-$(BINARYDIR)/treeIris: $(ANAOBJECTS) $(OBJECTDIR)/treeIris.o $(ROOTANA)/lib/librootana.a 
-	$(CXX) -o $@ $(CXXFLAGS) $^ $(ROOTGLIBS) -lm -lz -lutil -lnsl -lpthread -lrt
+$(BINARYDIR)/treeIris: $(ANAOBJECTS) $(OBJECTDIR)/treeIris.o $(ROOTANA)/lib/librootana.a $(IRISLIB)
+	$(CXX) -o $@ $(CXXFLAGS) $^ $(ROOTGLIBS) $(IRISLIB) -lm -lz -lutil -lnsl -lpthread -lrt
 
 $(LIBDIR)/libTEvent.so: $(OBJECTDIR)/IDet.o $(OBJECTDIR)/ITdc.o $(OBJECTDIR)/IScaler.o $(OBJECTDIR)/TEventDict.o
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ -o $@
