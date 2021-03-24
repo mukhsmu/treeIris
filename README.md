@@ -4,13 +4,15 @@ Unpacking software for the IRIS experiment @ TRIUMF
 
 ## Download and Installation ##
 	
-treeIris requires both ROOT (https://root.cern.ch) and ROOTANA (https://bitbucket.org/tmidas/rootana).
+treeIris requires both ROOT (https://root.cern.ch), ROOTANA (https://bitbucket.org/tmidas/rootana) and iris-daqtools (https://bitbucket.org/ttriumfdaq/iris-daqtools).
 
 To install treeIris use
 
 	git clone https://github.com/iris-triumf/treeIris
 
-change variable "ROOTANA" in the Makefile to the path of your ROOTANA installation. And compile treeIris with
+change variable "ROOTANA" in the Makefile to the path of your ROOTANA installation, 
+as well as IRISDIR to the directory where iris-daqtools is installed, and
+compile treeIris with
 
 	make
 
