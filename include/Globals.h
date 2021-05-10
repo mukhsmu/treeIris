@@ -20,9 +20,12 @@ extern TTree* tree;
 
 extern bool gRandomise;
 
-#include "VirtualOdb.h"
+//#include "VirtualOdb.h"
+//extern VirtualOdb* gOdb;
 
-extern VirtualOdb* gOdb;
+//VirtualOdb is obsolete and removed from rootana
+#include "mvodb.h"
+extern MVOdb *gOdb;
 
 // end
 

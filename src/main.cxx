@@ -12,8 +12,10 @@
 #include <string>
 
 #include "TMidasEvent.h"
-#include "TMidasFile.h"
-#include "XmlOdb.h"
+//#include "TMidasFile.h"
+#include "midasio.h"
+//#include "XmlOdb.h"
+#include "mvodb.h"
 
 #include <TTimer.h>
 #include <TFile.h>
@@ -47,7 +49,8 @@ char scalbkname[][5] = {"SCAD", "SCAR", "SCAS",""}; //scalers
 
 TFile* treeFile = NULL;
 TTree *tree = NULL;
-VirtualOdb* gOdb = NULL;
+//VirtualOdb* gOdb = NULL;
+MVOdb *gOdb = NULL;
 
 IDet detec; // calibrated variables from detectors, to be passed to HandlePhysics
 IDet *pdet = &detec;
@@ -66,7 +69,8 @@ double GetTimeSec() {
 void startRun(int run,int time)
 {
 	gRunNumber = run;
-	gIsPedestalsRun = gOdb->odbReadBool("/experiment/edit on start/Pedestals run");
+	//gIsPedestalsRun = gOdb->odbReadBool("/experiment/edit on start/Pedestals run");
+	gOdb->RB("/experiment/edit on start/Pedestals run",&gIsPedestalsRun);
 	printf("Begin run: %d, pedestal run: %d\n", gRunNumber, gIsPedestalsRun);
 		
 	if(treeFile!=NULL)
@@ -186,21 +190,25 @@ int ProcessMidasFile(const char*fname)
 {
 	char dcfname[100] = "dccp://";
    	strcat(dcfname,fname); // added dccp:// in front of fname, there is seg fault
-  	TMidasFile f;
-  	bool tryOpen = false;
+  	//TMidasFile f;
+  	TMReaderInterface *reader = TMNewReader(fname);
+  	//bool tryOpen = false;
   	
-	if(gUseDccp) tryOpen = f.Open(dcfname);
-	else tryOpen = f.Open(fname);
+	//if(gUseDccp) tryOpen = f.Open(dcfname);
+	//else tryOpen = f.Open(fname);
  
-  	if (!tryOpen)
-    {
-    	printf("Cannot open input file \"%s\"\n",dcfname);
-      	return -1;
-    }
+  	//if (!tryOpen)
+  	if(reader->fError)
+   {
+     printf("Cannot open input file \"%s\"\n",dcfname);
+     delete reader;
+     return -1;
+   }
 
 	while(1){
     	TMidasEvent event;
-    	if (!f.Read(&event))
+    	//if (!f.Read(&event))
+    	if (!TMReadEvent(reader, &event))
 		break;
 
     	int eventId = event.GetEventId();
@@ -210,7 +218,8 @@ int ProcessMidasFile(const char*fname)
 			printf("---- BEGIN RUN ---- \n");
 			// Load ODB contents from the ODB XML file
 			if (gOdb) delete gOdb;
-			gOdb = new XmlOdb(event.GetData(),event.GetDataSize());
+			//gOdb = new XmlOdb(event.GetData(),event.GetDataSize());
+			gOdb = MakeXmlBufferOdb(event.GetData(),event.GetDataSize());
 			startRun(event.GetSerialNumber(),0);
 		}
     	else if ((eventId & 0xFFFF) == 0x8001)
@@ -236,7 +245,10 @@ int ProcessMidasFile(const char*fname)
 			break;
 		}
 	}
-  	f.Close();
+  	//f.Close();
+  	reader->Close();
+   delete reader;
+   reader = NULL;
   	endRun(gRunNumber,0);
 
   	return 0;
