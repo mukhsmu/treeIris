@@ -1,3 +1,4 @@
+Makefile
 *.o 
 *Dict.cxx 
 *Dict.cpp 
