@@ -309,11 +309,11 @@ int main(int argc, char *argv[])
 	 		gCalibFile = arg+9;
 		}
     else if (strncmp(arg,"-tdc",4)==0){
-      printf("argument = %s\n",arg);
+      //printf("argument = %s\n",arg);
       gUseTdc=true;
       if(strncmp(arg,"-tdc=",5)==0){
         gTimeFile = arg+5; //optional calibration file.
-        printf("gTimeFile = %s\n",gTimeFile.c_str());
+        //printf("gTimeFile = %s\n",gTimeFile.c_str());
       }
     }
     else if (strcmp(arg,"-raw")==0)
