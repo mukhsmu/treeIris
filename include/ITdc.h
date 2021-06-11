@@ -75,6 +75,10 @@ class ITdc : public TObject {
 		std::vector<Double_t> TSd2sTime;
 		//std::vector<Double_t> TSd2sTimeRF;
 
+    //Just for testing.
+    std::vector<uint16_t> TChannel;
+    std::vector<uint32_t> TTDC;
+
     void Clear();
     ClassDef(ITdc,1)
 };

@@ -61,5 +61,8 @@ void ITdc::Clear()
 	TSd2sTChannel.clear();
 	TSd2sTime.clear();
 	//TSd2sTimeRF.clear();
+
+  TChannel.clear();
+  TTDC.clear();
 }
 
