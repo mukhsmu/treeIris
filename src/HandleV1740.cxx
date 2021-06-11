@@ -27,6 +27,7 @@ vector<vector<uint16_t>> traces(16,vector<uint16_t>());
 
 void HandleV1740(TMidasEvent& event, void* ptr, int nitems)
 {
+  //Clear old values
   for(unsigned int i=0; i<traces.size(); i++) traces.at(i).clear();
   //trace.clear();
   //amplitudes.clear();
@@ -73,52 +74,69 @@ void HandleV1740(TMidasEvent& event, void* ptr, int nitems)
     
       int offset = 4 + i*9;
       // write out the decoding for blocks of 9 words explicitly, otherwise hard to understand this bank decoding
-      samples[group_j*8+0].push_back(((data[offset] & 0xfff))); 
-      samples[group_j*8+0].push_back(((data[offset] & 0xfff000) >> 12 )); 
-      samples[group_j*8+0].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
-
-      samples[group_j*8+1].push_back(((data[offset+1] & 0xfff0) >> 4)); 
-      samples[group_j*8+1].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
-      samples[group_j*8+1].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
-
-      samples[group_j*8+2].push_back(((data[offset+2] & 0xfff00)>>8)); 
-      samples[group_j*8+2].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
-
+      
+      traces[group_j*4+0].push_back(((data[offset] & 0xfff))); 
+      traces[group_j*4+0].push_back(((data[offset] & 0xfff000) >> 12 )); 
+      traces[group_j*4+0].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
+      
+      traces[group_j*4+1].push_back(((data[offset+2] & 0xfff00)>>8)); 
+      traces[group_j*4+1].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
       offset += 3;
-
-      samples[group_j*8+2].push_back(((data[offset] & 0xfff))); 
-
-      samples[group_j*8+3].push_back(((data[offset] & 0xfff000) >> 12 )); 
-      samples[group_j*8+3].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
-      samples[group_j*8+3].push_back(((data[offset+1] & 0xfff0) >> 4)); 
-
-      samples[group_j*8+4].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
-      samples[group_j*8+4].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
-      samples[group_j*8+4].push_back(((data[offset+2] & 0xfff00)>>8)); 
-
-      samples[group_j*8+5].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
-
+      traces[group_j*4+1].push_back(((data[offset] & 0xfff)));
+      
+      traces[group_j*4+2].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+      traces[group_j*4+2].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
+      traces[group_j*4+2].push_back(((data[offset+2] & 0xfff00)>>8));
+      
       offset += 3;
+          
+      traces[group_j*4+3].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
+      traces[group_j*4+3].push_back(((data[offset+1] & 0xfff0) >> 4)); 
+      traces[group_j*4+3].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+      
+      //samples[group_j*8+0].push_back(((data[offset] & 0xfff))); 
+      //samples[group_j*8+0].push_back(((data[offset] & 0xfff000) >> 12 )); 
+      //samples[group_j*8+0].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
 
-      samples[group_j*8+5].push_back(((data[offset] & 0xfff))); 
-      samples[group_j*8+5].push_back(((data[offset] & 0xfff000) >> 12 )); 
+      //samples[group_j*8+1].push_back(((data[offset+1] & 0xfff0) >> 4)); 
+      //samples[group_j*8+1].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+      //samples[group_j*8+1].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
+      
+      //samples[group_j*8+2].push_back(((data[offset+2] & 0xfff00)>>8)); 
+      //samples[group_j*8+2].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
+      //offset += 3;
+      //samples[group_j*8+2].push_back(((data[offset] & 0xfff))); 
 
-      samples[group_j*8+6].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
-      samples[group_j*8+6].push_back(((data[offset+1] & 0xfff0) >> 4)); 
-      samples[group_j*8+6].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+      //samples[group_j*8+3].push_back(((data[offset] & 0xfff000) >> 12 )); 
+      //samples[group_j*8+3].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
+      //samples[group_j*8+3].push_back(((data[offset+1] & 0xfff0) >> 4)); 
 
-      samples[group_j*8+7].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
-      samples[group_j*8+7].push_back(((data[offset+2] & 0xfff00)>>8)); 
-      samples[group_j*8+7].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
+      //samples[group_j*8+4].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+      //samples[group_j*8+4].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
+      //samples[group_j*8+4].push_back(((data[offset+2] & 0xfff00)>>8)); 
+
+      //samples[group_j*8+5].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
+
+      //offset += 3;
+      //samples[group_j*8+5].push_back(((data[offset] & 0xfff))); 
+      //samples[group_j*8+5].push_back(((data[offset] & 0xfff000) >> 12 )); 
+
+      //samples[group_j*8+6].push_back(((data[offset] & 0xff000000) >> 24) + ((data[offset+1] & 0xf) <<8) ); 
+      //samples[group_j*8+6].push_back(((data[offset+1] & 0xfff0) >> 4)); 
+      //samples[group_j*8+6].push_back(((data[offset+1] & 0xfff0000) >> 16 )); 
+
+      //samples[group_j*8+7].push_back(((data[offset+1] & 0xf0000000) >> 28) + ((data[offset+2] & 0xff) <<4) ); 
+      //samples[group_j*8+7].push_back(((data[offset+2] & 0xfff00)>>8)); 
+      //samples[group_j*8+7].push_back(((data[offset+2] & 0xfff00000) >> 20 )); 
     }
   }
   
   //Save data.
-  for(unsigned int i=0; i<samples.size(); i+=2){
-    for(unsigned int j=0; j<samples[i].size(); j++){
-      traces.at(i/2).push_back(samples[i][j]);
-    }
-  }
+  //for(unsigned int i=0; i<samples.size(); i+=2){
+  //  for(unsigned int j=0; j<samples[i].size(); j++){
+  //    traces.at(i/2).push_back(samples[i][j]);
+  //  }
+  //}
     
   // save channel 0
   //printf("DT5740: Sample size: %d\n",samples[0].size());
@@ -175,7 +193,7 @@ void HandleBOR_V1740(int file)
   if(file==0){
     for(int i=0; i<16; i++){
       char name[32];
-      sprintf(name,"TWfdTrace%02d",i);
+      sprintf(name,"TWfdTrace%02d",2*i);
       tree->Branch(name,&(traces.at(i)));
     //tree->Branch("TWfdADC",&amplitudes);
     //tree->Branch("TWfdTDC",&times);
@@ -184,7 +202,7 @@ void HandleBOR_V1740(int file)
   else{
 	 for(int i=0; i<16; i++){
       char name[32];
-      sprintf(name,"TWfdTrace%02d",i);
+      sprintf(name,"TWfdTrace%02d",2*i);
       tree->SetBranchAddress(name,&(traces.at(i)));
     //tree->SetBranchAddress("TWfdADC",&amplitudes);
     //tree->SetBranchAddress("TWfdTDC",&times);
