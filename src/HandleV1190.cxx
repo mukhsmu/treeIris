@@ -158,23 +158,34 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 	if(bank==5){ 	// check for last bank
 	  ITdc times;
     times.Clear(); //Seems unnecessary..?
+    //For testing.
+    //for(i=0; i<512; i++){
+    //  queue<uint32_t> &ti = timeRaw.at(i);
+    //  while(!ti.empty()){
+    //    times.TChannel.push_back(i);
+    //    times.TTDC.push_back(ti.front());
+    //    ti.pop();
+    //  }
+    //}    
+
     if(tRef > 0){
     bool hasCal = false;
     hasCal = calibrations["IC"].size() == 64 ? true : false;
 		for(i=0; i<64; i++){
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TICTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TICTDC.push_back(tMeas);
         times.TICTChannel.push_back(i);
         times.TICTMul++;
         if(hasCal){
           array<double,2> &coeffs =  calibrations["IC"].at(i);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TICTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRef[i]>0.){
@@ -194,17 +205,18 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 	  for(i=64; i<96; i++){
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSd2sTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TSd2sTDC.push_back(tMeas);
         times.TSd2sTChannel.push_back(95-i);
         times.TSd2sTMul++;
         if(hasCal){
           array<double,2> &coeffs =  calibrations["SD2S"].at(95-i);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSd2sTime.push_back(time);
         }
-        ti.pop();
       }
       /*      
 			if(timeRaw[i]>0.){
@@ -221,20 +233,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
       */
     }
     hasCal = calibrations["SD2R"].size() == 24 ? true : false;
-		for(i=104; i<128; i++){
+		for(i=96; i<128; i++){ //104-127
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSd2rTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        if(i<104) continue;
+        times.TSd2rTDC.push_back(tMeas);
         times.TSd2rTChannel.push_back(127-i);
         times.TSd2rTMul++;
         if(hasCal){
           array<double,2> &coeffs =  calibrations["SD2R"].at(127-i);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSd2rTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -254,17 +268,18 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 		for(i=128; i<160; i++){
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSd1sTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TSd1sTDC.push_back(tMeas);
         times.TSd1sTChannel.push_back(159-i);
         times.TSd1sTMul++;
         if(hasCal){
           array<double,2> &coeffs =  calibrations["SD1S"].at(159-i);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSd1sTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -281,20 +296,22 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
       */
 		}
     hasCal = calibrations["SD1R"].size() == 24 ? true : false;
-		for(i=168; i<192; i++){
+		for(i=160; i<192; i++){ //168-191
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSd1rTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        if(i<168) continue;
+        times.TSd1rTDC.push_back(tMeas);
         times.TSd1rTChannel.push_back(191-i);
         times.TSd1rTMul++;
         if(hasCal){
           array<double,2> &coeffs =  calibrations["SD1R"].at(191-i);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSd1rTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -315,7 +332,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 		for(i=192; i<320; i++){
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TYdTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TYdTDC.push_back(tMeas);
         int YdChannel = ((i-192)/16)*16+15-(i-192)%16;
         times.TYdTChannel.push_back(YdChannel);
         times.TYdTMul++;
@@ -323,10 +342,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
           array<double,2> &coeffs =  calibrations["YD"].at(YdChannel);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TYdTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -345,10 +363,12 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
       */
 		}
     hasCal = calibrations["SUS"].size() == 32 ? true : false;
-		for(i=320; i<351; i++){
+		for(i=320; i<352; i++){ 
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSusTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TSusTDC.push_back(tMeas);
         int SusChannel = i < 336 ? 335-i : 351-i+16;
         times.TSusTChannel.push_back(SusChannel);
         times.TSusTMul++;
@@ -356,10 +376,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
           array<double,2> &coeffs =  calibrations["SUS"].at(SusChannel);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSusTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -378,10 +397,12 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 		}
     hasCal = calibrations["SUR"].size() == 24 ? true : false;
 		for(i=352; i<384; i++){
-      if(i>367 && i<376) continue;
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TSurTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        if(i>367 && i<376) continue;
+        times.TSurTDC.push_back(tMeas);
         int SurChannel = i < 368 ? 367-i : 383-i + 16;
         times.TSurTChannel.push_back(SurChannel);
         times.TSurTMul++;
@@ -389,10 +410,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
           array<double,2> &coeffs =  calibrations["SUR"].at(SurChannel);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TSurTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -413,7 +433,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
 		for(i=384; i<512; i++){
       queue<uint32_t> &ti = timeRaw.at(i);
       while(!ti.empty()){
-        times.TYuTDC.push_back(ti.front());
+        uint32_t tMeas = ti.front();
+        ti.pop();
+        times.TYuTDC.push_back(tMeas);
         int YuChannel = i < 480 ? ((i-384)/16)*16+15-(i-384)%16 : 511-i+96;
         times.TYuTChannel.push_back(YuChannel);
         times.TYuTMul++;
@@ -421,10 +443,9 @@ void HandleV1190(TMidasEvent& event, void* ptr, int nitems, int bank, ITdc* ptdc
           array<double,2> &coeffs =  calibrations["YU"].at(YuChannel);
           double slope = coeffs.at(0);
           double delay = coeffs.at(1);
-          double time = slope*((double)ti.front()-tRef-delay);
+          double time = slope*((double)tMeas-tRef-delay);
           times.TYuTime.push_back(time);
         }
-        ti.pop();
       }
       /*
 			if(timeRaw[i]>0.){
@@ -546,7 +567,7 @@ void CheckSize(string det,vector<array<double,2>> &cal)
   if(det == "SUS" && cal.size() != 32) ok = false;
 
   if(!ok){
-    printf("Time calibration for %s has wrong size: %d\n",det.c_str(),cal.size());
+    printf("Time calibration for %s has wrong size: %d\n",det.c_str(),(int)cal.size());
     exit(EXIT_FAILURE);
   }
 }
